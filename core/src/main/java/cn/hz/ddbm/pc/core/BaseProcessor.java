@@ -18,17 +18,17 @@ import java.util.List;
 
 @Getter
 public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
-    final Fsm.FsmRecord<S> fsmRecord;
-    final List<Plugin>     plugins;
+    final Fsm.Transition<S> fsmRecord;
+    final List<Plugin>      plugins;
 
 
-    public BaseProcessor(Fsm.FsmRecord<S> fsmRecord, List<Plugin> plugins) {
+    public BaseProcessor(Fsm.Transition<S> fsmRecord, List<Plugin> plugins) {
         this.plugins   = plugins;
         this.fsmRecord = fsmRecord;
     }
 
 
-    public abstract A action(FlowContext<S, ?> ctx);
+    public abstract A action(FsmContext<S, ?> ctx);
 
 //    public Action<S> action(FlowContext<S, ?> ctx) {
 //        if (null == this.action) {
@@ -57,7 +57,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
 //    }
 
 
-    protected void preActionPlugin(Fsm<S> flow, FlowContext<S, ?> ctx) {
+    protected void preActionPlugin(Fsm<S> flow, FsmContext<S, ?> ctx) {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
@@ -69,7 +69,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
         });
     }
 
-    protected void postActionPlugin(Fsm<S> flow, S lastNode, FlowContext<S, ?> ctx) {
+    protected void postActionPlugin(Fsm<S> flow, S lastNode, FsmContext<S, ?> ctx) {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
@@ -81,7 +81,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
         });
     }
 
-    protected void onActionExceptionPlugin(Fsm<S> flow, S preNode, Exception e, FlowContext<S, ?> ctx) {
+    protected void onActionExceptionPlugin(Fsm<S> flow, S preNode, Exception e, FsmContext<S, ?> ctx) {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
@@ -93,7 +93,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
         });
     }
 
-    protected void onActionFinallyPlugin(Fsm<S> flow, FlowContext<S, ?> ctx) {
+    protected void onActionFinallyPlugin(Fsm<S> flow, FsmContext<S, ?> ctx) {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
@@ -106,5 +106,5 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
     }
 
 
-    public abstract void execute(FlowContext<S, ?> ctx) throws ActionException, StatusException;
+    public abstract void execute(FsmContext<S, ?> ctx) throws ActionException, StatusException;
 }

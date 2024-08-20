@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hz.ddbm.pc.core.action.MultiSimpleAction;
+import cn.hz.ddbm.pc.core.action.MultiAction;
 import cn.hz.ddbm.pc.core.action.NoneAction;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 
@@ -13,15 +13,14 @@ public interface Action<S extends Enum<S>> {
     String beanName();
 
 
-    void execute(FlowContext<S, ?> ctx) throws Exception;
+    void execute(FsmContext<S, ?> ctx) throws Exception;
 
     interface QueryAction<S extends Enum<S>> extends Action<S> {
-        S query(FlowContext<S, ?> ctx) throws Exception;
+        S query(FsmContext<S, ?> ctx) throws Exception;
     }
 
     interface SagaAction<S extends Enum<S>> extends Action<S>, QueryAction<S> {
 
-        S getExecuteResult(FlowContext<S, ?> ctx);
     }
 
     /**
@@ -38,7 +37,7 @@ public interface Action<S extends Enum<S>> {
     String single_regexp = "\\w{1,20}";
     String multi_regexp  = "(\\w+,)+\\w+";
 
-    public static <T extends Action<S>, S extends Enum<S>> T of(String actionDsl, Class<T> type, FlowContext<S, ?> ctx) {
+    public static <T extends Action<S>, S extends Enum<S>> T of(String actionDsl, Class<T> type, FsmContext<S, ?> ctx) {
         if (null != ctx && ctx.getMockBean()) {
             if (StrUtil.isBlank(actionDsl)) {
                 return (T) new NoneAction("");
@@ -57,7 +56,7 @@ public interface Action<S extends Enum<S>> {
             List<Action> actions = Arrays.stream(actionBeanNames)
                     .map(name -> InfraUtils.getBean(name, Action.class))
                     .collect(Collectors.toList());
-            return (T) new MultiSimpleAction(actionDsl, actions);
+            return (T) new MultiAction(actionDsl, actions);
         }
         return (T) new NoneAction("");
     }

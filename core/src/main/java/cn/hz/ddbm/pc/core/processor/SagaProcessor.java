@@ -23,16 +23,16 @@ import java.util.Set;
 public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<Action.SagaAction<S>, S> {
 
 
-    public SagaProcessor(Fsm.FsmRecord<S> f, List<Plugin> plugins) {
+    public SagaProcessor(Fsm.Transition<S> f, List<Plugin> plugins) {
         super(f, plugins);
     }
 
     @Override
-    public Action.SagaAction<S> action(FlowContext<S, ?> ctx) {
+    public Action.SagaAction<S> action(FsmContext<S, ?> ctx) {
         return Action.of(getFsmRecord().getActionDsl(), Action.SagaAction.class, ctx);
     }
 
-    public void execute(FlowContext<S, ?> ctx) throws ActionException, StatusException {
+    public void execute(FsmContext<S, ?> ctx) throws ActionException, StatusException {
         Fsm<S>       flow     = ctx.getFlow();
         Serializable id       = ctx.getId();
         String       event    = ctx.getEvent();
@@ -51,20 +51,20 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<Action.SagaA
             Set<S> conditions   = getFsmRecord().getConditions();
             if (conditions.contains(currentState)) {
                 action(ctx).execute(ctx);
-                S nextNode = action(ctx).getExecuteResult(ctx);
+                S nextNode = action(ctx).query(ctx);
                 if (null == nextNode) {
                     nextNode = getFsmRecord().getFailover();
                 }
                 ctx.getStatus().flush(event, nextNode, flow);
             }
-            postActionPlugin(flow, lastNode.getName(), ctx);
+            postActionPlugin(flow, lastNode.getState(), ctx);
         } catch (ActionException e) {
             ctx.getStatus().flush(event, getFsmRecord().getFailover(), flow);
-            onActionExceptionPlugin(flow, lastNode.getName(), e, ctx);
+            onActionExceptionPlugin(flow, lastNode.getState(), e, ctx);
             throw e;
         } catch (Exception e) {
             ctx.getStatus().flush(event, getFsmRecord().getFailover(), flow);
-            onActionExceptionPlugin(flow, lastNode.getName(), e, ctx);
+            onActionExceptionPlugin(flow, lastNode.getState(), e, ctx);
             throw new ActionException(e);
         } finally {
             onActionFinallyPlugin(flow, ctx);
@@ -72,7 +72,7 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<Action.SagaA
         }
     }
 
-    private StatusManager getStatusManager(FlowContext<S, ?> ctx) {
+    private StatusManager getStatusManager(FsmContext<S, ?> ctx) {
         return InfraUtils.getStatusManager(ctx.getProfile().getStatusManager());
     }
 

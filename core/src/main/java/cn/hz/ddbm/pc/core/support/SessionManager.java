@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.core.support;
 
 
-import cn.hz.ddbm.pc.core.FlowContext;
+import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.exception.SessionException;
 
 /**
@@ -19,7 +19,7 @@ public interface SessionManager {
 
     Object get(String flowName, String flowId, String key);
 
-    default void flush(FlowContext<?, ?> ctx) throws SessionException {
+    default void flush(FsmContext<?, ?> ctx) throws SessionException {
         //todo
     }
 

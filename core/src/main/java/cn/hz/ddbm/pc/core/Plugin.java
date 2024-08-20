@@ -9,17 +9,17 @@ package cn.hz.ddbm.pc.core;
 public interface Plugin<S extends Enum<S>> extends ValueObject {
     String code();
 
-    void preAction(String name, FlowContext<S, ?> ctx);
+    void preAction(String name, FsmContext<S, ?> ctx);
 
-    void postAction(String name, S lastNode, FlowContext<S, ?> ctx);
+    void postAction(String name, S lastNode, FsmContext<S, ?> ctx);
 
-    void onActionException(String actionName, S preNode, Exception e, FlowContext<S, ?> ctx);
+    void onActionException(String actionName, S preNode, Exception e, FsmContext<S, ?> ctx);
 
-    void onActionFinally(String name, FlowContext<S, ?> ctx);
+    void onActionFinally(String name, FsmContext<S, ?> ctx);
 
-    void postRoute(String routerName, S preNode, FlowContext<S, ?> ctx);
+    void postRoute(String routerName, S preNode, FsmContext<S, ?> ctx);
 
-    void onRouteExcetion(String routerName, Exception e, FlowContext<S, ?> ctx);
+    void onRouteExcetion(String routerName, Exception e, FsmContext<S, ?> ctx);
 
 
 }

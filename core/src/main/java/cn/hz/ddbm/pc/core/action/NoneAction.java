@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.core.action;
 
 import cn.hz.ddbm.pc.core.Action;
-import cn.hz.ddbm.pc.core.FlowContext;
+import cn.hz.ddbm.pc.core.FsmContext;
 
 public class NoneAction implements Action, Action.QueryAction, Action.SagaAction {
     String actionDsl;
@@ -16,17 +16,13 @@ public class NoneAction implements Action, Action.QueryAction, Action.SagaAction
     }
 
     @Override
-    public void execute(FlowContext ctx) throws Exception {
+    public void execute(FsmContext ctx) throws Exception {
 
     }
 
     @Override
-    public Enum query(FlowContext ctx) throws Exception {
+    public Enum query(FsmContext ctx) throws Exception {
         return null;
     }
 
-    @Override
-    public Enum getExecuteResult(FlowContext ctx) {
-        return null;
-    }
 }

@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+    id 'groovy'
+}
+
+group = 'cn.hz.ddbm.pc'
+version = '0.0.1-SNAPSHOT'
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation platform("cn.hz.ddbm.pc:core:0.0.1-SNAPSHOT")
+}
+
+test {
+    useJUnitPlatform()
+}

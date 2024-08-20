@@ -8,18 +8,18 @@ import java.util.List;
 
 public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<Action.QueryAction<S>, S> {
 
-    public RouterProcessor(Fsm.FsmRecord<S> f, List<Plugin> plugins) {
+    public RouterProcessor(Fsm.Transition<S> f, List<Plugin> plugins) {
         super(f, plugins);
     }
 
 
     @Override
-    public Action.QueryAction<S> action(FlowContext<S, ?> ctx) {
+    public Action.QueryAction<S> action(FsmContext<S, ?> ctx) {
         return Action.of(getFsmRecord().getActionDsl(), Action.QueryAction.class, ctx);
     }
 
 
-    public void execute(FlowContext<S, ?> ctx) throws ActionException {
+    public void execute(FsmContext<S, ?> ctx) throws ActionException {
         Fsm<S>       flow     = ctx.getFlow();
         Serializable id       = ctx.getId();
         String       event    = ctx.getEvent();
@@ -31,10 +31,10 @@ public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<Action.Que
                 nextNode = getFsmRecord().getFrom();
             }
             ctx.getStatus().flush(event, nextNode, flow);
-            postActionPlugin(flow, lastNode.getName(), ctx);
+            postActionPlugin(flow, lastNode.getState(), ctx);
         } catch (Exception e) {
             ctx.getStatus().flush(event, getFsmRecord().getFrom(), flow);
-            onActionExceptionPlugin(flow, lastNode.getName(), e, ctx);
+            onActionExceptionPlugin(flow, lastNode.getState(), e, ctx);
             throw new ActionException(e);
         } finally {
             onActionFinallyPlugin(flow, ctx);
