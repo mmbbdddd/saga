@@ -118,7 +118,7 @@ public interface FSM<S extends Enum<S>> {
             if (t.getType().equals(Fsm.TransitionType.SAGA)) {
                 fsm.getEventTable().saga(t.getFrom(), t.event, t.conditions, t.failover, t.action);
             }
-            if (t.getType().equals(Fsm.TransitionType.ROUTER)) {
+            if (t.getType().equals(Fsm.TransitionType.QUERY)) {
                 fsm.getEventTable().router(t.getFrom(), t.getEvent(), t.getAction());
             }
             if (t.getType().equals(Fsm.TransitionType.TO)) {
@@ -148,13 +148,14 @@ public interface FSM<S extends Enum<S>> {
             return this;
         }
 
-        public Transitions<S> router(S node, String event, String action) {
-            transitions.add(Transition.routerOf(node, event, action));
+        public Transitions<S> query(S node, String event, String action) {
+            transitions.add(Transition.queryOf(node, event, action));
             return this;
         }
 
         public Transitions<S> saga(S node, String event, Set<S> conditions, S failover, String action) {
             transitions.add(Transition.sagaOf(node, event, conditions, failover, action));
+            transitions.add(Transition.queryOf(failover, event, action));
             return this;
         }
     }
@@ -170,9 +171,9 @@ public interface FSM<S extends Enum<S>> {
         S                 to;
 
 
-        public static <S> Transition<S> routerOf(S node, String event, String action) {
+        public static <S> Transition<S> queryOf(S node, String event, String action) {
             Transition<S> t = new Transition<S>();
-            t.type   = Fsm.TransitionType.ROUTER;
+            t.type   = Fsm.TransitionType.QUERY;
             t.from   = node;
             t.event  = event;
             t.action = action;

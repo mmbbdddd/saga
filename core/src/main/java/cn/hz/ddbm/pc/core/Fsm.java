@@ -144,7 +144,7 @@ public class Fsm<S extends Enum<S>> {
         }
 
         public void router(S from, String event, String actionDsl) {
-            this.records.add(new Transition<>(TransitionType.ROUTER, from, event, actionDsl, null, null, null));
+            this.records.add(new Transition<>(TransitionType.QUERY, from, event, actionDsl, null, null, null));
         }
 
         public void saga(S from, String event, Set<S> conditions, S failover, String actionDsl) {
@@ -208,6 +208,6 @@ public class Fsm<S extends Enum<S>> {
     }
 
     public enum TransitionType {
-        TO, SAGA, ROUTER
+        TO, SAGA, QUERY
     }
 }
