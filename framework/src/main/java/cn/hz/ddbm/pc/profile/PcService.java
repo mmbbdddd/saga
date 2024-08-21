@@ -110,7 +110,7 @@ public abstract class PcService {
             return true;
         }
         if (!state.isRunnable()) {
-            Logs.flow.info("流程不可运行：{},{},{}", flowName, ctx.getId(), state.getState());
+            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), state.getStatus(),state.getState());
             return false;
         }
 
@@ -118,7 +118,7 @@ public abstract class PcService {
         Integer nodeRetry = ctx.getFlow().getNode(state.getState()).getRetry();
 
         if (exeRetry > nodeRetry) {
-            Logs.flow.info("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), state.getState(), exeRetry, nodeRetry);
+            Logs.flow.warn("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), state.getState(), exeRetry, nodeRetry);
             return false;
         }
         return true;
