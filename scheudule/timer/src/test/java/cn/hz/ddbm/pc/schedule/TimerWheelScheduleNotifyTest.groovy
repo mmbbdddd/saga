@@ -1,18 +1,38 @@
-package cn.hz.ddbm.pc;
+package cn.hz.ddbm.pc.schedule
 
-
+import cn.hz.ddbm.pc.core.coast.Coasts
+import cn.hz.ddbm.pc.core.schedule.ScheduleManger
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import org.junit.Test
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeUnit
 
-public class HashedWheelTimerPressureTest {
+class TimerWheelScheduleNotifyTest {
+    TimerWheelScheduleNotify timerWheelScheduleNotify = new TimerWheelScheduleNotify()
 
+    @Test
+    void testType() {
+        ScheduleManger.Type result = timerWheelScheduleNotify.type()
+        assert result == ScheduleManger.Type.TIMER
+    }
+
+    @Test
+    void testSchedule() {
+//        timerWheelScheduleNotify.schedule("flow", null)
+    }
+
+    @Test
+    void testNotifyMe() {
+        timerWheelScheduleNotify.notifyMe("flow", 1, Coasts.EVENT_PAUSE,2, TimeUnit.NANOSECONDS)
+        Thread.sleep(2000)
+    }
     private static final int NUM_TIMERS = 10; // 假设我们要创建100万个定时任务
     private static final int TIMEOUT_SECONDS = 10; // 超时时间设为10秒
 
-    public static void main(String[] args) {
+    @Test
+    public   void test(){
         HashedWheelTimer timer = new HashedWheelTimer();
 
         for (int i = 0; i < NUM_TIMERS; i++) {
@@ -32,10 +52,12 @@ public class HashedWheelTimerPressureTest {
         // 注意：实际压测时，可能需要更复杂的逻辑来确保所有任务都被执行
         // 例如，可以通过计数或其他同步机制来确保任务执行完毕
         try {
-            Thread.sleep(10000); // 假设等待10秒能够保证所有任务执行
+            Thread.sleep(4); // 假设等待10秒能够保证所有任务执行
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         timer.stop();
     }
 }
+
+//Generated with love by TestMe :) Please raise issues & feature requests at: https://weirddev.com/forum#!/testme

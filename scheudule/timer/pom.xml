@@ -3,29 +3,33 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <parent>
+        <groupId>cn.hz.ddbm.pc</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.9.8-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
     <groupId>cn.hz.ddbm.pc</groupId>
-    <artifactId>scheudule</artifactId>
+    <artifactId>scheudule-timer</artifactId>
     <version>0.9.8-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>cn.hz.ddbm.pc</groupId>
+            <artifactId>core</artifactId>
+            <version>0.9.8-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+         <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+        </dependency>
+    </dependencies>
 
-    <modules>
-<!--        实时性最高的-->
-<!--        <module>notify</module>-->
-<!--        准实时的-->
-        <!--        scheduledThreadPool  or NettyWheelTimer？ -->
-        <module>timer</module>
-        <module>lazy-queue</module>
 
-<!--        兜底-->
-<!--        spring-cron/xxl-->
-        <module>spring-cron</module>
-        <module>xxl-job</module>
-    </modules>
 </project>
