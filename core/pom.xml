@@ -45,6 +45,12 @@
             <artifactId>spring-context-support</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>cn.hz.ddbm.pc</groupId>
+            <artifactId>common</artifactId>
+            <version>0.9.8-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

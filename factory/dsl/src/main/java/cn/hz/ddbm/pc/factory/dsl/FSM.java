@@ -3,11 +3,13 @@ package cn.hz.ddbm.pc.factory.dsl;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
+import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.core.Fsm;
 import cn.hz.ddbm.pc.core.Plugin;
 import cn.hz.ddbm.pc.core.Profile;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
+import cn.hz.ddbm.pc.core.schedule.ScheduleManger;
 import cn.hz.ddbm.pc.core.support.SessionManager;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import lombok.Getter;
@@ -91,10 +93,12 @@ public interface FSM<S extends Enum<S>> {
     Profile<S> profile();
 
     /**
-     * 节点>cron表达式
+     * 节点>可用的调度能力>调度优先级>tps限制
+     *
+     * 实时任务不受调度规则限制，但调用回累计到调度规则中。
      * @return
      */
-    Map<S,String> cron();
+    Map<S, Triple<ScheduleManger.Type,Double,Integer>> scheduleRules();
 
 
     default Fsm<S> build() throws Exception {

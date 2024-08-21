@@ -2,10 +2,12 @@ package cn.hz.ddbm.pc.example;
 
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.map.multi.Table;
+import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.core.Plugin;
 import cn.hz.ddbm.pc.core.Profile;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
+import cn.hz.ddbm.pc.core.schedule.ScheduleManger;
 import cn.hz.ddbm.pc.core.support.SessionManager;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
@@ -126,9 +128,11 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     }
 
     @Override
-    public Map<PayState, String> cron() {
+    public Map<PayState, Triple<ScheduleManger.Type, Double, Integer>> scheduleRules() {
+        //取不到，就是无限制。能取到。则按规则执行
         return new HashMap<>();
     }
+
 
 
     public String fsmId() {
