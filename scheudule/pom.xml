@@ -16,10 +16,9 @@
     </properties>
 
     <modules>
-<!--        实时性最高的-->
-<!--        <module>notify</module>-->
+<!--        实时性最高的：内存事件  > 第三方回调-->
 <!--        准实时的-->
-        <!--        scheduledThreadPool  or NettyWheelTimer？ -->
+        <!--        NettyWheelTimer >延迟队列 -->
         <module>timer</module>
         <module>lazy-queue</module>
 
