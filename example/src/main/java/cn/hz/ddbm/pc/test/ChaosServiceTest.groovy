@@ -5,13 +5,13 @@ import cn.hz.ddbm.pc.core.FsmPayload
 import cn.hz.ddbm.pc.core.Fsm
 import cn.hz.ddbm.pc.core.Node
 import cn.hz.ddbm.pc.core.coast.Coasts
-import cn.hz.ddbm.pc.profile.ChaosPcService
+import cn.hz.ddbm.pc.profile.ChaosSagaService
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import spock.lang.Specification
 
 public class ChaosServiceTest extends Specification {
 
-    ChaosPcService chaosService = new ChaosPcService();
+    ChaosSagaService chaosService = new ChaosSagaService();
     Fsm flow
 
     public void setup() {
@@ -37,7 +37,7 @@ public class ChaosServiceTest extends Specification {
     def "Execute"() {
         expect:
 
-        FsmPayload date = new ChaosPcService.MockPayLoad("init");
+        FsmPayload date = new ChaosSagaService.MockPayLoad("init");
         String event = Coasts.EVENT_DEFAULT;
         chaosService.execute("test", date, event, 100, 10, rules, false)
 

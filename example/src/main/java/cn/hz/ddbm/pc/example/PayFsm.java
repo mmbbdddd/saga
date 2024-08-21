@@ -12,7 +12,7 @@ import cn.hz.ddbm.pc.core.support.SessionManager;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.factory.dsl.FSM;
-import cn.hz.ddbm.pc.profile.PcService;
+import cn.hz.ddbm.pc.profile.BaseService;
 import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,6 +147,6 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        InfraUtils.getBean(PcService.class).addFlow(build());
+        InfraUtils.getBean(BaseService.class).addFlow(build());
     }
 }

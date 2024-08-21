@@ -6,7 +6,7 @@ import cn.hz.ddbm.pc.core.support.Locker;
 import cn.hz.ddbm.pc.core.support.SessionManager;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import cn.hz.ddbm.pc.core.utils.RandomUitl;
-import cn.hz.ddbm.pc.profile.ChaosPcService;
+import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
 import cn.hz.ddbm.pc.profile.chaos.ChaosTarget;
 
@@ -19,9 +19,9 @@ import java.util.Set;
  */
 public class ChaosHandler {
 
-    ChaosPcService chaosPcService;
+    ChaosSagaService chaosPcService;
 
-    public ChaosHandler(ChaosPcService chaosPcService) {
+    public ChaosHandler(ChaosSagaService chaosPcService) {
         this.chaosPcService = chaosPcService;
     }
 

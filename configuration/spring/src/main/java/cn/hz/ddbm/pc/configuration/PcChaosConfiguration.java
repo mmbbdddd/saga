@@ -8,8 +8,8 @@ import cn.hz.ddbm.pc.core.support.Locker;
 import cn.hz.ddbm.pc.core.support.StatisticsSupport;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.lock.JdkLocker;
-import cn.hz.ddbm.pc.profile.ChaosPcService;
-import cn.hz.ddbm.pc.profile.PcService;
+import cn.hz.ddbm.pc.profile.ChaosSagaService;
+import cn.hz.ddbm.pc.profile.BaseService;
 import cn.hz.ddbm.pc.session.memory.MemorySessionManager;
 import cn.hz.ddbm.pc.statistics.SimpleStatistics;
 import cn.hz.ddbm.pc.status.memory.MemoryStatusManager;
@@ -18,7 +18,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-@ConditionalOnClass({PcService.class})
+@ConditionalOnClass({BaseService.class})
 @EnableConfigurationProperties({PcProperties.class})
 @EnableAspectJAutoProxy
 public class PcChaosConfiguration {
@@ -30,8 +30,8 @@ public class PcChaosConfiguration {
     }
 
     @Bean
-    ChaosPcService pcService() {
-        return new ChaosPcService();
+    ChaosSagaService pcService() {
+        return new ChaosSagaService();
     }
 
     @Bean
@@ -45,7 +45,7 @@ public class PcChaosConfiguration {
     }
 
     @Bean
-    ChaosHandler chaosHandler(ChaosPcService pcService) {
+    ChaosHandler chaosHandler(ChaosSagaService pcService) {
         return new ChaosHandler(pcService);
     }
 

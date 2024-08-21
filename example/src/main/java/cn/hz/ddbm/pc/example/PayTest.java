@@ -2,9 +2,8 @@ package cn.hz.ddbm.pc.example;
 
 import cn.hz.ddbm.pc.configuration.PcChaosConfiguration;
 import cn.hz.ddbm.pc.core.coast.Coasts;
-import cn.hz.ddbm.pc.profile.ChaosPcService;
+import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
-import cn.hz.ddbm.pc.profile.chaos.ChaosTarget;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class PayTest {
 
 
     @Autowired
-    ChaosPcService chaosService;
+    ChaosSagaService chaosService;
 
     /**
      * doc/img_4.png
@@ -49,7 +48,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.execute("test", new ChaosPcService.MockPayLoad(PayState.init), event, 1000, 10, rules, true);
+            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 1000, 10, rules, true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,7 +70,7 @@ public class PayTest {
         String event = Coasts.EVENT_DEFAULT;
         try {
             //执行10000次，查看流程中断概率
-            chaosService.execute("test", new ChaosPcService.MockPayLoad(PayState.init), event, 10000, 10, new ArrayList(), false);
+            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 10000, 10, new ArrayList(), false);
         } catch (Exception e) {
             e.printStackTrace();
         }

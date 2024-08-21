@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class PcService {
+public abstract class BaseService {
     Map<String, Fsm> flows = new HashMap<>();
 
 

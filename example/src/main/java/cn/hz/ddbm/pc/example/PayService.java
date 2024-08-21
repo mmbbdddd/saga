@@ -4,11 +4,7 @@ import cn.hz.ddbm.pc.core.FsmPayload;
 import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
-import cn.hz.ddbm.pc.core.exception.SessionException;
-import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
-import cn.hz.ddbm.pc.profile.ChaosPcService;
-import cn.hz.ddbm.pc.profile.PcService;
-import cn.hz.ddbm.pc.profile.StablePcService;
+import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +18,7 @@ import java.util.Map;
 public class PayService implements InitializingBean {
     static Map<Long, PayOrder> orders;
     @Autowired
-    ChaosPcService pcService;
+    ChaosSagaService pcService;
 
     //每个业务方法前后增加事件拦截。自动发出push事件。
 //    @FsmWatch(ids = {"$order.id"})

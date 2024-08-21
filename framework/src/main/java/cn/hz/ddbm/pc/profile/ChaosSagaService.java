@@ -23,13 +23,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class ChaosPcService extends PcService {
+public class ChaosSagaService extends BaseService {
 
     ExecutorService      threadPool = Executors.newFixedThreadPool(20);
     List<StatisticsLine> statisticsLines;
     List<ChaosRule>      chaosRules;
 
-    public ChaosPcService() {
+    public ChaosSagaService() {
         this.chaosRules = new ArrayList<>();
     }
 
