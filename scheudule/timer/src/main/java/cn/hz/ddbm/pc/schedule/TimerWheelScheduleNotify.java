@@ -1,26 +1,22 @@
 package cn.hz.ddbm.pc.schedule;
 
-import cn.hz.ddbm.pc.core.FlowPayload;
 import cn.hz.ddbm.pc.core.FsmPayload;
+import cn.hz.ddbm.pc.core.exception.NotImplementedException;
 import cn.hz.ddbm.pc.core.schedule.ScheduleManger;
 import cn.hz.ddbm.pc.profile.StablePcService;
 import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.Serializable;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-public class TimerWheelScheduleNotify implements ScheduleManger, InitializingBean {
+public class TimerWheelScheduleNotify implements ScheduleManger {
 
-    @Autowired
-    ThreadPoolTaskScheduler threadPoolTaskScheduler;
+    @Resource
+    ThreadFactory threadPoolTaskScheduler;
 
-    @Autowired
+    @Resource
     StablePcService pcService;
 
     HashedWheelTimer timer;
@@ -37,15 +33,10 @@ public class TimerWheelScheduleNotify implements ScheduleManger, InitializingBea
 
     @Override
     public void notifyMe(String flow, FsmPayload payload, String event, Integer delay, TimeUnit timeUnit) {
-        timer.newTimeout(new TimerTask() {
-            @Override
-            public void run(Timeout timeout) throws Exception {
-                pcService.execute(flow, payload, event);
-            }
-        }, delay, timeUnit);
+        timer.newTimeout(timeout -> pcService.execute(flow, payload, event), delay, timeUnit);
     }
 
-    @Override
+    @PostConstruct
     public void afterPropertiesSet() throws Exception {
         timer = new HashedWheelTimer(threadPoolTaskScheduler, 2L, TimeUnit.SECONDS, 2);
     }
