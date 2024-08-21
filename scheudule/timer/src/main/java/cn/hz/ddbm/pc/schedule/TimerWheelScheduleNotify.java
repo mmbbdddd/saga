@@ -1,6 +1,9 @@
 package cn.hz.ddbm.pc.schedule;
 
+import cn.hz.ddbm.pc.core.FlowPayload;
+import cn.hz.ddbm.pc.core.FsmPayload;
 import cn.hz.ddbm.pc.core.schedule.ScheduleManger;
+import cn.hz.ddbm.pc.profile.StablePcService;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -13,9 +16,14 @@ import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 public class TimerWheelScheduleNotify implements ScheduleManger, InitializingBean {
-    private HashedWheelTimer timer;
+
     @Autowired
     ThreadPoolTaskScheduler threadPoolTaskScheduler;
+
+    @Autowired
+    StablePcService pcService;
+
+    HashedWheelTimer timer;
 
     @Override
     public Type type() {
@@ -28,8 +36,13 @@ public class TimerWheelScheduleNotify implements ScheduleManger, InitializingBea
     }
 
     @Override
-    public void notifyMe(String flow, Serializable flowId, String event, Integer delay, TimeUnit timeUnit) {
-        timer.newTimeout(new FsmTimerTask(flow, flowId, event), delay, timeUnit);
+    public void notifyMe(String flow, FsmPayload payload, String event, Integer delay, TimeUnit timeUnit) {
+        timer.newTimeout(new TimerTask() {
+            @Override
+            public void run(Timeout timeout) throws Exception {
+                pcService.execute(flow, payload, event);
+            }
+        }, delay, timeUnit);
     }
 
     @Override
@@ -37,34 +50,5 @@ public class TimerWheelScheduleNotify implements ScheduleManger, InitializingBea
         timer = new HashedWheelTimer(threadPoolTaskScheduler, 2L, TimeUnit.SECONDS, 2);
     }
 
-
-    static class FsmTimerTask implements TimerTask {
-        String       flowName;
-        Serializable flowId;
-        String       event;
-
-        public FsmTimerTask(String flowName, Serializable flowId, String event) {
-            this.flowName = flowName;
-            this.flowId   = flowId;
-            this.event    = event;
-        }
-
-        @Override
-        public void run(Timeout timeout) throws Exception {
-
-        }
-
-        public String getFlowName() {
-            return flowName;
-        }
-
-        public Serializable getFlowId() {
-            return flowId;
-        }
-
-        public String getEvent() {
-            return event;
-        }
-    }
 
 }

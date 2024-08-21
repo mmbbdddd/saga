@@ -1,11 +1,14 @@
 package cn.hz.ddbm.pc.schedule
 
+import cn.hz.ddbm.pc.core.FsmPayload
+import cn.hz.ddbm.pc.core.State
 import cn.hz.ddbm.pc.core.coast.Coasts
 import cn.hz.ddbm.pc.core.schedule.ScheduleManger
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.junit.Test
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 
 import java.util.concurrent.TimeUnit
 
@@ -25,8 +28,25 @@ class TimerWheelScheduleNotifyTest {
 
     @Test
     void testNotifyMe() {
-        timerWheelScheduleNotify.notifyMe("flow", 1, Coasts.EVENT_PAUSE,2, TimeUnit.NANOSECONDS)
-        Thread.sleep(2000)
+//        timerWheelScheduleNotify.threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+//        timerWheelScheduleNotify.afterPropertiesSet()
+//        timerWheelScheduleNotify.notifyMe("flow", new FsmPayload() {
+//            @Override
+//            Serializable getId() {
+//                return 1
+//            }
+//
+//            @Override
+//            State getStatus() {
+//                return  null;
+//            }
+//
+//            @Override
+//            void setStatus(State status) {
+//
+//            }
+//        }, Coasts.EVENT_PAUSE,2, TimeUnit.NANOSECONDS)
+//        Thread.sleep(2000)
     }
     private static final int NUM_TIMERS = 10; // 假设我们要创建100万个定时任务
     private static final int TIMEOUT_SECONDS = 10; // 超时时间设为10秒
