@@ -128,11 +128,9 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     }
 
     @Override
-    public Map<PayState, Triple<ScheduleManger.Type, Double, Integer>> scheduleRules() {
-        //取不到，就是无限制。能取到。则按规则执行
-        return new HashMap<>();
+    public Map<PayState, Integer> thresholds() {
+        return null;
     }
-
 
 
     public String fsmId() {

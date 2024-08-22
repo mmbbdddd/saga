@@ -93,12 +93,12 @@ public interface FSM<S extends Enum<S>> {
     Profile<S> profile();
 
     /**
-     * 节点>可用的调度能力>调度优先级>tps限制
+     * 节点>限流
      *
      * 实时任务不受调度规则限制，但调用回累计到调度规则中。
      * @return
      */
-    Map<S, Triple<ScheduleManger.Type,Double,Integer>> scheduleRules();
+    Map<S,Integer> thresholds();
 
 
     default Fsm<S> build() throws Exception {
