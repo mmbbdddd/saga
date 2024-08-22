@@ -7,7 +7,6 @@
     <version>0.9.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-
     <modules>
         <module>parent</module>
         <module>common</module>
@@ -25,6 +24,8 @@
         <module>scheudule</module>
         <module>build-all</module>
     </modules>
+
+
 
 
 </project>
