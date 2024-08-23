@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -48,6 +49,7 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
         this.flow   = flow;
         this.status = data.getStatus();
         this.fluent = true;
+        this.session = new HashMap<>();
         //todo需要从应用中同步
         if (flow.getProfile() != null) {
             this.profile = flow.getProfile();
