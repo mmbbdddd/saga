@@ -3,7 +3,7 @@ package cn.hz.ddbm.pc.schedule;
 import cn.hz.ddbm.pc.core.FsmPayload;
 import cn.hz.ddbm.pc.core.exception.NotImplementedException;
 import cn.hz.ddbm.pc.core.schedule.ScheduleManger;
-import cn.hz.ddbm.pc.profile.StablePcService;
+import cn.hz.ddbm.pc.profile.Sagaervice;
 import io.netty.util.HashedWheelTimer;
 
 import javax.annotation.PostConstruct;
@@ -17,7 +17,7 @@ public class TimerWheelScheduleNotify implements ScheduleManger {
     ThreadFactory threadPoolTaskScheduler;
 
     @Resource
-    StablePcService pcService;
+    Sagaervice pcService;
 
     HashedWheelTimer timer;
 
