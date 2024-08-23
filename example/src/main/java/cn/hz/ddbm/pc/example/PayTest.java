@@ -48,7 +48,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 1000, 10, rules, true);
+            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 2, 10, rules, true);
         } catch (Exception e) {
             e.printStackTrace();
         }

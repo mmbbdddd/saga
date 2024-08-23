@@ -2,12 +2,16 @@ package cn.hz.ddbm.pc.core.action;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.core.*;
+import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.core.utils.RandomUitl;
 
 import java.util.Set;
 
 public class ChaosAction<S extends Enum<S>> implements Action<S>, Action.QueryAction<S>, Action.SagaAction<S> {
     String actionName;
+    public ChaosAction(String actionName){
+        this.actionName = actionName;
+    }
 
 
     @Override
@@ -17,7 +21,7 @@ public class ChaosAction<S extends Enum<S>> implements Action<S>, Action.QueryAc
 
     @Override
     public void execute(FsmContext<S, ?> ctx) throws Exception {
-
+        InfraUtils.getBean("chaosHandler");
 
     }
 

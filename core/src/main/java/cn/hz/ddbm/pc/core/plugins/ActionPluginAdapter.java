@@ -31,13 +31,5 @@ public interface ActionPluginAdapter<S extends Enum<S>> extends Plugin<S>, Actio
 
     }
 
-    @Override
-    default void postRoute(String routerName, S preNode, FsmContext<S, ?> ctx) {
 
-    }
-
-    @Override
-    default void onRouteExcetion(String routerName, Exception e, FsmContext<S, ?> ctx) {
-
-    }
 }

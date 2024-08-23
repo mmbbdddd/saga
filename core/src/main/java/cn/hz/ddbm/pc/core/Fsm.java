@@ -78,16 +78,16 @@ public class Fsm<S extends Enum<S>> {
     }
 
 
-    public <T> void execute(FsmContext<S, ?> ctx) throws ActionException, FsmEndException, StatusException {
-        Assert.isTrue(true, "ctx is null");
+    public <T> Transition<S> execute(FsmContext<S, ?> ctx) throws ActionException, FsmEndException, StatusException {
         State<S> node = ctx.getStatus();
         if (!node.isRunnable()) {
             throw new FsmEndException();
         }
-        Transition<S> atom = eventTable.find(node.state, ctx.getEvent());
-        Assert.notNull(atom, String.format("找不到事件处理器%s@%s", ctx.getEvent(), ctx.getStatus().state));
-        ctx.setExecutor(atom.initExecutor(ctx));
-        atom.execute(ctx);
+        Transition<S> transition = eventTable.find(node.state, ctx.getEvent());
+        Assert.notNull(transition, String.format("找不到事件处理器%s@%s", ctx.getEvent(), ctx.getStatus().state));
+        ctx.setExecutor(transition.initExecutor(ctx));
+        transition.execute(ctx);
+        return transition;
     }
 
 
@@ -204,6 +204,10 @@ public class Fsm<S extends Enum<S>> {
                 }
             }
             return this.processor;
+        }
+
+        public void interruptedPlugins(FsmContext<S, ?> ctx) {
+        this.processor.interrupteFlowForPlugins(ctx);
         }
     }
 

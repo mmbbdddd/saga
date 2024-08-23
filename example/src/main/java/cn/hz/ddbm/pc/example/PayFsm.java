@@ -10,6 +10,7 @@ import cn.hz.ddbm.pc.core.support.SessionManager;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.factory.dsl.FSM;
+import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import cn.hz.ddbm.pc.profile.BaseService;
 import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
         List<Plugin> plugins = new ArrayList<Plugin>();
 //        plugins.add(new DigestLogPluginMock());
 //        plugins.add(new PayAction());
+        plugins.add(new PerformancePlugin());
 //        plugins.add(new PayQueryAction());
 //        plugins.add(new SendAction());
 //        plugins.add(new SendQueryAction());

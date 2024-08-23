@@ -24,10 +24,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class PcChaosConfiguration {
 
 
-    @Bean
-    ChaosAction chaosAction() {
-        return new ChaosAction();
-    }
 
     @Bean
     ChaosSagaService pcService() {

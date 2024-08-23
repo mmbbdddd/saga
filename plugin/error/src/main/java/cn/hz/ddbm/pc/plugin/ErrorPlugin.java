@@ -13,14 +13,10 @@ public class ErrorPlugin implements Plugin {
     }
 
     @Override
-    public void onRouteExcetion(String routerName, Exception e, FsmContext ctx) {
+    public void interrupteFlow(String s, FsmContext ctx) {
 
     }
 
-    @Override
-    public void postRoute(String routerName, Enum preNode, FsmContext ctx) {
-
-    }
 
     @Override
     public void onActionFinally(String name, FsmContext ctx) {

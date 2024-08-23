@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hz.ddbm.pc.core.action.ChaosAction;
 import cn.hz.ddbm.pc.core.action.MultiAction;
 import cn.hz.ddbm.pc.core.action.NoneAction;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
@@ -42,7 +43,7 @@ public interface Action<S extends Enum<S>> {
             if (StrUtil.isBlank(actionDsl)) {
                 return (T) new NoneAction("");
             } else {
-                return InfraUtils.getBean("chaosAction", type);
+                return (T)new ChaosAction<S>(actionDsl);
             }
         }
         if (StrUtil.isBlank(actionDsl)) {

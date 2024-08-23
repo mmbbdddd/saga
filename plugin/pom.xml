@@ -16,6 +16,7 @@
     </properties>
 
     <modules>
+        <module>performance</module>
         <module>digest</module>
         <module>error</module>
     </modules>

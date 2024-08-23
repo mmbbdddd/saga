@@ -28,7 +28,7 @@ public abstract class BaseService {
         Fsm<S> flow = flows.get(flowName);
 
         for (T payload : payloads) {
-            FsmContext<S, T> ctx = new FsmContext<>(flow, payload, event,flow.getProfile());
+            FsmContext<S, T> ctx = new FsmContext<>(flow, payload, event, flow.getProfile());
             execute(ctx);
         }
     }
@@ -43,17 +43,17 @@ public abstract class BaseService {
         execute(ctx);
     }
 
-    public <S extends Enum<S>, T extends FsmPayload<S>> void
-    execute(FsmContext<S, T> ctx) throws StatusException, SessionException {
+    public <S extends Enum<S>, T extends FsmPayload<S>> void execute(FsmContext<S, T> ctx) throws StatusException, SessionException {
         if (Boolean.FALSE.equals(tryLock(ctx))) {
             return;
         }
+        Fsm.Transition<S> transition = null;
         try {
             Boolean fluent = ctx.getFluent();
-            ctx.getFlow().execute(ctx);
+            transition = ctx.getFlow().execute(ctx);
             if (fluent && isCanContinue(ctx)) {
                 ctx.setEvent(Coasts.EVENT_DEFAULT);
-                ctx.getFlow().execute(ctx);
+                transition = ctx.getFlow().execute(ctx);
             }
         } catch (FsmEndException e) {
             //即PauseFlowException
@@ -66,24 +66,27 @@ public abstract class BaseService {
                 flush(ctx);
                 execute(ctx);
             } else
-            //中断流程除（内部错误：不可重复执行，执行次数受限……）再次调度可触发：
-            if (e.getRaw() instanceof InterruptedFlowException) {
-                Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
-                flush(ctx);
-            } else
-            //中断流程（内部程序错误：配置错误，代码错误）再次调度不响应：
-            if (e.getRaw() instanceof PauseFlowException) {
-                Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
-                flush(ctx);
-            } else {
-                e.printStackTrace();
-            }
+                //中断流程除（内部错误：不可重复执行，执行次数受限……）再次调度可触发：
+                if (e.getRaw() instanceof InterruptedFlowException) {
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    flush(ctx);
+                } else
+                    //中断流程（内部程序错误：配置错误，代码错误）再次调度不响应：
+                    if (e.getRaw() instanceof PauseFlowException) {
+                        Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                        flush(ctx);
+                    } else {
+                        e.printStackTrace();
+                    }
         } catch (StatusException e) {
             //todo
             //即PauseFlowException
             Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e.getRaw());
             flush(ctx);
         } finally {
+            if(null != transition){
+                transition.interruptedPlugins(ctx);
+            }
             releaseLock(ctx);
         }
 
@@ -113,7 +116,7 @@ public abstract class BaseService {
             return true;
         }
         if (!state.isRunnable()) {
-            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), state.getStatus(),state.getState());
+            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), state.getStatus(), state.getState());
             return false;
         }
 

@@ -13,13 +13,13 @@ public class DigestLogPluginMock implements Plugin {
     }
 
     @Override
-    public void onRouteExcetion(String routerName, Exception e, FsmContext ctx) {
+    public void interrupteFlow(String s, FsmContext ctx) {
 
     }
 
+
     @Override
     public void onActionFinally(String name, FsmContext ctx) {
-
     }
 
     @Override
@@ -40,11 +40,5 @@ public class DigestLogPluginMock implements Plugin {
     }
 
 
-    @Override
-    public void postRoute(String routerName, Enum preNode, FsmContext ctx) {
-        Logs.digest.info("{},{},{},{}", ctx.getFlow()
-                .getName(), ctx.getId(), preNode, ctx.getStatus()
-                .getState());
-    }
 
 }
