@@ -28,6 +28,9 @@ public interface StatisticsSupport {
     }
 
 
+    /**
+     * todo
+     */
     enum StatisticsAlgo {
         WINDOWS, RANGE
     }
