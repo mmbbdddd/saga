@@ -157,6 +157,17 @@ saga事件的实现和性能分别是：内存事件>IO事件（RPC，MQ，定�
 
 IO事件包含：回调，MQ延迟队列，调度任务事件
 
+# 项目结构推荐
+
+* 1，Service层：数据逻辑，增删改等
+* 2，Commmand层：流程编排，Saga
+* 3，acitons层：各流程action分目录组织 
+* 4，dao：数据接口
+* 5，sao：服务整合
+* 6，repositry：配置表==》领域对象==》action
+* 7，ability层：特定领域能力（ability）==》action。。。。。领域内部通用能力
+* 8，paas层：技术通用能力
+* 9，apaas层：业务跨领域通用能力
 
 
 

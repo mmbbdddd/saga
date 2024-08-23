@@ -5,15 +5,17 @@ import cn.hz.ddbm.pc.core.support.SessionManager;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
+import java.io.Serializable;
 import java.time.Duration;
+import java.util.Map;
 
 public class MemorySessionManager implements SessionManager {
 
-    String keyTemplate = "%s:%s;%s";
+    String keyTemplate = "%s:%s";
 
     Integer               cacheSize;
     Integer               hours;
-    Cache<String, Object> cache;
+    Cache<String, Map<String,Object>> cache;
 
     public MemorySessionManager(Integer cacheSize, Integer hours) {
         Assert.notNull(cacheSize, "cacheSize is null");
@@ -34,12 +36,12 @@ public class MemorySessionManager implements SessionManager {
     }
 
     @Override
-    public void set(String flowName, String flowId, String key, Object value) {
-        cache.put(String.format(keyTemplate, flowId, flowId, key), value);
+    public void set(String flowName, Serializable id, Map<String,Object> session) {
+        cache.put(String.format(keyTemplate, id), session);
     }
 
     @Override
-    public Object get(String flowName, String flowId, String key) {
-        return cache.getIfPresent(String.format(keyTemplate, flowId, flowId, key));
+    public Map<String,Object> get(String flowName, Serializable flowId) {
+        return cache.getIfPresent(String.format(keyTemplate, flowId));
     }
 }

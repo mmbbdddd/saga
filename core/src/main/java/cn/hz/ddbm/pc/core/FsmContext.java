@@ -33,6 +33,7 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
     private Boolean             isChaos  = false;
     @Setter
     private S                   nextNode;
+    private Map<String, Object> session;
 
 
     public FsmContext(Fsm<S> flow, T data, String event, Profile profile) {
@@ -72,5 +73,13 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
 
     public Map<String, Object> buildExpressionContext() {
         return null;
+    }
+
+    public void getSession(String key) {
+        session.get(key);
+    }
+
+    public void setSession(String key, Object value) {
+        session.put(key, value);
     }
 }

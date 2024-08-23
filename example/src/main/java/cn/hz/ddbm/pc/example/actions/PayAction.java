@@ -25,6 +25,7 @@ public class PayAction implements Action.SagaAction<PayState> {
         PayTest.account.decrementAndGet();
         PayTest.freezed.incrementAndGet();
         Logs.flow.info("{},{}支付扣款", ctx.getFlow().getName(), ctx.getId());
+        ctx.getSession("");
     }
 
 

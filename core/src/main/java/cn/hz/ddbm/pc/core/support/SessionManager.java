@@ -3,6 +3,11 @@ package cn.hz.ddbm.pc.core.support;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.exception.SessionException;
+import cn.hz.ddbm.pc.core.exception.WrapedException;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @Description TODO
@@ -15,12 +20,16 @@ import cn.hz.ddbm.pc.core.exception.SessionException;
 public interface SessionManager {
     Type code();
 
-    void set(String flowName, String flowId, String key, Object value);
+    void set(String flowName, Serializable flowId, Map<String, Object> session) throws IOException;
 
-    Object get(String flowName, String flowId, String key);
+    Map<String,Object> get(String flowName, Serializable flowId) throws IOException;
 
     default void flush(FsmContext<?, ?> ctx) throws SessionException {
-        //todo
+        try {
+            set(ctx.getFlow().getName(), ctx.getId(), ctx.getSession());
+        } catch (IOException e) {
+            throw new SessionException(e);
+        }
     }
 
     enum Type {
