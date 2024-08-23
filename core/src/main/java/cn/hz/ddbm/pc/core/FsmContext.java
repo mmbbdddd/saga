@@ -11,6 +11,8 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 @Getter
 public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
@@ -43,12 +45,12 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
         Assert.notNull(event, "event is null");
         Assert.notNull(data.getId(), "date.id is null");
         Assert.notNull(data.getStatus(), "date.status is null");
-        this.event  = event;
-        this.data   = data;
-        this.id     = data.getId();
-        this.flow   = flow;
-        this.status = data.getStatus();
-        this.fluent = true;
+        this.event   = event;
+        this.data    = data;
+        this.id      = data.getId();
+        this.flow    = flow;
+        this.status  = data.getStatus();
+        this.fluent  = true;
         this.session = new HashMap<>();
         //todo需要从应用中同步
         if (flow.getProfile() != null) {
@@ -63,7 +65,12 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
     public void metricsNode(FsmContext<S, ?> ctx) {
         StatisticsSupport metricsWindows = InfraUtils.getMetricsTemplate();
         ///todo 待优化。这块有比较大的IO，可以合并到session中。
-        metricsWindows.increment(ctx.getFlow().getName(), ctx.getId(), ctx.getStatus().getState(), Coasts.EXECUTE_COUNT);
+        AtomicLong atomic = getSessionOrDefault(Coasts.EXECUTE_COUNT, new AtomicLong(0));
+        atomic.incrementAndGet();
+    }
+
+    private <T> T getSessionOrDefault(String key, T deft) {
+        return (T) session.computeIfAbsent(key, (Function<String, T>) s -> deft);
     }
 
     /**
