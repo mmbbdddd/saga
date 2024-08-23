@@ -60,6 +60,7 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
 
     public void metricsNode(FsmContext<S, ?> ctx) {
         StatisticsSupport metricsWindows = InfraUtils.getMetricsTemplate();
+        ///todo 待优化。这块有比较大的IO，可以合并到session中。
         metricsWindows.increment(ctx.getFlow().getName(), ctx.getId(), ctx.getStatus().getState(), Coasts.EXECUTE_COUNT);
     }
 
