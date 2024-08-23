@@ -9,6 +9,9 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.Map;
 
+/**
+ * El引擎。动静分离
+ */
 public class ExpressionEngineUtils {
     private static final ExpressionParser parser = new SpelExpressionParser();
 

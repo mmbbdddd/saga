@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * @Description TODO
+ * @Description 状态接口
  * @Author wanglin
  * @Date 2024/8/7 21:29
  * @Version 1.0.0

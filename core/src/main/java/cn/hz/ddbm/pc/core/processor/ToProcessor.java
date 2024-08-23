@@ -6,6 +6,10 @@ import cn.hz.ddbm.pc.core.exception.wrap.ActionException;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 通用非一致性业务，也非查询类业务。
+ * @param <S>
+ */
 public class ToProcessor<S extends Enum<S>> extends BaseProcessor<Action<S>, S> {
 
 

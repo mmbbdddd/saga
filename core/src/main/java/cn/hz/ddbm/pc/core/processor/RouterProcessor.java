@@ -6,6 +6,10 @@ import cn.hz.ddbm.pc.core.exception.wrap.ActionException;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 查询类接口通用流程
+ * @param <S>
+ */
 public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<Action.QueryAction<S>, S> {
 
     public RouterProcessor(Fsm.Transition<S> f, List<Plugin> plugins) {

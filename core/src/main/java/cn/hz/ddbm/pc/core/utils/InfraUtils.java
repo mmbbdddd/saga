@@ -14,6 +14,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+/**
+ * 基础设施类（隔离层，屏蔽对基础设施的依赖）
+ */
 public class InfraUtils {
     static Map<SessionManager.Type, SessionManager> sessionManagerMap;
     static Map<StatusManager.Type, StatusManager>   statusManagerMap;

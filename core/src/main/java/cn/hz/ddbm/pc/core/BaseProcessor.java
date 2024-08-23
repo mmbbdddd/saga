@@ -30,33 +30,6 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
 
     public abstract A action(FsmContext<S, ?> ctx);
 
-//    public Action<S> action(FlowContext<S, ?> ctx) {
-//        if (null == this.action) {
-//            synchronized (this) {
-//                this.action = initAction(ctx);
-//            }
-//        }
-//        return this.action;
-//    }
-//
-//    protected Action<S> initAction(FlowContext<S, ?> ctx) {
-//        return Action.of(actionDsl, ctx);
-//    }
-
-
-//    private S nextNode(S lastNode, FlowContext<S, ?> ctx) throws RouterException {
-//        try {
-//            S nextNode = route(ctx);
-//            postRoutePlugin(ctx.getFlow(), lastNode, ctx);
-//            return nextNode;
-//        } catch (Exception e) {
-//            ctx.getStatus().flush(Coasts.EVENT_DEFAULT, failover(), ctx.getFlow());
-//            onRouterExceptionPlugin(ctx.getFlow(), e, ctx);
-//            throw new RouterException(e);
-//        }
-//    }
-
-
     protected void preActionPlugin(Fsm<S> flow, FsmContext<S, ?> ctx) {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {

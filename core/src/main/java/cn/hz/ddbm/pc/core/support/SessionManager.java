@@ -10,13 +10,11 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * @Description TODO
+ * @Description 会话接口
  * @Author wanglin
  * @Date 2024/8/7 21:29
  * @Version 1.0.0
  **/
-
-
 public interface SessionManager {
     Type code();
 

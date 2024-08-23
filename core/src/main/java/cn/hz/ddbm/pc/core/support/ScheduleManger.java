@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.core.schedule;
+package cn.hz.ddbm.pc.core.support;
 
 import cn.hz.ddbm.pc.core.FlowPayload;
 import cn.hz.ddbm.pc.core.FsmPayload;
@@ -6,6 +6,9 @@ import cn.hz.ddbm.pc.core.FsmPayload;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 调度接口
+ */
 public interface ScheduleManger {
     Type type();
 
