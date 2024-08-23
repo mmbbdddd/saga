@@ -13,10 +13,7 @@ import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,7 +35,7 @@ public class ChaosSagaService extends BaseService {
         Assert.notNull(payload, "FlowPayload is null");
         CountDownLatch cdl = new CountDownLatch(times);
         this.chaosRules = rules;
-        statisticsLines = new ArrayList<>(times);
+        statisticsLines = Collections.synchronizedList(new ArrayList<>(times));
         for (int i = 0; i < times; i++) {
             MockPayLoad<S> mockPayLoad = payload.copy(i);
             mockPayLoad.setId(i);
@@ -67,7 +64,7 @@ public class ChaosSagaService extends BaseService {
     }
 
     private void printStatisticsReport() {
-        Map<Pair, List<StatisticsLine>> groups = statisticsLines.stream()
+        Map<Pair<String,String>, List<StatisticsLine>> groups = statisticsLines.stream()
                 .collect(Collectors.groupingBy(t -> Pair.of(t.result.type, t.result.value)));
         Logs.flow.info("混沌测试报告：\\n");
         groups.forEach((triple, list) -> {

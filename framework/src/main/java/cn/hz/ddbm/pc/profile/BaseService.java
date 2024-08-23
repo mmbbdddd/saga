@@ -43,7 +43,8 @@ public abstract class BaseService {
         execute(ctx);
     }
 
-    public <S extends Enum<S>, T extends FsmPayload<S>> void execute(FsmContext<S, T> ctx) throws StatusException, SessionException {
+    public <S extends Enum<S>, T extends FsmPayload<S>> void
+    execute(FsmContext<S, T> ctx) throws StatusException, SessionException {
         if (Boolean.FALSE.equals(tryLock(ctx))) {
             return;
         }
@@ -64,16 +65,18 @@ public abstract class BaseService {
                 Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
                 flush(ctx);
                 execute(ctx);
-            }
+            } else
             //中断流程除（内部错误：不可重复执行，执行次数受限……）再次调度可触发：
             if (e.getRaw() instanceof InterruptedFlowException) {
                 Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
                 flush(ctx);
-            }
+            } else
             //中断流程（内部程序错误：配置错误，代码错误）再次调度不响应：
             if (e.getRaw() instanceof PauseFlowException) {
                 Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
                 flush(ctx);
+            } else {
+                e.printStackTrace();
             }
         } catch (StatusException e) {
             //todo
