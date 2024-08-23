@@ -123,7 +123,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     @Override
     public Profile<PayState> profile() {
         Profile<PayState> profile = new Profile(session(), status());
-        profile.setRetry(2);
+        profile.setRetry(1);
         return profile;
     }
 
