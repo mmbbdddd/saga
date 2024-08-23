@@ -114,7 +114,7 @@
 
 
 ## 3 逻辑实现
-整体流程验证合理以后，嵌入的action开始开发
+整体流程验证合理以后，嵌入的action开始开发（设计先行，设计和解耦）
 参见 [业务逻辑实现](example/src/main/java/cn/hz/ddbm/pc/example/actions)
 
 
@@ -160,13 +160,13 @@ IO事件包含：回调，MQ延迟队列，调度任务事件
 
 * 1，Service层：数据逻辑，增删改等
 * 2，Commmand层：流程编排，Saga
-* 3，acitons层：各流程action分目录组织 
+* 3，acitons层：流程action分目录组织 
 * 4，dao：数据接口
 * 5，sao：服务整合
 * 6，repositry：配置表==》领域对象==》action
 * 7，ability层：特定领域能力（ability）==》action。。。。。领域内部通用能力
-* 8，paas层：技术通用能力
-* 9，apaas层：业务跨领域通用能力
+~~* 8，paas层：技术通用能力~~
+~~* 9，apaas层：业务跨领域通用能力~~
 
 
 
