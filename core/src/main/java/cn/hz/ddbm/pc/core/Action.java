@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.core;
 import cn.hutool.core.util.StrUtil;
 import cn.hz.ddbm.pc.core.action.MultiAction;
 import cn.hz.ddbm.pc.core.action.NoneAction;
+import cn.hz.ddbm.pc.core.action.ParallelAction;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 
 import java.util.Arrays;
@@ -21,6 +22,7 @@ public interface Action<S extends Enum<S>> {
 
     interface SagaAction<S extends Enum<S>> extends Action<S> {
         S query(FsmContext<S, ?> ctx) throws Exception;
+
         S failover();
     }
 
@@ -34,8 +36,9 @@ public interface Action<S extends Enum<S>> {
      * @param actionDsl
      * @return
      */
-    String single_regexp = "\\w{1,20}";
-    String multi_regexp  = "(\\w+,)+\\w+";
+    String single_regexp   = "\\w{1,20}";
+    String parallel_regexp = "(\\w+,)+\\w+";
+    String serial_regexp   = "(\\w+|)+\\w+";
 
     public static <T extends Action<S>, S extends Enum<S>> T of(String actionDsl, Class<T> type, FsmContext<S, ?> ctx) {
         if (null != ctx && ctx.getMockBean()) {
@@ -51,12 +54,19 @@ public interface Action<S extends Enum<S>> {
         if (actionDsl.matches(single_regexp)) {
             return InfraUtils.getBean(actionDsl, type);
         }
-        if (actionDsl.matches(multi_regexp)) {
+        if (actionDsl.matches(parallel_regexp)) {
             String[] actionBeanNames = actionDsl.split(",");
             List<Action> actions = Arrays.stream(actionBeanNames)
-                    .map(name -> InfraUtils.getBean(name, Action.class))
-                    .collect(Collectors.toList());
-            return (T) new MultiAction(actionDsl, actions);
+                                         .map(name -> InfraUtils.getBean(name, Action.class))
+                                         .collect(Collectors.toList());
+            return (T) new ParallelAction(actionDsl, actions);
+        }
+        if (actionDsl.matches(serial_regexp)) {
+            String[] actionBeanNames = actionDsl.split(",");
+            List<Action> actions = Arrays.stream(actionBeanNames)
+                                         .map(name -> InfraUtils.getBean(name, Action.class))
+                                         .collect(Collectors.toList());
+            return (T) new ParallelAction(actionDsl, actions);
         }
         return (T) new NoneAction("");
     }

@@ -12,17 +12,15 @@ import java.util.stream.Collectors;
  **/
 
 
-public abstract class MultiAction<S extends Enum<S>> implements Action<S>, Action.QueryAction<S>, Action.SagaAction<S> {
-    String               actionNames;
-    List<QueryAction<S>> queryActions;
-    List<SagaAction<S>>  sagaActions;
-    List<Action<S>>      otherActions;
+public abstract class MultiAction implements Action, Action.QueryAction, Action.SagaAction {
+    String            actionNames;
+    List<QueryAction> queryActions;
+    List<Action>      dealActions;
 
-    public MultiAction(String actionNames, List<Action<S>> actions) {
+    public MultiAction(String actionNames, List<Action> actions) {
         this.actionNames  = actionNames;
         this.queryActions = null;
-        this.sagaActions  = null;
-        this.otherActions = null;
+        this.dealActions  = null;
     }
 
     @Override

@@ -5,19 +5,25 @@ import cn.hz.ddbm.pc.core.FsmContext;
 
 import java.util.List;
 
-public class ParallelAction<S extends Enum<S>> extends MultiAction<S>{
+public class ParallelAction extends MultiAction{
 
-    public ParallelAction(String actionNames, List<Action<S>> actions) {
+    public ParallelAction(String actionNames, List<Action> actions) {
         super(actionNames, actions);
     }
 
+
     @Override
-    public void execute(FsmContext<S, ?> ctx) throws Exception {
+    public void execute(FsmContext ctx) throws Exception {
 
     }
 
     @Override
-    public S query(FsmContext<S, ?> ctx) throws Exception {
+    public Enum query(FsmContext ctx) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Enum failover() {
         return null;
     }
 }
