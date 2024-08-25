@@ -2,3 +2,39 @@
 target/!/.idea/
 !/common/target/
 /example/.gradle/
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea/
+chaos/target/
+common/target/
+configuration/spring/target/
+configuration/guice/target/
+core/target/
+example/target/
+factory/dsl/target/
+factory/json/target/
+factory/xml/target/
+framework/target/
+locker/db/target/
+locker/jdk/target/
+locker/redis/target/
+locker/zk/target/
+plugin/digest/target/
+plugin/error/target/
+scheudule/lazy-queue/target/
+scheudule/notify/target/
+scheudule/spring-cron/target/
+scheudule/xxl-job/target/
+scheudule/timer/target/
+session/memory/target/
+session/redis/target/
+statistics/micrometer/target/
+statistics/redis/target/
+statistics/simple/target/
+status/dao/target/
+status/memory/target/
+status/redis/target/
+out
+gen
