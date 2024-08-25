@@ -19,17 +19,17 @@ public interface Action<S extends Enum<S>> {
         S query(FsmContext<S, ?> ctx) throws Exception;
     }
 
-    interface SagaAction<S extends Enum<S>> extends Action<S>, QueryAction<S> {
-
+    interface SagaAction<S extends Enum<S>> extends Action<S> {
+        S query(FsmContext<S, ?> ctx) throws Exception;
+        S failover();
     }
 
     /**
      * 将各种action配置语法转换为特定的Action实现
      * <p>
      * 1，单action配置                     ：xxxAction
-     * 2，多action配置，逗号分隔             ：xxxAction，yyyAction，zzzAction
-     * 3，sagaAction配置                   ：xxxAction,（failover）  or  xxxAction,yyyyAction,zzzAction,(failover)
-     * 4，noneAction配置                   ：“”   or “none”
+     * 2，多action串行配置，逗号分隔           ：xxxAction，yyyAction，zzzAction
+     * 2，多action并行配置，|分隔             ：xxxAction|yyyAction|zzzAction
      *
      * @param actionDsl
      * @return
