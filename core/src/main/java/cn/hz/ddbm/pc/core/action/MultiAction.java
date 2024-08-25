@@ -16,11 +16,13 @@ public abstract class MultiAction implements Action, Action.QueryAction, Action.
     String            actionNames;
     List<QueryAction> queryActions;
     List<Action>      dealActions;
+    Enum              failover;
 
-    public MultiAction(String actionNames, List<Action> actions) {
+    public MultiAction(String actionNames, Enum failover, List<Action> actions) {
         this.actionNames  = actionNames;
         this.queryActions = null;
         this.dealActions  = null;
+        this.failover     = failover;
     }
 
     @Override
@@ -28,5 +30,8 @@ public abstract class MultiAction implements Action, Action.QueryAction, Action.
         return actionNames;
     }
 
-
+    @Override
+    public Enum failover() {
+        return failover;
+    }
 }

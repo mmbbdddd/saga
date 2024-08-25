@@ -7,8 +7,8 @@ import java.util.List;
 
 public class ParallelAction extends MultiAction{
 
-    public ParallelAction(String actionNames, List<Action> actions) {
-        super(actionNames, actions);
+    public ParallelAction(String actionNames,Enum failover, List<Action> actions) {
+        super(actionNames,failover, actions);
     }
 
 
@@ -22,8 +22,4 @@ public class ParallelAction extends MultiAction{
         return null;
     }
 
-    @Override
-    public Enum failover() {
-        return null;
-    }
 }

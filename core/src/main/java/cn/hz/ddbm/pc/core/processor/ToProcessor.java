@@ -19,7 +19,7 @@ public class ToProcessor<S extends Enum<S>> extends BaseProcessor<Action<S>, S> 
 
     @Override
     public Action<S> action(FsmContext<S, ?> ctx) {
-        return Action.of(getFsmRecord().getActionDsl(), Action.class, ctx);
+        return Action.of(getFsmRecord().getActionDsl(), null,Action.class, ctx);
     }
 
     public void execute(FsmContext<S, ?> ctx) throws ActionException {

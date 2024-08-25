@@ -40,7 +40,7 @@ public interface Action<S extends Enum<S>> {
     String parallel_regexp = "(\\w+,)+\\w+";
     String serial_regexp   = "(\\w+|)+\\w+";
 
-    public static <T extends Action<S>, S extends Enum<S>> T of(String actionDsl, Class<T> type, FsmContext<S, ?> ctx) {
+    public static <T extends Action<S>, S extends Enum<S>> T of(String actionDsl,S failover, Class<T> type, FsmContext<S, ?> ctx) {
         if (null != ctx && ctx.getMockBean()) {
             if (StrUtil.isBlank(actionDsl)) {
                 return (T) new NoneAction("");
@@ -59,14 +59,14 @@ public interface Action<S extends Enum<S>> {
             List<Action> actions = Arrays.stream(actionBeanNames)
                                          .map(name -> InfraUtils.getBean(name, Action.class))
                                          .collect(Collectors.toList());
-            return (T) new ParallelAction(actionDsl, actions);
+            return (T) new ParallelAction(actionDsl,failover, actions);
         }
         if (actionDsl.matches(serial_regexp)) {
             String[] actionBeanNames = actionDsl.split(",");
             List<Action> actions = Arrays.stream(actionBeanNames)
                                          .map(name -> InfraUtils.getBean(name, Action.class))
                                          .collect(Collectors.toList());
-            return (T) new ParallelAction(actionDsl, actions);
+            return (T) new ParallelAction(actionDsl,failover, actions);
         }
         return (T) new NoneAction("");
     }

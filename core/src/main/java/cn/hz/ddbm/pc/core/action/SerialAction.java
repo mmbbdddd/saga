@@ -6,10 +6,10 @@ import cn.hz.ddbm.pc.core.FsmContext;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SerialAction<S extends Enum<S>> extends MultiAction  {
+public class SerialAction extends MultiAction  {
 
-    public SerialAction(String actionNames, List<Action > actions) {
-        super(actionNames, actions);
+    public SerialAction(String actionNames,Enum failover, List<Action > actions) {
+        super(actionNames, failover,actions);
     }
 
 
@@ -23,10 +23,6 @@ public class SerialAction<S extends Enum<S>> extends MultiAction  {
         return null;
     }
 
-    @Override
-    public Enum failover() {
-        return null;
-    }
 
 
 }
