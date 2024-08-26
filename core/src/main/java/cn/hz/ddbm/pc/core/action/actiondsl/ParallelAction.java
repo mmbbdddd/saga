@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.core.action.dsl;
+package cn.hz.ddbm.pc.core.action.actiondsl;
 
 import cn.hz.ddbm.pc.core.Fsm;
 import cn.hz.ddbm.pc.core.FsmContext;
@@ -10,11 +10,11 @@ import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ParallelActionDecorator extends MultiActionDecorator {
+public class ParallelAction extends MultiAction {
     Boolean allThrough;
     MergeAction mergeAction;
 
-    public ParallelActionDecorator(Boolean allThrough, Fsm.Transition transition, List<Action> actions) {
+    public ParallelAction(Boolean allThrough, Fsm.Transition transition, List<Action> actions) {
         super(transition, actions);
         this.allThrough = allThrough;
     }

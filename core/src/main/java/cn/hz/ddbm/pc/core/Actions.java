@@ -2,13 +2,12 @@ package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hz.ddbm.pc.core.action.*;
-import cn.hz.ddbm.pc.core.action.dsl.ParallelActionDecorator;
-import cn.hz.ddbm.pc.core.action.dsl.SerialActionDecorator;
+import cn.hz.ddbm.pc.core.action.actiondsl.ParallelAction;
+import cn.hz.ddbm.pc.core.action.actiondsl.SerialAction;
 import cn.hz.ddbm.pc.core.action.proxy.ChaosActionProxy;
 import cn.hz.ddbm.pc.core.action.proxy.CommandActionProxy;
 import cn.hz.ddbm.pc.core.action.proxy.QueryActionProxy;
 import cn.hz.ddbm.pc.core.action.proxy.SagaActionProxy;
-import cn.hz.ddbm.pc.core.action.type.*;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 
 import java.util.List;
@@ -58,12 +57,12 @@ public interface Actions {
         }
         if (actionDsl.matches(parallel_regexp)) {
             List<Action> actions = StrUtil.split(actionDsl, "|").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
-            return (T) new ParallelActionDecorator(allThrough, t, actions);
+            return (T) new ParallelAction(allThrough, t, actions);
 
         }
         if (actionDsl.matches(serial_regexp)) {
             List<Action> actions = StrUtil.split(actionDsl, ",").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
-            return (T) new SerialActionDecorator(t, actions);
+            return (T) new SerialAction(t, actions);
 
         }
         throw new RuntimeException(String.format("no such action:%s # %s", actionDsl, type.getSimpleName()));

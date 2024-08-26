@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.core.action.dsl;
+package cn.hz.ddbm.pc.core.action.actiondsl;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.core.Fsm;
@@ -9,10 +9,10 @@ import cn.hz.ddbm.pc.core.action.QueryAction;
 
 import java.util.List;
 
-public class SerialActionDecorator  extends MultiActionDecorator {
+public class SerialAction extends MultiAction {
     QueryAction queryAction;
 
-    public SerialActionDecorator(Fsm.Transition transition, List<Action> actions) {
+    public SerialAction(Fsm.Transition transition, List<Action> actions) {
         super(transition, actions);
         Assert.notNull(queryActions.size() != 1, "ParallelActionDecorator.queryActions.size !=1");
         this.queryAction = queryActions.get(0);
