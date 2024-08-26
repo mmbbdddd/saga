@@ -34,8 +34,4 @@ public class PayAction implements SagaAction<PayState> {
         return RandomUitl.random(Lists.newArrayList(PayState.init, PayState.payed));
     }
 
-    @Override
-    public PayState failover() {
-        return PayState.payed_failover;
-    }
 }

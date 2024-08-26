@@ -1,63 +1,46 @@
 package cn.hz.ddbm.pc.core.action.decorator;
 
 import cn.hutool.core.lang.Assert;
+import cn.hz.ddbm.pc.core.Fsm;
 import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.action.ParallelAction;
-import cn.hz.ddbm.pc.core.action.SagaAction;
+import cn.hz.ddbm.pc.core.action.Action;
+import cn.hz.ddbm.pc.core.action.CommandAction;
+import cn.hz.ddbm.pc.core.action.MergeAction;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ParallelActionDecorator extends MultiActionDecorator {
-    List<ParallelAction> actions;
-    Enum                 su;
-    Enum                 fail;
+    Boolean allThrough;
+    MergeAction mergeQuery;
 
-    public ParallelActionDecorator(String actionNames, Enum su, Enum fail, Enum failover, List<ParallelAction> actions) {
-        super(actionNames, failover);
-        Assert.notNull(actions, "ParallelAction.actions is null");
-        Assert.notNull(failover, "ParallelAction.failover is null");
-        this.actions = actions;
-        this.fail    = fail;
-        this.su      = su;
+    public ParallelActionDecorator(Boolean allThrough, Fsm.Transition transition, List<Action> actions) {
+        super(transition, actions);
+        this.allThrough = allThrough;
     }
-
 
     @Override
     public void execute(FsmContext ctx) throws Exception {
-        for (ParallelAction action : actions) {
+        for (CommandAction sCommandAction : commandActions) {
             InfraUtils.getActionExecutorService().submit(() -> {
-                try {
-                    action.execute(ctx);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                sCommandAction.execute(ctx);
+                return null;
             });
         }
     }
 
     @Override
     public Enum query(FsmContext ctx) throws Exception {
-        List<ParallelAction.ActionResultType> results = actions.stream().map(action -> {
+        List<MergeAction.ActionResult> results = queryActions.stream().map(queryAction -> {
             try {
-                Enum state = action.query(ctx);
-                return action.resultType(state);
+                Enum state = queryAction.query(ctx);
+                return MergeAction.ActionResult.of(state);
             } catch (Exception e) {
-                return action.resultType(e);
+                return MergeAction.ActionResult.exception(null,e);
             }
         }).collect(Collectors.toList());
-        //全部任务完成，即认为完成。
-        if (results.stream().allMatch(result -> result.equals(ParallelAction.ActionResultType.FINE))) {
-            return su;
-        } else if (results.stream()
-                .allMatch(result -> result.equals(ParallelAction.ActionResultType.FINE) || result.equals(ParallelAction.ActionResultType.ERROR))) {
-            //并非全部任务完成，则认为失败
-            return fail;
-        } else {
-            //依然有任务未完成
-            return failover;
-        }
+        return mergeQuery.mergeResult(allThrough,results);
     }
 
 

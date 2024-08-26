@@ -2,61 +2,30 @@ package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hz.ddbm.pc.core.action.Action;
-import cn.hz.ddbm.pc.core.action.ParallelAction;
-import cn.hz.ddbm.pc.core.action.SagaAction;
 import cn.hz.ddbm.pc.core.action.decorator.ChaosActionDecorator;
 import cn.hz.ddbm.pc.core.action.NoneAction;
-import cn.hz.ddbm.pc.core.action.decorator.ParallelActionDecorator;
-import cn.hz.ddbm.pc.core.action.decorator.SerialActionDecorator;
-import cn.hz.ddbm.pc.core.utils.InfraUtils;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import cn.hz.ddbm.pc.core.action.decorator.QueryActionDecorator;
+import cn.hz.ddbm.pc.core.action.decorator.SagaActionDecorator;
+import cn.hz.ddbm.pc.core.action.decorator.ToActionDecorator;
 
 public interface Actions {
 
     /**
      * 将各种action配置语法转换为特定的Action实现
-     * <p>
-     * 1，单action配置                     ：xxxAction
-     * 2，多action串行配置，逗号分隔           ：xxxAction，yyyAction，zzzAction
-     * 2，多action并行配置，|分隔             ：xxxAction|yyyAction|zzzAction
-     *
-     * @param actionDsl
-     * @return
      */
-    String single_regexp   = "\\w{1,20}";
-    String parallel_regexp = "(\\w+,)+\\w+";
-    String serial_regexp   = "(\\w+|)+\\w+";
 
     public static <T extends Action<S>, S extends Enum<S>> T of(Fsm.Transition<S> t, Class<T> type, FsmContext<S, ?> ctx) {
         if (null != ctx && ctx.getMockBean()) {
-            if (StrUtil.isBlank(t.getActionDsl())) {
-                return (T) new NoneAction("");
-            } else {
-                return (T) new ChaosActionDecorator<S>(t.getActionDsl());
-            }
+            return (T) new ChaosActionDecorator<S>(t.getActionDsl());
         }
-        if (StrUtil.isBlank(t.getActionDsl())) {
-            return (T) new NoneAction("");
+        if (t.getType().equals(Fsm.TransitionType.SAGA)) {
+            return (T) new SagaActionDecorator(t.getActionDsl(), t.getFailover(), null);
         }
-        if (t.getActionDsl().matches(single_regexp)) {
-            return InfraUtils.getBean(t.getActionDsl(), type);
+        if (t.getType().equals(Fsm.TransitionType.QUERY)) {
+            return (T) new QueryActionDecorator(t.getActionDsl(), null);
         }
-        if (t.getActionDsl().matches(parallel_regexp)) {
-            String[] actionBeanNames = t.getActionDsl().split("|");
-            List<ParallelAction> actions = Arrays.stream(actionBeanNames)
-                    .map(name -> InfraUtils.getBean(name, ParallelAction.class))
-                    .collect(Collectors.toList());
-            return (T) new ParallelActionDecorator(t.getActionDsl(), null, null, t.getFailover(), actions);
-        }
-        if (t.getActionDsl().matches(serial_regexp)) {
-            String[] actionBeanNames = t.getActionDsl().split(",");
-            List<Action> actions = Arrays.stream(actionBeanNames)
-                    .map(name -> InfraUtils.getBean(name, Action.class))
-                    .collect(Collectors.toList());
-            return (T) new SerialActionDecorator(t.getActionDsl(), t.getFailover(), actions);
+        if (t.getType().equals(Fsm.TransitionType.TO)) {
+            return (T) new ToActionDecorator(t.getActionDsl(), null);
         }
         return (T) new NoneAction("");
     }

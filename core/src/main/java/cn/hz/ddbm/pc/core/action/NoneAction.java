@@ -4,7 +4,7 @@ import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.action.QueryAction;
 import cn.hz.ddbm.pc.core.action.SagaAction;
 
-public class NoneAction implements QueryAction, SagaAction {
+public class NoneAction implements SagaAction {
     String actionDsl;
 
     public NoneAction(String actionDsl) {
@@ -24,12 +24,7 @@ public class NoneAction implements QueryAction, SagaAction {
     @Override
     public Enum query(FsmContext ctx) throws Exception {
         //todo
-        return null;
+        return ctx.getStatus().getState();
     }
 
-    @Override
-    public Enum failover() {
-        //todo
-        return null;
-    }
 }

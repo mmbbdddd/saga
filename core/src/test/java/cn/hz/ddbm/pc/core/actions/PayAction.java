@@ -21,9 +21,4 @@ public class PayAction implements SagaAction {
     public Enum query(FsmContext ctx) throws Exception {
         return null;
     }
-
-    @Override
-    public Enum failover() {
-        return null;
-    }
 }

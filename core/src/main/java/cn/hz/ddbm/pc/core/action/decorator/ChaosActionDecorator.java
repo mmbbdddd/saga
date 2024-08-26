@@ -46,8 +46,4 @@ public class ChaosActionDecorator<S extends Enum<S>> implements QueryAction<S>, 
         }
     }
 
-    @Override
-    public S failover() {
-        return null;
-    }
 }

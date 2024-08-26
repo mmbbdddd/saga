@@ -1,29 +1,28 @@
 package cn.hz.ddbm.pc.core.action.decorator;
 
-
+import cn.hz.ddbm.pc.core.Fsm;
+import cn.hz.ddbm.pc.core.action.Action;
+import cn.hz.ddbm.pc.core.action.CommandAction;
+import cn.hz.ddbm.pc.core.action.QueryAction;
 import cn.hz.ddbm.pc.core.action.SagaAction;
 
-/**
- * 支持aAction，bActioin，cAction.....组合成一个Action运行的写法。
- **/
+import java.util.List;
 
+public abstract class MultiActionDecorator  implements SagaAction  {
+    Fsm.Transition       transition;
+    List<CommandAction > commandActions;
+    List<QueryAction >   queryActions;
 
-public abstract class MultiActionDecorator implements SagaAction {
-    String actionNames;
-    Enum   failover;
-
-    public MultiActionDecorator(String actionNames, Enum failover) {
-        this.actionNames = actionNames;
-        this.failover    = failover;
+    public MultiActionDecorator(Fsm.Transition transition, List<Action> actions) {
+        this.transition     = transition;
+        this.commandActions = null;
+        this.queryActions   = null;
     }
 
     @Override
     public String beanName() {
-        return actionNames;
+        return transition.getActionDsl();
     }
 
-    @Override
-    public Enum failover() {
-        return failover;
-    }
+
 }
