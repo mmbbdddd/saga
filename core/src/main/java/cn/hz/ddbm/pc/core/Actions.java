@@ -14,8 +14,8 @@ public interface Actions {
      * 将各种action配置语法转换为特定的Action实现
      */
 
-    public static <T extends Action<S>, S extends Enum<S>> T of(Fsm.Transition<S> t, Class<T> type, FsmContext<S, ?> ctx) {
-        if (null != ctx && ctx.getMockBean()) {
+    public static <T extends Action<S>, S extends Enum<S>> T of(Fsm.Transition<S> t, Class<T> type, Boolean mockBean) {
+        if (mockBean) {
             return (T) new ChaosActionDecorator<S>(t.getActionDsl());
         }
         if (t.getType().equals(Fsm.TransitionType.SAGA)) {

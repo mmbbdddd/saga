@@ -5,6 +5,8 @@ import cn.hz.ddbm.pc.core.Fsm
 import cn.hz.ddbm.pc.core.FsmPayload
 import cn.hz.ddbm.pc.core.Node
 import cn.hz.ddbm.pc.core.coast.Coasts
+import cn.hz.ddbm.pc.core.enums.FlowStatus
+import cn.hz.ddbm.pc.example.PayState
 import cn.hz.ddbm.pc.profile.ChaosSagaService
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import spock.lang.Specification
@@ -13,40 +15,28 @@ public class ChaosServiceTest extends Specification {
 
     ChaosSagaService chaosService = new ChaosSagaService();
     Fsm flow
-
+    Map<PayState, FlowStatus> map = new HashMap<>();
     public void setup() {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext()
         ctx.register(PcChaosConfiguration.class)
         ctx.refresh()
 
-        flow = Fsm.devOf("test", "测试流程", [
-                new Node(Node.Type.START, "init", null,),
-                new Node(Node.Type.TASK, "pay", null,),
-                new Node(Node.Type.END, "pay_error", null,)
-        ] as Set, [])
+        map.put(PayState.init, FlowStatus.INIT);
+        map.put(PayState.payed, FlowStatus.RUNNABLE);
+        map.put(PayState.sended, FlowStatus.RUNNABLE);
+        map.put(PayState.payed_failover, FlowStatus.RUNNABLE);
+        map.put(PayState.sended_failover, FlowStatus.RUNNABLE);
+        map.put(PayState.su, FlowStatus.FINISH);
+        map.put(PayState.fail, FlowStatus.FINISH);
+        map.put(PayState.error, FlowStatus.FINISH);
 
-        flow.to("init", Coasts.EVENT_DEFAULT, Coasts.NONE, "pay")
-        flow.to("pay", Coasts.EVENT_DEFAULT, Coasts.NONE, "pay_error")
-        flow.to("pay_error", Coasts.EVENT_DEFAULT, Coasts.NONE, "pay_error")
+
+        flow = Fsm.devOf("test", "测试流程", map)
 
 
         chaosService.addFlow(flow)
     }
 
-
-    def "Execute"() {
-        expect:
-
-        FsmPayload date = new ChaosSagaService.MockPayLoad("init");
-        String event = Coasts.EVENT_DEFAULT;
-        chaosService.execute("test", date, event, 100, 10, rules, false)
-
-        where:
-        flowStatus                | nodeStatus | result
-//        null                       | null       | "flowStatus is null"
-//        Flow.STAUS.RUNNABLE.name() | null       | null
-        Fsm.STAUS.RUNNABLE.name() | "init"     | "init"
-    }
 
 
 }

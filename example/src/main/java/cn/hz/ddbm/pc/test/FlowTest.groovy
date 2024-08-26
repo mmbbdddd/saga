@@ -1,23 +1,41 @@
 package cn.hz.ddbm.pc.test
 
-
+import cn.hz.ddbm.pc.configuration.PcChaosConfiguration
 import cn.hz.ddbm.pc.core.Fsm
 import cn.hz.ddbm.pc.core.Node
+import cn.hz.ddbm.pc.core.enums.FlowStatus
+import cn.hz.ddbm.pc.example.PayState
 import org.junit.Assert
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import spock.lang.Specification
+
+import java.util.stream.Collectors
 
 class FlowTest extends Specification {
 
+    Map<PayState, FlowStatus> map = new HashMap<>();
 
-    void cleanup() {}
+    void setup() {
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+        ctx.register(PcChaosConfiguration.class)
+        ctx.refresh()
+
+
+        map.put(PayState.init, FlowStatus.INIT);
+        map.put(PayState.payed, FlowStatus.RUNNABLE);
+        map.put(PayState.sended, FlowStatus.RUNNABLE);
+        map.put(PayState.payed_failover, FlowStatus.RUNNABLE);
+        map.put(PayState.sended_failover, FlowStatus.RUNNABLE);
+        map.put(PayState.su, FlowStatus.FINISH);
+        map.put(PayState.fail, FlowStatus.FINISH);
+        map.put(PayState.error, FlowStatus.FINISH);
+    }
 
     def "Of"() {
         expect:
-        Fsm f = Fsm.devOf(name, "测试流程", [
-                new Node(Node.Type.START, "init", null,),
-                new Node(Node.Type.TASK, "pay", null,),
-                new Node(Node.Type.END, "pay_error", null,)
-        ] as Set, [])
+
+
+        Fsm f = Fsm.devOf(name, "测试流程", map)
         String.format("%s:%s:%s", f.name, f.profile.sessionManager, f.profile.statusManager) == result
         where:
         name | session | status | result
@@ -31,11 +49,7 @@ class FlowTest extends Specification {
 
     def "AddRouter"() {
         when:
-        Fsm f = Fsm.devOf("test", "测试流程", [
-                new Node(Node.Type.START, "init", null,),
-                new Node(Node.Type.TASK, "pay", null,),
-                new Node(Node.Type.END, "pay_error", null,)
-        ] as Set, [])
+        Fsm f = Fsm.devOf("test", "测试流程", map)
 
 
         then:
@@ -72,27 +86,20 @@ class FlowTest extends Specification {
 
     def "StartStep"() {
         when:
-        Fsm flow = Fsm.devOf("test", "测试流程", [
-                new Node(Node.Type.START, "init", null,),
-                new Node(Node.Type.TASK, "pay", null,),
-                new Node(Node.Type.END, "pay_error", null,)
-        ] as Set, [])
+        Fsm flow = Fsm.devOf("test", "测试流程", map)
         def node = flow.startStep()
         then:
-        Assert.assertTrue(node.name == "init")
+        Assert.assertTrue(node == PayState.init)
     }
 
     def "NodeNames"() {
         when:
-        Fsm flow = Fsm.devOf("test", "测试流程", [
-                new Node(Node.Type.START, "init", null,),
-                new Node(Node.Type.TASK, "pay", null,),
-                new Node(Node.Type.END, "pay_error", null,)
-        ] as Set, [])
+        Fsm flow = Fsm.devOf("test", "测试流程", map)
         def names = flow.nodeNames()
         then:
-        Assert.assertTrue(["init", "pay", "pay_error"] as Set == names)
+        Assert.assertTrue(EnumSet.allOf(PayState).stream().map {t->t.name()}.collect(Collectors.toSet()) == names)
     }
+
 
 
 }

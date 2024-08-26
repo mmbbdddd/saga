@@ -1,6 +1,8 @@
 package cn.hz.ddbm.pc.core
 
 import cn.hutool.extra.spring.SpringUtil
+import cn.hz.ddbm.pc.core.action.Action
+import cn.hz.ddbm.pc.core.action.SagaAction
 import cn.hz.ddbm.pc.core.utils.InfraUtils
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
@@ -18,7 +20,7 @@ class ActionTest extends Specification {
 //
     def "test of"() {
         expect:
-        Action.of(actionDsl, null, null, null).beanName() == result
+        Actions.of(new Fsm.Transition(Fsm.TransitionType.SAGA, null, null, null, null, null, null), Action.class, false).beanName() == result
         where:
         actionDsl               | result
 //        null                    | "none"
