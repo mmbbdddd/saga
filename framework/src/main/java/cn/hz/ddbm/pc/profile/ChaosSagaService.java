@@ -64,7 +64,7 @@ public class ChaosSagaService extends BaseService {
     }
 
     private void printStatisticsReport() {
-        Map<Pair<String,String>, List<StatisticsLine>> groups = statisticsLines.stream()
+        Map<Pair<String, String>, List<StatisticsLine>> groups = statisticsLines.stream()
                 .collect(Collectors.groupingBy(t -> Pair.of(t.result.type, t.result.value)));
         Logs.flow.info("混沌测试报告：\\n");
         groups.forEach((triple, list) -> {
@@ -98,7 +98,7 @@ public class ChaosSagaService extends BaseService {
             return true;
         }
         if (!state.isRunnable()) {
-            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), state.getStatus(),state.getState());
+            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), state.getStatus(), state.getState());
             return false;
         }
 

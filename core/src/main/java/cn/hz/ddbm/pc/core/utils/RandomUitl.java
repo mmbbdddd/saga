@@ -13,9 +13,10 @@ import java.util.TreeMap;
 public class RandomUitl {
     /**
      * 随机选取S
+     *
      * @param list
-     * @return
      * @param <S>
+     * @return
      */
     public static <S> S random(List<S> list) {
         int size   = list.size() * 10 - 1;
@@ -27,10 +28,11 @@ public class RandomUitl {
 
     /**
      * 按权重来随机生成T。
+     *
      * @param key
      * @param sets
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> T selectByWeight(String key, Set<Pair<T, Double>> sets) {
         return (T) weightRandomCache.get(key, (Func0<WeightRandom<?>>) () -> new WeightRandom<>(sets)).random();

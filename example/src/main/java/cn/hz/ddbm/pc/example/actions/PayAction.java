@@ -1,16 +1,16 @@
 package cn.hz.ddbm.pc.example.actions;
 
-import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.action.SagaAction;
 import cn.hz.ddbm.pc.core.log.Logs;
 import cn.hz.ddbm.pc.core.utils.RandomUitl;
-import cn.hz.ddbm.pc.example.PayTest;
 import cn.hz.ddbm.pc.example.PayState;
+import cn.hz.ddbm.pc.example.PayTest;
 import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PayAction implements Action.SagaAction<PayState> {
+public class PayAction implements SagaAction<PayState> {
 
     public PayAction() {
     }

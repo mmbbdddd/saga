@@ -1,10 +1,9 @@
 package cn.hz.ddbm.pc.schedule
 
-
 import cn.hz.ddbm.pc.core.support.ScheduleManger
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
+import io.netty.util.HashedWheelTimer
+import io.netty.util.Timeout
+import io.netty.util.TimerTask
 import org.junit.Test
 
 import java.util.concurrent.TimeUnit
@@ -49,7 +48,7 @@ class TimerWheelScheduleNotifyTest {
     private static final int TIMEOUT_SECONDS = 10; // 超时时间设为10秒
 
     @Test
-    public   void test(){
+    public void test() {
         HashedWheelTimer timer = new HashedWheelTimer();
 
         for (int i = 0; i < NUM_TIMERS; i++) {
@@ -58,11 +57,11 @@ class TimerWheelScheduleNotifyTest {
                 @Override
                 public void run(Timeout timeout) {
                     // 定时任务的逻辑
-                    System.out.println(finalI +"，秒执行");
+                    System.out.println(finalI + "，秒执行");
                 }
             };
             // 启动定时任务，10秒后执行
-            timer.newTimeout(task, i%3, TimeUnit.SECONDS);
+            timer.newTimeout(task, i % 3, TimeUnit.SECONDS);
         }
 
         // 等待所有任务执行完毕，然后关闭定时器

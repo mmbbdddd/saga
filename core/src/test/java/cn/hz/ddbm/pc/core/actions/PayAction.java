@@ -1,11 +1,11 @@
 package cn.hz.ddbm.pc.core.actions;
 
-import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.action.SagaAction;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PayAction implements Action {
+public class PayAction implements SagaAction {
     @Override
     public String beanName() {
         return "payAction";
@@ -17,4 +17,13 @@ public class PayAction implements Action {
     }
 
 
+    @Override
+    public Enum query(FsmContext ctx) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Enum failover() {
+        return null;
+    }
 }

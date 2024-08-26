@@ -1,28 +1,28 @@
-package cn.hz.ddbm.pc.core.action;
+package cn.hz.ddbm.pc.core.action.impl;
 
 
-import cn.hz.ddbm.pc.core.Action;
-import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.action.Action;
+import cn.hz.ddbm.pc.core.action.QueryAction;
+import cn.hz.ddbm.pc.core.action.SagaAction;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 支持aAction，bActioin，cAction.....组合成一个Action运行的写法。
  **/
 
 
-public abstract class MultiAction implements Action, Action.QueryAction, Action.SagaAction {
+public abstract class MultiAction implements QueryAction, SagaAction {
     String            actionNames;
     List<QueryAction> queryActions;
-    List<Action>      dealActions;
+    List<SagaAction>  commandActions;
     Enum              failover;
 
     public MultiAction(String actionNames, Enum failover, List<Action> actions) {
-        this.actionNames  = actionNames;
-        this.queryActions = null;
-        this.dealActions  = null;
-        this.failover     = failover;
+        this.actionNames    = actionNames;
+        this.queryActions   = null;
+        this.commandActions = null;
+        this.failover       = failover;
     }
 
     @Override

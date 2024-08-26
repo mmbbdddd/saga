@@ -14,7 +14,7 @@ public class ChaosAspect {
     @Resource
     ChaosHandler chaosHandler;
 
-    @Around(" execution(* cn.hz.ddbm.pc.core.Action.execute(*))")
+    @Around(" execution(* cn.hz.ddbm.pc.core.action.CommandAction.execute(*))")
     public Object action(ProceedingJoinPoint pjp) throws Throwable {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();

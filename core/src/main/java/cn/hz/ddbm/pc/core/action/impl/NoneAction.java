@@ -1,9 +1,10 @@
-package cn.hz.ddbm.pc.core.action;
+package cn.hz.ddbm.pc.core.action.impl;
 
-import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.action.QueryAction;
+import cn.hz.ddbm.pc.core.action.SagaAction;
 
-public class NoneAction implements Action, Action.QueryAction, Action.SagaAction {
+public class NoneAction implements QueryAction, SagaAction {
     String actionDsl;
 
     public NoneAction(String actionDsl) {
@@ -22,11 +23,13 @@ public class NoneAction implements Action, Action.QueryAction, Action.SagaAction
 
     @Override
     public Enum query(FsmContext ctx) throws Exception {
+        //todo
         return null;
     }
 
     @Override
     public Enum failover() {
+        //todo
         return null;
     }
 }

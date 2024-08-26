@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.core.processor;
 
 import cn.hz.ddbm.pc.core.*;
+import cn.hz.ddbm.pc.core.action.QueryAction;
 import cn.hz.ddbm.pc.core.exception.wrap.ActionException;
 
 import java.io.Serializable;
@@ -8,9 +9,10 @@ import java.util.List;
 
 /**
  * 查询类接口通用流程
+ *
  * @param <S>
  */
-public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<Action.QueryAction<S>, S> {
+public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<QueryAction<S>, S> {
 
     public RouterProcessor(Fsm.Transition<S> f, List<Plugin> plugins) {
         super(f, plugins);
@@ -18,8 +20,8 @@ public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<Action.Que
 
 
     @Override
-    public Action.QueryAction<S> action(FsmContext<S, ?> ctx) {
-        return Action.of(getFsmRecord().getActionDsl(),null, Action.QueryAction.class, ctx);
+    public QueryAction<S> action(FsmContext<S, ?> ctx) {
+        return Actions.of(getFsmRecord().getActionDsl(), null, QueryAction.class, ctx);
     }
 
 

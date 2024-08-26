@@ -1,11 +1,10 @@
 package cn.hz.ddbm.pc.core.actions;
 
-import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class QueryAction implements Action {
+public class QueryAction implements cn.hz.ddbm.pc.core.action.QueryAction {
 
     @Override
     public String beanName() {
@@ -14,7 +13,7 @@ public class QueryAction implements Action {
 
 
     @Override
-    public void execute(FsmContext ctx) throws Exception {
+    public Enum query(FsmContext ctx) throws Exception {
+        return null;
     }
-
 }

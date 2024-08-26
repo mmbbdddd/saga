@@ -6,7 +6,7 @@ import cn.hz.ddbm.pc.core.coast.Coasts;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class DigestLogPlugin  implements Plugin  {
+public class DigestLogPlugin implements Plugin {
     @Override
     public String code() {
         return Coasts.PLUGIN_DIGEST_LOG;
@@ -37,8 +37,6 @@ public class DigestLogPlugin  implements Plugin  {
     public void preAction(String name, FsmContext ctx) {
 
     }
-
-
 
 
 }

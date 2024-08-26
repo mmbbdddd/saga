@@ -1,15 +1,15 @@
 package cn.hz.ddbm.pc.example.actions;
 
-import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.action.QueryAction;
 import cn.hz.ddbm.pc.core.utils.RandomUitl;
-import cn.hz.ddbm.pc.example.PayTest;
 import cn.hz.ddbm.pc.example.PayState;
+import cn.hz.ddbm.pc.example.PayTest;
 import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PayQueryAction implements Action.QueryAction<PayState> {
+public class PayQueryAction implements QueryAction<PayState> {
 
     public PayQueryAction() {
     }
@@ -17,11 +17,6 @@ public class PayQueryAction implements Action.QueryAction<PayState> {
     @Override
     public String beanName() {
         return "payAction";
-    }
-
-    @Override
-    public void execute(FsmContext<PayState, ?> ctx) throws Exception {
-
     }
 
 

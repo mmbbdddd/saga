@@ -10,7 +10,7 @@ import java.util.Map;
 public class RedisSessionManager implements SessionManager {
 
     @Autowired
-    RedisTemplate<String, Map<String,Object>> redisTemplate;
+    RedisTemplate<String, Map<String, Object>> redisTemplate;
     String keyTemplate = "%s:%s";
 
     @Override
@@ -19,12 +19,12 @@ public class RedisSessionManager implements SessionManager {
     }
 
     @Override
-    public void set(String flowName, Serializable id,Map<String,Object> session) {
+    public void set(String flowName, Serializable id, Map<String, Object> session) {
         redisTemplate.opsForValue().set(String.format(keyTemplate, id), session);
     }
 
     @Override
-    public Map<String,Object> get(String flowName, Serializable flowId) {
+    public Map<String, Object> get(String flowName, Serializable flowId) {
         return redisTemplate.opsForValue().get(String.format(keyTemplate, flowId));
     }
 }

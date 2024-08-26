@@ -27,7 +27,7 @@ public class PayService implements InitializingBean {
         order.state  = PayState.init;
         orders.put(order.orderId, order);
         try {
-            pcService.execute("pay",order, Coasts.EVENT_DEFAULT);
+            pcService.execute("pay", order, Coasts.EVENT_DEFAULT);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,9 +36,6 @@ public class PayService implements InitializingBean {
     public PayOrder query(Long orderId) {
         return PayService.orders.get(orderId);
     }
-
-
-
 
 
     @Override

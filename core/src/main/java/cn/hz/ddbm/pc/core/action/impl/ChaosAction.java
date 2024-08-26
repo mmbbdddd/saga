@@ -1,15 +1,21 @@
-package cn.hz.ddbm.pc.core.action;
+package cn.hz.ddbm.pc.core.action.impl;
 
 import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.core.*;
+import cn.hz.ddbm.pc.core.BaseProcessor;
+import cn.hz.ddbm.pc.core.Fsm;
+import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.Profile;
+import cn.hz.ddbm.pc.core.action.QueryAction;
+import cn.hz.ddbm.pc.core.action.SagaAction;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.core.utils.RandomUitl;
 
 import java.util.Set;
 
-public class ChaosAction<S extends Enum<S>> implements Action<S>, Action.QueryAction<S>, Action.SagaAction<S> {
+public class ChaosAction<S extends Enum<S>> implements QueryAction<S>, SagaAction<S> {
     String actionName;
-    public ChaosAction(String actionName){
+
+    public ChaosAction(String actionName) {
         this.actionName = actionName;
     }
 

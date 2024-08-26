@@ -40,5 +40,4 @@ public class DigestLogPluginMock implements Plugin {
     }
 
 
-
 }

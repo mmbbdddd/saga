@@ -49,6 +49,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
 
     /**
      * 定义混沌模式下
+     *
      * @param table
      * @return
      */
@@ -96,6 +97,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
         map.put(PayState.error, FlowStatus.FINISH);
         return map;
     }
+
     @Override
     public void transitions(Transitions<PayState> t) {
 //        payAction:执行本地扣款

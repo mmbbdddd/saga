@@ -13,9 +13,9 @@ public class MemorySessionManager implements SessionManager {
 
     String keyTemplate = "%s:%s";
 
-    Integer               cacheSize;
-    Integer               hours;
-    Cache<String, Map<String,Object>> cache;
+    Integer                            cacheSize;
+    Integer                            hours;
+    Cache<String, Map<String, Object>> cache;
 
     public MemorySessionManager(Integer cacheSize, Integer hours) {
         Assert.notNull(cacheSize, "cacheSize is null");
@@ -36,12 +36,12 @@ public class MemorySessionManager implements SessionManager {
     }
 
     @Override
-    public void set(String flowName, Serializable id, Map<String,Object> session) {
+    public void set(String flowName, Serializable id, Map<String, Object> session) {
         cache.put(String.format(keyTemplate, id), session);
     }
 
     @Override
-    public Map<String,Object> get(String flowName, Serializable flowId) {
+    public Map<String, Object> get(String flowName, Serializable flowId) {
         return cache.getIfPresent(String.format(keyTemplate, flowId));
     }
 }

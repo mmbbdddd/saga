@@ -1,14 +1,14 @@
 package cn.hz.ddbm.pc.example.actions;
 
-import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.action.SagaAction;
 import cn.hz.ddbm.pc.core.utils.RandomUitl;
 import cn.hz.ddbm.pc.example.PayState;
 import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SendAction implements Action.SagaAction<PayState> {
+public class SendAction implements SagaAction<PayState> {
 
     public SendAction() {
     }

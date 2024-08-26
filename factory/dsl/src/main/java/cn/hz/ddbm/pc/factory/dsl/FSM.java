@@ -20,12 +20,14 @@ import java.util.Set;
 public interface FSM<S extends Enum<S>> {
     /**
      * 状态机ID
+     *
      * @return
      */
     String fsmId();
 
     /**
      * 状态机说明
+     *
      * @return
      */
     String describe();
@@ -33,18 +35,21 @@ public interface FSM<S extends Enum<S>> {
     /**
      * 定义插件，在每个节点执行前后执行。
      * 常用的插件有日志插件，监控埋点插件……
+     *
      * @return
      */
     List<Plugin> plugins();
 
     /**
      * 参见profile
+     *
      * @return
      */
     SessionManager.Type session();
 
     /**
-     *  参见profile
+     * 参见profile
+     *
      * @return
      */
     StatusManager.Type status();
@@ -52,6 +57,7 @@ public interface FSM<S extends Enum<S>> {
     /**
      * 定义流程编排的各节点
      * Map<节点，节点类型/>
+     *
      * @return
      */
     Map<S, FlowStatus> nodes();
@@ -59,6 +65,7 @@ public interface FSM<S extends Enum<S>> {
     /**
      * 定义混沌模式下，每个节点可能的状态值。
      * Table<节点，事件,Set<Pair<目标节点,发生概率>>
+     *
      * @param table
      * @return
      */
@@ -66,9 +73,9 @@ public interface FSM<S extends Enum<S>> {
 
     /**
      * 流程变迁设置，包含三种类型
-     *  事务业务：saga
-     *  非事务业务：to
-     *  查询业务：router
+     * 事务业务：saga
+     * 非事务业务：to
+     * 查询业务：router
      *
      * @param transitions
      */
@@ -76,9 +83,11 @@ public interface FSM<S extends Enum<S>> {
 
     /**
      * 参见profile
+     *
      * @return
      */
     Map<S, Profile.StepAttrs> stateAttrs();
+
     /**
      * 参见profile
      */
@@ -86,17 +95,19 @@ public interface FSM<S extends Enum<S>> {
 
     /**
      * 流程的配置，例如状态管理，会话管理，缺省重试次数，超时事件，节点属性，atcion属性等
+     *
      * @return
      */
     Profile<S> profile();
 
     /**
      * 节点>限流
-     *
+     * <p>
      * 实时任务不受调度规则限制，但调用回累计到调度规则中。
+     *
      * @return
      */
-    Map<S,Integer> thresholds();
+    Map<S, Integer> thresholds();
 
 
     default Fsm<S> build() throws Exception {
@@ -162,11 +173,11 @@ public interface FSM<S extends Enum<S>> {
     class Transition<S> {
         Fsm.TransitionType type;
         S                  from;
-        String            event;
-        Set<S>            conditions;
-        S                 failover;
-        String            action;
-        S                 to;
+        String             event;
+        Set<S>             conditions;
+        S                  failover;
+        String             action;
+        S                  to;
 
 
         public static <S> Transition<S> queryOf(S node, String event, String action) {

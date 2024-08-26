@@ -3,10 +3,10 @@
 # quickstart
 
 ## 0 场景
+
 ![img_5.png](img_5.png)
+
 ## 1 流程编排
-
-
 
 ``` java 
     @Override
@@ -37,10 +37,10 @@
 
 ```
 
-
 详细  [编排代码](example/src/main/java/cn/hz/ddbm/pc/example/PayFsm.java)
 
 ## 2 混沌验证
+
 我们可以在业务逻辑没没有实现的情况下，执行流程。验证
 
 * 1，流程设计是否合理
@@ -75,6 +75,7 @@
 ```
 
 理想情况下，1000笔交易retry = 1的有（716+79）/1000可以完成。其他卡在执行次数限制上
+
 ```shell
 2024-08-20 12:39:45.311  INFO 3770 --- [           main] flow                                     : 混沌测试报告：\n
 2024-08-20 12:39:45.311  INFO 3770 --- [           main] flow                                     : FlowContext,sended_failover:RUNNABLE,70
@@ -85,7 +86,9 @@
 2024-08-20 12:39:45.311  INFO 3770 --- [           main] flow                                     : FlowContext,su:FINISH,716
 
 ```
- retry = 2 的情况下 ，有（850+111）/1000可以完成
+
+retry = 2 的情况下 ，有（850+111）/1000可以完成
+
 ```shell
 2024-08-20 12:40:44.221  INFO 3795 --- [           main] flow                                     : 混沌测试报告：\n
 2024-08-20 12:40:44.221  INFO 3795 --- [           main] flow                                     : FlowContext,sended_failover:RUNNABLE,7
@@ -94,6 +97,7 @@
 2024-08-20 12:40:44.221  INFO 3795 --- [           main] flow                                     : FlowContext,su:FINISH,850
 2024-08-20 12:40:44.221  INFO 3795 --- [           main] flow                                     : FlowContext,fail:FINISH,111
 ```
+
 混沌情况下&retry =2
 
 ```java
@@ -102,6 +106,7 @@
                 add(Exception.class);
             }}));
 ```
+
 ```shell
 2024-08-20 12:43:43.953  INFO 3824 --- [           main] flow                                     : 混沌测试报告：\n
 2024-08-20 12:43:43.953  INFO 3824 --- [           main] flow                                     : FlowContext,sended_failover:RUNNABLE,3
@@ -112,14 +117,13 @@
 
 ```
 
-
 ## 3 逻辑实现
+
 整体流程验证合理以后，嵌入的action开始开发（设计先行，设计和解耦）
 参见 [业务逻辑实现](example/src/main/java/cn/hz/ddbm/pc/example/actions)
 
-
-
 # 事务实现机制选型
+
 ![img_8.png](img_8.png)
 
 1. 数据压力不大，本地事务是最优解
@@ -135,24 +139,24 @@
 5. 每个短事务应该只包含一个变化
 6. 事务操作，容错优先
 7. 非冥等业务（事务业务），可包装为条件执行的冥等业务
-8. retry机制无限容错 = 交易成功率99.999999……%  ——————瓶颈在时间限制、retry间隔机制、对方retry限制 
-
+8. retry机制无限容错 = 交易成功率99.999999……% ——————瓶颈在时间限制、retry间隔机制、对方retry限制
 
 # 事务实现原理比较
+
 ![img_1.png](img_1.png)
 ![img_2.png](img_2.png)
 ![img_3.png](img_3.png)
 ![img_4.png](img_4.png)
 
 # 性能比较（事务消息/流程编排）
- 
+
 事务消息的结构：生产者>mq>消费者
 
 saga事务的结构：from节点>事件>to节点
 
 saga事件的实现和性能分别是：内存事件>IO事件（RPC，MQ，定时任务等）
 
-内存事件包含：连续执行事件，内存延迟执行队列 
+内存事件包含：连续执行事件，内存延迟执行队列
 
 IO事件包含：回调，MQ延迟队列，调度任务事件
 
@@ -160,15 +164,13 @@ IO事件包含：回调，MQ延迟队列，调度任务事件
 
 * 1，Service层：数据逻辑，增删改等
 * 2，Commmand层：流程编排，Saga
-* 3，acitons层：流程action分目录组织 
+* 3，acitons层：流程action分目录组织
 * 4，dao：数据接口
 * 5，sao：服务整合
 * 6，repositry：配置表==》领域对象==》action
 * 7，ability层：特定领域能力（ability）==》action。。。。。领域内部通用能力
-~~* 8，paas层：技术通用能力~~
-~~* 9，apaas层：业务跨领域通用能力~~
-
-
+  ~~* 8，paas层：技术通用能力~~
+  ~~* 9，apaas层：业务跨领域通用能力~~
 
 # 待实现功能
 

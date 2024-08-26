@@ -1,9 +1,7 @@
 package cn.hz.ddbm.pc.core.support;
 
-import cn.hz.ddbm.pc.core.FlowPayload;
 import cn.hz.ddbm.pc.core.FsmPayload;
 
-import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,7 +26,7 @@ public interface ScheduleManger {
      * @param delay
      * @param timeUnit
      */
-    void notifyMe(String flow, FsmPayload<?> payload , String event, Integer delay, TimeUnit timeUnit);
+    void notifyMe(String flow, FsmPayload<?> payload, String event, Integer delay, TimeUnit timeUnit);
 
     enum Type {
         //        定时调度

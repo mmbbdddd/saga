@@ -3,13 +3,12 @@ package cn.hz.ddbm.pc.configuration;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.container.ChaosAspect;
 import cn.hz.ddbm.pc.container.chaos.ChaosHandler;
-import cn.hz.ddbm.pc.core.action.ChaosAction;
 import cn.hz.ddbm.pc.core.support.Locker;
 import cn.hz.ddbm.pc.core.support.StatisticsSupport;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.lock.JdkLocker;
-import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import cn.hz.ddbm.pc.profile.BaseService;
+import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import cn.hz.ddbm.pc.session.memory.MemorySessionManager;
 import cn.hz.ddbm.pc.statistics.SimpleStatistics;
 import cn.hz.ddbm.pc.status.memory.MemoryStatusManager;
@@ -22,7 +21,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableConfigurationProperties({PcProperties.class})
 @EnableAspectJAutoProxy
 public class PcChaosConfiguration {
-
 
 
     @Bean

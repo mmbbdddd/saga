@@ -2,13 +2,11 @@ package cn.hz.ddbm.pc.plugin;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.Plugin;
-import jdk.nashorn.internal.objects.annotations.Getter;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 public class PerformancePlugin implements Plugin {
     StopWatch sw = new StopWatch();
@@ -47,6 +45,7 @@ public class PerformancePlugin implements Plugin {
 
 final class StopWatch {
     private final Map<String, TaskInfo> tasks = new HashMap();
+
     public String prettyPrint() {
         StringBuilder sb = new StringBuilder("");
         sb.append('\n');
@@ -129,6 +128,7 @@ final class TaskInfo {
     public long getExecuteNanos() {
         return executeNanos;
     }
+
     public long getExecuteSeconds() {
         return nanosToMillis(executeNanos);
     }

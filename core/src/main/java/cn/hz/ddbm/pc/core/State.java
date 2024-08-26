@@ -7,8 +7,8 @@ import java.util.Objects;
 
 @Data
 public class State<S extends Enum<S>> {
-    S          state;
     FlowStatus status;
+    S          state;
 
     public State(S state, FlowStatus type) {
         this.state  = state;
@@ -29,7 +29,4 @@ public class State<S extends Enum<S>> {
         }
     }
 
-    public void update(S state) {
-        this.state = state;
-    }
 }

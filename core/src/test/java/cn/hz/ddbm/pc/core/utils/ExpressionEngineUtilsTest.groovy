@@ -1,16 +1,14 @@
 package cn.hz.ddbm.pc.core.utils
 
-import org.junit.Test
 import org.junit.Before
+import org.junit.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 import org.springframework.expression.ExpressionParser
-import static org.mockito.Mockito.*
 
 class ExpressionEngineUtilsTest {
     @Mock
-    ExpressionParser parser
+    ExpressionParser      parser
     @InjectMocks
     ExpressionEngineUtils expressionEngineUtils
 

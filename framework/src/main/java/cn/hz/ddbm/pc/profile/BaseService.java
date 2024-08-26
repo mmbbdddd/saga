@@ -51,6 +51,7 @@ public abstract class BaseService {
         try {
             Boolean fluent = ctx.getFluent();
             transition = ctx.getFlow().execute(ctx);
+
             if (fluent && isCanContinue(ctx)) {
                 ctx.setEvent(Coasts.EVENT_DEFAULT);
                 transition = ctx.getFlow().execute(ctx);
@@ -84,7 +85,7 @@ public abstract class BaseService {
             Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e.getRaw());
             flush(ctx);
         } finally {
-            if(null != transition){
+            if (null != transition) {
                 transition.interruptedPlugins(ctx);
             }
             releaseLock(ctx);

@@ -1,9 +1,9 @@
 package cn.hz.ddbm.pc.test;
 
-import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.action.QueryAction;
 
-public class TestAction implements Action {
+public class TestAction implements QueryAction {
     @Override
     public String beanName() {
         return "test";
@@ -11,9 +11,7 @@ public class TestAction implements Action {
 
 
     @Override
-    public void execute(FsmContext ctx) throws Exception {
-
+    public Enum query(FsmContext ctx) throws Exception {
+        return null;
     }
-
-
 }

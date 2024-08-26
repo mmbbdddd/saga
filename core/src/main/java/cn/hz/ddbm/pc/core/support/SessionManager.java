@@ -3,7 +3,6 @@ package cn.hz.ddbm.pc.core.support;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.exception.SessionException;
-import cn.hz.ddbm.pc.core.exception.WrapedException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -20,7 +19,7 @@ public interface SessionManager {
 
     void set(String flowName, Serializable flowId, Map<String, Object> session) throws IOException;
 
-    Map<String,Object> get(String flowName, Serializable flowId) throws IOException;
+    Map<String, Object> get(String flowName, Serializable flowId) throws IOException;
 
     default void flush(FsmContext<?, ?> ctx) throws SessionException {
         try {

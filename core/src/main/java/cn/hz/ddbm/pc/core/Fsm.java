@@ -78,7 +78,7 @@ public class Fsm<S extends Enum<S>> {
     }
 
 
-    public <T> Transition<S> execute(FsmContext<S, ?> ctx) throws ActionException, FsmEndException, StatusException {
+    public <T> Transition<S> execute(FsmContext<S, ?> ctx) throws FsmEndException, StatusException, ActionException {
         State<S> node = ctx.getStatus();
         if (!node.isRunnable()) {
             throw new FsmEndException();
@@ -180,7 +180,7 @@ public class Fsm<S extends Enum<S>> {
         }
 
 
-        public void execute(FsmContext<S, ?> ctx) throws ActionException, StatusException {
+        public void execute(FsmContext<S, ?> ctx) throws StatusException, ActionException {
             processor.execute(ctx);
         }
 
@@ -207,7 +207,7 @@ public class Fsm<S extends Enum<S>> {
         }
 
         public void interruptedPlugins(FsmContext<S, ?> ctx) {
-        this.processor.interrupteFlowForPlugins(ctx);
+            this.processor.interrupteFlowForPlugins(ctx);
         }
     }
 

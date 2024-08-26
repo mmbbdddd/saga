@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class HashedWheelTimerPressureTest {
 
-    private static final int NUM_TIMERS = 10; // 假设我们要创建100万个定时任务
+    private static final int NUM_TIMERS      = 10; // 假设我们要创建100万个定时任务
     private static final int TIMEOUT_SECONDS = 10; // 超时时间设为10秒
 
     public static void main(String[] args) {
@@ -21,11 +21,11 @@ public class HashedWheelTimerPressureTest {
                 @Override
                 public void run(Timeout timeout) {
                     // 定时任务的逻辑
-                    System.out.println(finalI +"，秒执行");
+                    System.out.println(finalI + "，秒执行");
                 }
             };
             // 启动定时任务，10秒后执行
-            timer.newTimeout(task, i%3, TimeUnit.SECONDS);
+            timer.newTimeout(task, i % 3, TimeUnit.SECONDS);
         }
 
         // 等待所有任务执行完毕，然后关闭定时器

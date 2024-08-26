@@ -1,8 +1,8 @@
 package cn.hz.ddbm.pc.core.plugins;
 
-import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.Plugin;
+import cn.hz.ddbm.pc.core.action.Action;
 
 public interface ActionPluginAdapter<S extends Enum<S>> extends Plugin<S>, Action<S> {
 
