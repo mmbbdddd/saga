@@ -1,21 +1,18 @@
-package cn.hz.ddbm.pc.core.action.decorator;
+package cn.hz.ddbm.pc.core.action.type;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.action.QueryAction;
-import cn.hz.ddbm.pc.core.action.SagaAction;
 
 public class QueryActionDecorator implements QueryAction {
-    String      beanName;
     QueryAction queryAction;
 
-    public QueryActionDecorator(String beanName, QueryAction queryAction) {
-        this.beanName    = beanName;
+    public QueryActionDecorator( QueryAction queryAction) {
         this.queryAction = queryAction;
     }
 
     @Override
     public String beanName() {
-        return beanName;
+        return queryAction.beanName();
     }
 
 

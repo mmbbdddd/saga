@@ -21,7 +21,7 @@ public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<QueryActio
 
     @Override
     public QueryAction<S> action(FsmContext<S, ?> ctx) {
-        return Actions.of(getFsmRecord(), QueryAction.class, ctx.getMockBean());
+        return Actions.typeOf(getFsmRecord(), QueryAction.class, ctx.getMockBean());
     }
 
 

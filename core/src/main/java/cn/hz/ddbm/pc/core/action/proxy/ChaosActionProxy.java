@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.core.action.decorator;
+package cn.hz.ddbm.pc.core.action.proxy;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.core.BaseProcessor;
@@ -12,10 +12,10 @@ import cn.hz.ddbm.pc.core.utils.RandomUitl;
 
 import java.util.Set;
 
-public class ChaosActionDecorator<S extends Enum<S>> implements QueryAction<S>, SagaAction<S> {
+public class ChaosActionProxy<S extends Enum<S>> implements QueryAction<S>, SagaAction<S> {
     String actionName;
 
-    public ChaosActionDecorator(String actionName) {
+    public ChaosActionProxy(String actionName) {
         this.actionName = actionName;
     }
 

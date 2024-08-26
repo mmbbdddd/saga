@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.core
 
 import cn.hutool.extra.spring.SpringUtil
 import cn.hz.ddbm.pc.core.action.Action
-import cn.hz.ddbm.pc.core.action.SagaAction
 import cn.hz.ddbm.pc.core.utils.InfraUtils
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
@@ -20,13 +19,12 @@ class ActionTest extends Specification {
 //
     def "test of"() {
         expect:
-        Actions.of(new Fsm.Transition(Fsm.TransitionType.SAGA, null, null, null, null, null, null), Action.class, false).beanName() == result
+        Actions.typeOf(new Fsm.Transition(type, null, null, actionDsl, null, null, null), Action.class, false).beanName() == result
         where:
-        actionDsl               | result
-//        null                    | "none"
-        "payAction"             | "payAction"
-        "payAction,queryAction" | "payAction,queryAction"
-        "ab,_b"                 | "ab"
+        type                    | actionDsl               | result
+        Fsm.TransitionType.SAGA | "payAction"             | "payAction"
+        Fsm.TransitionType.SAGA | "payAction,queryAction" | "payAction,queryAction"
+        Fsm.TransitionType.SAGA | "ab,_b"                 | "ab,_b"
     }
 
     def "exp"() {

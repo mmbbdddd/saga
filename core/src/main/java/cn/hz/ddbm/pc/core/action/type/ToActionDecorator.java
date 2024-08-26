@@ -1,21 +1,18 @@
-package cn.hz.ddbm.pc.core.action.decorator;
+package cn.hz.ddbm.pc.core.action.type;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.action.CommandAction;
-import cn.hz.ddbm.pc.core.action.SagaAction;
 
 public class ToActionDecorator implements CommandAction {
-    String        beanName;
     CommandAction commandAction;
 
-    public ToActionDecorator(String beanName,  CommandAction commandAction) {
-        this.beanName      = beanName;
+    public ToActionDecorator(  CommandAction commandAction) {
         this.commandAction = commandAction;
     }
 
     @Override
     public String beanName() {
-        return beanName;
+        return commandAction.beanName();
     }
 
     @Override

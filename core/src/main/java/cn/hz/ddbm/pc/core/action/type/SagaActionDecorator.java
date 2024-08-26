@@ -1,22 +1,18 @@
-package cn.hz.ddbm.pc.core.action.decorator;
+package cn.hz.ddbm.pc.core.action.type;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.action.SagaAction;
 
 public class SagaActionDecorator implements SagaAction {
-    String     beanName;
-    Enum       failover;
     SagaAction sagaAction;
 
-    public SagaActionDecorator(String beanName, Enum failover, SagaAction sagaAction) {
-        this.beanName   = beanName;
-        this.failover   = failover;
+    public SagaActionDecorator(   SagaAction sagaAction) {
         this.sagaAction = sagaAction;
     }
 
     @Override
     public String beanName() {
-        return beanName;
+        return sagaAction.beanName();
     }
 
     @Override
