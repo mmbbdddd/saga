@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.core.utils;
 
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.core.ValueObject;
+import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.support.Locker;
 import cn.hz.ddbm.pc.core.support.SessionManager;
 import cn.hz.ddbm.pc.core.support.StatisticsSupport;
@@ -45,11 +46,11 @@ public class InfraUtils {
     }
 
     public static ExecutorService getPluginExecutorService() {
-        return Executors.newFixedThreadPool(3);
+        return getBean(Coasts.PLUGIN_EXECUTOR_SERVICE,ExecutorService.class);
     }
 
     public static ExecutorService getActionExecutorService() {
-        return Executors.newFixedThreadPool(3);
+        return getBean(Coasts.ACTION_EXECUTOR_SERVICE,ExecutorService.class);
     }
 
     public static Locker getLocker() {

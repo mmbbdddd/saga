@@ -17,11 +17,24 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 @ConditionalOnClass({BaseService.class})
 @EnableConfigurationProperties({PcProperties.class})
 @EnableAspectJAutoProxy
 public class PcChaosConfiguration {
 
+
+    @Bean
+    ExecutorService pluginExecutorService() {
+        return new ScheduledThreadPoolExecutor(10);
+    }
+
+    @Bean
+    ExecutorService actionExecutorService() {
+        return new ScheduledThreadPoolExecutor(10);
+    }
 
     @Bean
     ChaosSagaService pcService() {
