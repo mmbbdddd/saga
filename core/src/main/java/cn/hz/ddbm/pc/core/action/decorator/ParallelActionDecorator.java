@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class ParallelActionDecorator extends MultiActionDecorator {
     Boolean allThrough;
-    MergeAction mergeQuery;
+    MergeAction mergeAction;
 
     public ParallelActionDecorator(Boolean allThrough, Fsm.Transition transition, List<Action> actions) {
         super(transition, actions);
@@ -40,7 +40,7 @@ public class ParallelActionDecorator extends MultiActionDecorator {
                 return MergeAction.ActionResult.exception(null,e);
             }
         }).collect(Collectors.toList());
-        return mergeQuery.mergeResult(allThrough,results);
+        return mergeAction.mergeResult(allThrough,results);
     }
 
 
