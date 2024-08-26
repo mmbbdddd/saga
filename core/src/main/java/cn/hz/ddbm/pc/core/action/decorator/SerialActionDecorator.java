@@ -1,20 +1,19 @@
-package cn.hz.ddbm.pc.core.action.impl;
+package cn.hz.ddbm.pc.core.action.decorator;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.action.Action;
 import cn.hz.ddbm.pc.core.action.CommandAction;
 import cn.hz.ddbm.pc.core.action.QueryAction;
-import cn.hz.ddbm.pc.core.action.SagaAction;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SerialAction extends MultiAction {
+public class SerialActionDecorator extends MultiActionDecorator {
     List<CommandAction> commandActions;
     QueryAction         queryAction;
 
-    public SerialAction(String actionNames, Enum failover, List<Action> actions) {
+    public SerialActionDecorator(String actionNames, Enum failover, List<Action> actions) {
         super(actionNames, failover);
         this.commandActions = actions.stream()
                 .filter(action -> action instanceof CommandAction)

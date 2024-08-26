@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.core.action.impl;
+package cn.hz.ddbm.pc.core.action.decorator;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.core.BaseProcessor;
@@ -12,10 +12,10 @@ import cn.hz.ddbm.pc.core.utils.RandomUitl;
 
 import java.util.Set;
 
-public class ChaosAction<S extends Enum<S>> implements QueryAction<S>, SagaAction<S> {
+public class ChaosActionDecorator<S extends Enum<S>> implements QueryAction<S>, SagaAction<S> {
     String actionName;
 
-    public ChaosAction(String actionName) {
+    public ChaosActionDecorator(String actionName) {
         this.actionName = actionName;
     }
 
@@ -28,7 +28,6 @@ public class ChaosAction<S extends Enum<S>> implements QueryAction<S>, SagaActio
     @Override
     public void execute(FsmContext<S, ?> ctx) throws Exception {
         InfraUtils.getBean("chaosHandler");
-
     }
 
 

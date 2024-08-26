@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.core.action.impl;
+package cn.hz.ddbm.pc.core.action;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.action.QueryAction;

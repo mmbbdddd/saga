@@ -2,11 +2,12 @@ package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hz.ddbm.pc.core.action.Action;
+import cn.hz.ddbm.pc.core.action.ParallelAction;
 import cn.hz.ddbm.pc.core.action.SagaAction;
-import cn.hz.ddbm.pc.core.action.impl.ChaosAction;
-import cn.hz.ddbm.pc.core.action.impl.NoneAction;
-import cn.hz.ddbm.pc.core.action.impl.ParallelAction;
-import cn.hz.ddbm.pc.core.action.impl.SerialAction;
+import cn.hz.ddbm.pc.core.action.decorator.ChaosActionDecorator;
+import cn.hz.ddbm.pc.core.action.NoneAction;
+import cn.hz.ddbm.pc.core.action.decorator.ParallelActionDecorator;
+import cn.hz.ddbm.pc.core.action.decorator.SerialActionDecorator;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public interface Actions {
             if (StrUtil.isBlank(t.getActionDsl())) {
                 return (T) new NoneAction("");
             } else {
-                return (T) new ChaosAction<S>(t.getActionDsl());
+                return (T) new ChaosActionDecorator<S>(t.getActionDsl());
             }
         }
         if (StrUtil.isBlank(t.getActionDsl())) {
@@ -45,17 +46,17 @@ public interface Actions {
         }
         if (t.getActionDsl().matches(parallel_regexp)) {
             String[] actionBeanNames = t.getActionDsl().split("|");
-            List<SagaAction> actions = Arrays.stream(actionBeanNames)
-                    .map(name -> InfraUtils.getBean(name, SagaAction.class))
+            List<ParallelAction> actions = Arrays.stream(actionBeanNames)
+                    .map(name -> InfraUtils.getBean(name, ParallelAction.class))
                     .collect(Collectors.toList());
-            return (T) new ParallelAction(t.getActionDsl(), null, null, t.getFailover(), actions);
+            return (T) new ParallelActionDecorator(t.getActionDsl(), null, null, t.getFailover(), actions);
         }
         if (t.getActionDsl().matches(serial_regexp)) {
             String[] actionBeanNames = t.getActionDsl().split(",");
             List<Action> actions = Arrays.stream(actionBeanNames)
                     .map(name -> InfraUtils.getBean(name, Action.class))
                     .collect(Collectors.toList());
-            return (T) new SerialAction(t.getActionDsl(), t.getFailover(), actions);
+            return (T) new SerialActionDecorator(t.getActionDsl(), t.getFailover(), actions);
         }
         return (T) new NoneAction("");
     }
