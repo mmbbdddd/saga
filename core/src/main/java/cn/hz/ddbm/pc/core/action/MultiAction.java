@@ -5,19 +5,24 @@ import cn.hz.ddbm.pc.core.Action;
 import cn.hz.ddbm.pc.core.FsmContext;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 支持aAction，bActioin，cAction.....组合成一个Action运行的写法。
  **/
 
 
-public class MultiAction<S extends Enum<S>> implements Action<S>, Action.QueryAction<S>, Action.SagaAction<S> {
-    String       actionNames;
-    List<Action<S>> actions;
+public abstract class MultiAction implements Action, Action.QueryAction, Action.SagaAction {
+    String            actionNames;
+    List<QueryAction> queryActions;
+    List<Action>      dealActions;
+    Enum              failover;
 
-    public MultiAction(String actionNames, List<Action<S>> actions) {
-        this.actionNames = actionNames;
-        this.actions     = actions;
+    public MultiAction(String actionNames, Enum failover, List<Action> actions) {
+        this.actionNames  = actionNames;
+        this.queryActions = null;
+        this.dealActions  = null;
+        this.failover     = failover;
     }
 
     @Override
@@ -26,19 +31,7 @@ public class MultiAction<S extends Enum<S>> implements Action<S>, Action.QueryAc
     }
 
     @Override
-    public void execute(FsmContext<S,?> ctx) throws Exception {
-        for (Action<S> action : this.actions) {
-            action.execute(ctx);
-        }
+    public Enum failover() {
+        return failover;
     }
-
-
-    @Override
-    public S query(FsmContext<S,?> ctx) throws Exception {
-        QueryAction<S> queryAction = actions.stream()
-                .filter(a->a instanceof QueryAction).map(a->(QueryAction)a).findFirst().get();
-        return queryAction.query(ctx);
-    }
-
-
 }

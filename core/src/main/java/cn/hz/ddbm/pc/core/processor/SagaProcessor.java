@@ -32,7 +32,7 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<Action.SagaA
 
     @Override
     public Action.SagaAction<S> action(FsmContext<S, ?> ctx) {
-        return Action.of(getFsmRecord().getActionDsl(), Action.SagaAction.class, ctx);
+        return Action.of(getFsmRecord().getActionDsl(),getFsmRecord().getFailover(), Action.SagaAction.class, ctx);
     }
 
     public void execute(FsmContext<S, ?> ctx) throws ActionException, StatusException {

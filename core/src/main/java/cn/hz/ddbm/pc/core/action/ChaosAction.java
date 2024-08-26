@@ -41,4 +41,8 @@ public class ChaosAction<S extends Enum<S>> implements Action<S>, Action.QueryAc
         }
     }
 
+    @Override
+    public S failover() {
+        return null;
+    }
 }
