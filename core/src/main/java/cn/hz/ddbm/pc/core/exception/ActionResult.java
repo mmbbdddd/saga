@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.core;
+package cn.hz.ddbm.pc.core.exception;
 
 public class ActionResult<S extends Enum<S>> {
     Type      type;

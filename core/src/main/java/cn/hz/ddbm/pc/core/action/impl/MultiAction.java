@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.core.action.impl;
 
 
 import cn.hz.ddbm.pc.core.action.Action;
+import cn.hz.ddbm.pc.core.action.CommandAction;
 import cn.hz.ddbm.pc.core.action.QueryAction;
 import cn.hz.ddbm.pc.core.action.SagaAction;
 
@@ -12,17 +13,13 @@ import java.util.List;
  **/
 
 
-public abstract class MultiAction implements QueryAction, SagaAction {
-    String            actionNames;
-    List<QueryAction> queryActions;
-    List<SagaAction>  commandActions;
-    Enum              failover;
+public abstract class MultiAction implements SagaAction {
+    String actionNames;
+    Enum   failover;
 
-    public MultiAction(String actionNames, Enum failover, List<Action> actions) {
-        this.actionNames    = actionNames;
-        this.queryActions   = null;
-        this.commandActions = null;
-        this.failover       = failover;
+    public MultiAction(String actionNames, Enum failover) {
+        this.actionNames = actionNames;
+        this.failover    = failover;
     }
 
     @Override

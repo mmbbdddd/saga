@@ -21,7 +21,7 @@ public class ToProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S>,
 
     @Override
     public SagaAction<S> action(FsmContext<S, ?> ctx) {
-        return Actions.of(getFsmRecord().getActionDsl(), null, SagaAction.class, ctx);
+        return Actions.of(getFsmRecord(), SagaAction.class, ctx);
     }
 
     public void execute(FsmContext<S, ?> ctx) throws ActionException {
