@@ -44,11 +44,11 @@ public interface Actions {
             return InfraUtils.getBean(t.getActionDsl(), type);
         }
         if (t.getActionDsl().matches(parallel_regexp)) {
-            String[] actionBeanNames = t.getActionDsl().split(",");
+            String[] actionBeanNames = t.getActionDsl().split("|");
             List<SagaAction> actions = Arrays.stream(actionBeanNames)
                     .map(name -> InfraUtils.getBean(name, SagaAction.class))
                     .collect(Collectors.toList());
-            return (T) new ParallelAction(t.getActionDsl(), null, null, t.getFailover(), actions, null);
+            return (T) new ParallelAction(t.getActionDsl(), null, null, t.getFailover(), actions);
         }
         if (t.getActionDsl().matches(serial_regexp)) {
             String[] actionBeanNames = t.getActionDsl().split(",");

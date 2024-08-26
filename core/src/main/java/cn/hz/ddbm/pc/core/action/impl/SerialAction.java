@@ -1,5 +1,6 @@
 package cn.hz.ddbm.pc.core.action.impl;
 
+import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.action.Action;
 import cn.hz.ddbm.pc.core.action.CommandAction;
@@ -15,8 +16,15 @@ public class SerialAction extends MultiAction {
 
     public SerialAction(String actionNames, Enum failover, List<Action> actions) {
         super(actionNames, failover);
-        this.commandActions = commandActions;
-        this.queryAction    = queryAction;
+        this.commandActions = actions.stream()
+                .filter(action -> action instanceof CommandAction)
+                .map(action -> (CommandAction) action)
+                .collect(Collectors.toList());
+        this.queryAction    = actions.stream()
+                .filter(action -> action instanceof CommandAction)
+                .map(action -> (QueryAction) action)
+                .findFirst().get();
+        Assert.notNull(this.queryAction, "SerialAction.queryAction is null");
     }
 
 

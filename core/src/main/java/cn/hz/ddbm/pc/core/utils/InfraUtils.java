@@ -48,6 +48,10 @@ public class InfraUtils {
         return Executors.newFixedThreadPool(3);
     }
 
+    public static ExecutorService getActionExecutorService() {
+        return Executors.newFixedThreadPool(3);
+    }
+
     public static Locker getLocker() {
         return SpringUtil.getBean(Locker.class);
     }
