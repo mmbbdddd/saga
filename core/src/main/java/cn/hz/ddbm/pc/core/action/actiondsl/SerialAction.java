@@ -14,7 +14,7 @@ public class SerialAction extends MultiAction {
 
     public SerialAction(Fsm.Transition transition, List<Action> actions) {
         super(transition, actions);
-        Assert.notNull(queryActions.size() != 1, "ParallelActionDecorator.queryActions.size !=1");
+        Assert.isTrue(queryActions.size() == 1, "ParallelActionDecorator.queryActions.size !=1");
         this.queryAction = queryActions.get(0);
     }
 

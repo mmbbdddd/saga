@@ -1,5 +1,7 @@
 package cn.hz.ddbm.pc.core.action.actiondsl;
 
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.core.Fsm;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.action.Action;
@@ -11,12 +13,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ParallelAction extends MultiAction {
-    Boolean allThrough;
+
+    Boolean     all;
     MergeAction mergeAction;
 
-    public ParallelAction(Boolean allThrough, Fsm.Transition transition, List<Action> actions) {
+    public ParallelAction(Boolean all, Fsm.Transition transition, List<Action> actions) {
         super(transition, actions);
-        this.allThrough = allThrough;
+        this.all         = all;
+        this.mergeAction = actions.stream().filter(t -> t instanceof MergeAction).map(a -> (MergeAction) a).findFirst().get();
+        Assert.notNull(mergeAction, "ParallelAction.mergeAction is null");
     }
 
     @Override
@@ -31,15 +36,15 @@ public class ParallelAction extends MultiAction {
 
     @Override
     public Enum query(FsmContext ctx) throws Exception {
-        List<MergeAction.ActionResult> results = queryActions.stream().map(queryAction -> {
+        List<Pair<?, ?>> results = queryActions.stream().map(queryAction -> {
             try {
                 Enum state = queryAction.query(ctx);
-                return MergeAction.ActionResult.of(state);
+                return Pair.of(state, null);
             } catch (Exception e) {
-                return MergeAction.ActionResult.exception(null,e);
+                return Pair.of(null, e);
             }
         }).collect(Collectors.toList());
-        return mergeAction.mergeResult(allThrough,results);
+        return mergeAction.mergeResult(all, results);
     }
 
 

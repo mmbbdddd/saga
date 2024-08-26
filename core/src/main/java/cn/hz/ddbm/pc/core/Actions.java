@@ -24,13 +24,13 @@ public interface Actions {
             return (T) new ChaosActionProxy<S>(t.getActionDsl());
         }
         if (t.getType().equals(Fsm.TransitionType.SAGA)) {
-            return (T) new SagaActionProxy(actionOf(t, SagaAction.class));
+            return (T) new SagaActionProxy(actionDsl(t, SagaAction.class));
         }
         if (t.getType().equals(Fsm.TransitionType.QUERY)) {
-            return (T) new QueryActionProxy(actionOf(t, QueryAction.class));
+            return (T) new QueryActionProxy(actionDsl(t, QueryAction.class));
         }
         if (t.getType().equals(Fsm.TransitionType.TO)) {
-            return (T) new CommandActionProxy(actionOf(t, CommandAction.class));
+            return (T) new CommandActionProxy(actionDsl(t, CommandAction.class));
         }
         return null;
     }
@@ -38,27 +38,31 @@ public interface Actions {
     /**
      * 将各种action配置语法转换为特定的Action实现
      * <p>
-     * 1，单action配置                     ：xxxAction
-     * 2，多action串行配置，逗号分隔           ：xxxAction，yyyAction，zzzAction
-     * 2，多action并行配置，|分隔             ：xxxAction|yyyAction|zzzAction
+     * 1，单action配置    xxxAction
+     * 2，a1|a2|a3       并行，any
+     * 3，a1&a2&a3       并行，all
+     * 4，a1，a2，a3，    串行，all
      *
      * @param actionDsl
      * @return
      */
-    String single_regexp   = "\\w{1,20}";
-    String parallel_regexp = "(\\w+,)+\\w+";
-    String serial_regexp   = "(\\w+|)+\\w+";
+    String single_regexp       = "\\w{1,20}";
+    String parallel_any_regexp = "(\\w+|)+\\w+";
+    String parallel_all_regexp = "(\\w+&)+\\w+";
+    String serial_regexp       = "(\\w+,)+\\w+";
 
-    static <T extends Action<S>, S extends Enum<S>> T actionOf(Fsm.Transition<S> t, Class<T> type) {
-        String  actionDsl  = t.getActionDsl();
-        Boolean allThrough = null;
+    static <T extends Action<S>, S extends Enum<S>> T actionDsl(Fsm.Transition<S> t, Class<T> type) {
+        String actionDsl = t.getActionDsl();
         if (actionDsl.matches(single_regexp)) {
             return InfraUtils.getBean(actionDsl, type);
         }
-        if (actionDsl.matches(parallel_regexp)) {
+        if (actionDsl.matches(parallel_any_regexp)) {
             List<Action> actions = StrUtil.split(actionDsl, "|").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
-            return (T) new ParallelAction(allThrough, t, actions);
-
+            return (T) new ParallelAction(false, t, actions);
+        }
+        if (actionDsl.matches(parallel_all_regexp)) {
+            List<Action> actions = StrUtil.split(actionDsl, "&").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
+            return (T) new ParallelAction(true, t, actions);
         }
         if (actionDsl.matches(serial_regexp)) {
             List<Action> actions = StrUtil.split(actionDsl, ",").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());

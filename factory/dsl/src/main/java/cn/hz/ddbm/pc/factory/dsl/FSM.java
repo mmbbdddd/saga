@@ -167,6 +167,7 @@ public interface FSM<S extends Enum<S>> {
             transitions.add(Transition.queryOf(failover, event, action));
             return this;
         }
+
     }
 
     @Getter

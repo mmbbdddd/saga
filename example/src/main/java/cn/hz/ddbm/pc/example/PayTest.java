@@ -4,6 +4,7 @@ import cn.hz.ddbm.pc.configuration.PcChaosConfiguration;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
+import cn.hz.ddbm.pc.profile.chaos.ChaosTarget;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class PayTest {
 //                add(RuntimeException.class);
 //                add(Exception.class);
 //            }}));
-            //注入锁错误
+////            注入锁错误
 //            add(new ChaosRule(ChaosTarget.LOCK, "true", "锁异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
 //                add(RuntimeException.class);
 //                add(Exception.class);
