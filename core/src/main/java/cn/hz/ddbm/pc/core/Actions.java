@@ -48,7 +48,7 @@ public interface Actions {
      */
     String single_regexp       = "\\w{1,20}";
     String parallel_any_regexp = "(\\w+|)+\\w+";
-    String parallel_all_regexp = "(\\w+&)+\\w+";
+    String parallel_all_regexp = "(\\w+\\&)+\\w+";
     String serial_regexp       = "(\\w+,)+\\w+";
 
     static <T extends Action<S>, S extends Enum<S>> T actionDsl(Fsm.Transition<S> t, Class<T> type) {
