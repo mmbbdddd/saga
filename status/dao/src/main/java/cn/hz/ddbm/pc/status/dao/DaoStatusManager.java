@@ -1,7 +1,9 @@
 package cn.hz.ddbm.pc.status.dao;
 
+import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.State;
+import cn.hz.ddbm.pc.core.FsmPayload;
+import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -23,15 +25,16 @@ public class DaoStatusManager implements StatusManager, InitializingBean, Applic
     }
 
     @Override
-    public void setStatus(String flow, Serializable flowId, State<?> flowStatus, Integer timeout, FsmContext<?, ?> ctx) throws IOException {
+    public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> statusPair, Integer timeout, FsmContext<?, ?> ctx) throws IOException {
         flowDaoMap.get(flow).save(ctx.getData());
     }
 
-
     @Override
-    public State<?> getStatus(String flow, Serializable flowId) throws IOException {
-        return flowDaoMap.get(flow).get(flow).getStatus();
+    public Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws IOException {
+        FsmPayload payload = flowDaoMap.get(flow).get(flow);
+        return Pair.of(payload.getStatus(), payload.getState());
     }
+
 
     @Override
     public void afterPropertiesSet() throws Exception {

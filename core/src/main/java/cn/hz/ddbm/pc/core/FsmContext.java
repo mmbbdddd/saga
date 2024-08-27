@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.core.coast.Coasts;
+import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.support.StatisticsSupport;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import lombok.Getter;
@@ -25,7 +26,9 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
     @Setter
     private String              event;
     @Setter
-    private State<S>            status;
+    private FlowStatus          status;
+    @Setter
+    private S                   state;
     @Setter
     private BaseProcessor<?, S> executor;
     @Setter
@@ -50,6 +53,7 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
         this.id      = data.getId();
         this.flow    = flow;
         this.status  = data.getStatus();
+        this.state   = data.getState();
         this.fluent  = true;
         this.session = new HashMap<>();
         //todo需要从应用中同步
@@ -78,7 +82,7 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
      * 1，status ==> entity
      */
     public void syncPayLoad() {
-        data.setStatus(status);
+        data.setStatusSate(status,state);
     }
 
     public Map<String, Object> buildExpressionContext() {

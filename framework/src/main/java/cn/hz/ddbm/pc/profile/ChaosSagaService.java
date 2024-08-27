@@ -11,6 +11,7 @@ import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
 import cn.hz.ddbm.pc.core.log.Logs;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
+import jdk.nashorn.internal.objects.annotations.Getter;
 
 import java.io.Serializable;
 import java.util.*;
@@ -92,21 +93,18 @@ public class ChaosSagaService extends BaseService {
 
     public <S extends Enum<S>> boolean chaosIsContine(FsmContext<S, MockPayLoad<S>> ctx) {
 
-        String   flowName = ctx.getFlow().getName();
-        State<S> state    = ctx.getStatus();
-        if (ctx.getFlow().isRouter(state.getState())) {
-            return true;
-        }
-        if (!state.isRunnable()) {
-            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), state.getStatus(), state.getState());
+        String flowName = ctx.getFlow().getName();
+        S      state    = ctx.getState();
+        if (!ctx.getFlow().isRunnable(state)) {
+            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), ctx.getStatus(), ctx.getState());
             return false;
         }
 
-        Long    executeCount = InfraUtils.getMetricsTemplate().get(ctx.getFlow().getName(), ctx.getId(), state.getState(), Coasts.EXECUTE_COUNT);
-        Integer nodeRetry    = ctx.getFlow().getNode(state.getState()).getRetry();
+        Long    executeCount = InfraUtils.getMetricsTemplate().get(ctx.getFlow().getName(), ctx.getId(), state, Coasts.EXECUTE_COUNT);
+        Integer nodeRetry    = ctx.getFlow().getNode(state).getRetry();
 
         if (executeCount > nodeRetry) {
-            Logs.flow.warn("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), state.getState(), executeCount, nodeRetry);
+            Logs.flow.warn("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), state, executeCount, nodeRetry);
             return false;
         }
         return true;
@@ -119,11 +117,13 @@ public class ChaosSagaService extends BaseService {
 
 
     public static class MockPayLoad<S extends Enum<S>> implements FsmPayload<S> {
-        Integer  id;
-        State<S> status;
+        Integer    id;
+        FlowStatus status;
+        S          state;
 
         public MockPayLoad(S init) {
-            this.status = new State<S>(init, FlowStatus.INIT);
+            this.status = FlowStatus.INIT;
+            this.state = init;
         }
 
         @Override
@@ -136,17 +136,23 @@ public class ChaosSagaService extends BaseService {
         }
 
         @Override
-        public State<S> getStatus() {
+        public FlowStatus getStatus() {
             return status;
         }
 
         @Override
-        public void setStatus(State<S> status) {
-            this.status = status;
+        public S getState() {
+            return state;
         }
 
+        @Override
+        public void setStatusSate(FlowStatus status, S state) {
+
+        }
+
+
         public MockPayLoad<S> copy(Integer id) {
-            MockPayLoad<S> copy = new MockPayLoad<>(this.status.getState());
+            MockPayLoad<S> copy = new MockPayLoad<>(this.state);
             copy.setId(id);
             return copy;
         }
@@ -181,7 +187,7 @@ public class ChaosSagaService extends BaseService {
 
         public TypeValue(FsmContext<?, ?> ctx) {
             this.type  = ctx.getClass().getSimpleName();
-            this.value = String.format("%s:%s", ctx.getStatus().getState(), ctx.getStatus().getStatus());
+            this.value = String.format("%s:%s", ctx.getState(), ctx.getStatus());
         }
 
         @Override

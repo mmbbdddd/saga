@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface FSM<S extends Enum<S>> {
     /**
@@ -119,7 +120,15 @@ public interface FSM<S extends Enum<S>> {
         profile.setStates(stepAttrsMap);
         Table<S, String, Set<Pair<S, Double>>> maybeResults = new RowKeyTable<>();
         profile.setMaybeResults(maybeResults(maybeResults));
-        Fsm<S> fsm = Fsm.of(fsmId(), describe(), nodes(), profile);
+        Map<S, FlowStatus> nodes = nodes();
+        S                  init  = nodes.entrySet().stream().filter(e -> e.getValue().equals(FlowStatus.INIT)).map(Map.Entry::getKey).findFirst().get();
+        Set<S>             tasks = nodes.entrySet()
+                .stream()
+                .filter(e -> FlowStatus.isRunnable(e.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        Set<S>             ends  = nodes.entrySet().stream().filter(e -> FlowStatus.isEnd(e.getValue())).map(Map.Entry::getKey).collect(Collectors.toSet());
+        Fsm<S>             fsm   = Fsm.of(fsmId(), describe(), init, tasks, ends, profile);
         fsm.setPlugins(plugins());
         Transitions<S> transitions = new Transitions<>();
         transitions(transitions);

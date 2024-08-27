@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hz.ddbm.pc.core.action.*;
-import cn.hz.ddbm.pc.core.action.actiondsl.ParallelAction;
 import cn.hz.ddbm.pc.core.action.actiondsl.SerialAction;
 import cn.hz.ddbm.pc.core.action.proxy.ChaosActionProxy;
 import cn.hz.ddbm.pc.core.action.proxy.CommandActionProxy;
@@ -56,14 +55,15 @@ public interface Actions {
         if (actionDsl.matches(single_regexp)) {
             return InfraUtils.getBean(actionDsl, type);
         }
-        if (actionDsl.matches(parallel_any_regexp)) {
-            List<Action> actions = StrUtil.split(actionDsl, "|").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
-            return (T) new ParallelAction(false, t, actions);
-        }
-        if (actionDsl.matches(parallel_all_regexp)) {
-            List<Action> actions = StrUtil.split(actionDsl, "&").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
-            return (T) new ParallelAction(true, t, actions);
-        }
+//        没必要搞这么复杂。暂不支持fork join 模式
+//        if (actionDsl.matches(parallel_any_regexp)) {
+//            List<Action> actions = StrUtil.split(actionDsl, "|").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
+//            return (T) new ParallelAction(false, t, actions);
+//        }
+//        if (actionDsl.matches(parallel_all_regexp)) {
+//            List<Action> actions = StrUtil.split(actionDsl, "&").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
+//            return (T) new ParallelAction(true, t, actions);
+//        }
         if (actionDsl.matches(serial_regexp)) {
             List<Action> actions = StrUtil.split(actionDsl, ",").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
             return (T) new SerialAction(t, actions);

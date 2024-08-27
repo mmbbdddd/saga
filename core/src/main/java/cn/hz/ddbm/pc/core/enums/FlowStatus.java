@@ -1,7 +1,16 @@
 package cn.hz.ddbm.pc.core.enums;
 
+import java.util.Objects;
+
 public enum FlowStatus {
     INIT, RUNNABLE, PAUSE, CANCEL, FINISH;
+
+    public static Boolean isRunnable(FlowStatus status) {
+        return Objects.equals(INIT, status) || Objects.equals(RUNNABLE, status) || Objects.equals(PAUSE, status) ;
+    }
+    public static Boolean isEnd(FlowStatus status) {
+        return Objects.equals(FINISH, status) || Objects.equals(CANCEL, status) ;
+    }
 
     public FlowStatus on(Event event) {
         switch (this) {

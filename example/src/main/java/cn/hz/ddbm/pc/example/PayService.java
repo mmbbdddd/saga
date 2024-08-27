@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc.example;
 
 import cn.hz.ddbm.pc.core.FsmPayload;
-import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.profile.ChaosSagaService;
@@ -54,14 +53,21 @@ public class PayService implements InitializingBean {
         }
 
         @Override
-        public State<PayState> getStatus() {
-            return new State<>(state, status);
+        public FlowStatus getStatus() {
+            return status;
+        }
+
+
+        @Override
+        public PayState getState() {
+            return state;
         }
 
         @Override
-        public void setStatus(State<PayState> state) {
-            this.status = state.getStatus();
-            this.state  = state.getState();
+        public void setStatusSate(FlowStatus status, PayState state) {
+            this.status = status;
+            this.state  = state;
         }
+
     }
 }

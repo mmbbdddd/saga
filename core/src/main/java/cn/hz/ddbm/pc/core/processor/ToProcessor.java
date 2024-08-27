@@ -28,15 +28,15 @@ public class ToProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S>,
         Fsm<S>       flow     = ctx.getFlow();
         Serializable id       = ctx.getId();
         String       event    = ctx.getEvent();
-        State<S>     lastNode = ctx.getStatus();
+        S            lastNode = ctx.getState();
         try {
             preActionPlugin(flow, ctx);
             action(ctx).execute(ctx);
-            ctx.getStatus().flush(event, getFsmRecord().getTo(), flow);
-            postActionPlugin(flow, lastNode.getState(), ctx);
+            ctx.setState(getFsmRecord().getTo());
+            postActionPlugin(flow, lastNode, ctx);
         } catch (Exception e) {
-            ctx.getStatus().flush(event, getFsmRecord().getFrom(), flow);
-            onActionExceptionPlugin(flow, lastNode.getState(), e, ctx);
+            ctx.setState(getFsmRecord().getFrom());
+            onActionExceptionPlugin(flow, lastNode, e, ctx);
             throw new ActionException(e);
         } finally {
             onActionFinallyPlugin(flow, ctx);

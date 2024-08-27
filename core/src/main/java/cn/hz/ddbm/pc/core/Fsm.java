@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.core.coast.Coasts;
-import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.exception.wrap.ActionException;
 import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
 import cn.hz.ddbm.pc.core.processor.RouterProcessor;
@@ -30,22 +29,26 @@ public class Fsm<S extends Enum<S>> {
     //运行时配置参数
     final Profile<S>      profile;
     //状态机节点对象。
-    final Map<S, Node<S>> nodes;
+    final Map<S, Node<S>> tasks;
+    final Set<S>          ends;
     //状态机插件
     @Setter
     List<Plugin> plugins;
     //状态机事件定义表
     EventTable<S> eventTable;
 
-    public Fsm(String name, String descr, Map<S, FlowStatus> nodesType, Profile<S> profile) {
+    public Fsm(String name, String descr, S init, Set<S> tasks, Set<S> ends, Profile<S> profile) {
         Assert.notNull(name, "flow.name is null");
-        Assert.notNull(nodesType, "nodesType is null");
+        Assert.notNull(init, "init is null");
+        Assert.notNull(tasks, "tasks is null");
+        Assert.notNull(ends, "ends is null");
         Assert.notNull(profile, "profile is null");
         this.name       = name;
         this.descr      = descr;
         this.profile    = profile;
-        this.nodes      = nodesType.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, t -> new Node<>(t.getKey(), t.getValue(), profile)));
-        this.init       = this.nodes.values().stream().filter(t -> t.type.equals(FlowStatus.INIT)).findFirst().get().name;
+        this.ends       = ends;
+        this.init       = init;
+        this.tasks      = tasks.stream().collect(Collectors.toMap(t -> t, t -> new Node<>(t, profile)));
         this.eventTable = new EventTable<>();
         this.plugins    = new ArrayList<>();
     }
@@ -58,8 +61,8 @@ public class Fsm<S extends Enum<S>> {
      * @param profile
      * @return
      */
-    public static <S extends Enum<S>> Fsm<S> of(String name, String descr, Map<S, FlowStatus> nodesType, Profile profile) {
-        return new Fsm<>(name, descr, nodesType, profile);
+    public static <S extends Enum<S>> Fsm<S> of(String name, String descr, S init, Set<S> tasks, Set<S> ends, Profile<S> profile) {
+        return new Fsm<>(name, descr, init, tasks, ends, profile);
     }
 
     /**
@@ -68,26 +71,30 @@ public class Fsm<S extends Enum<S>> {
      * @param name
      * @return
      */
-    public static <S extends Enum<S>> Fsm<S> devOf(String name, String descr, Map<S, FlowStatus> nodesType) {
+    public static <S extends Enum<S>> Fsm<S> devOf(String name, String descr, S init, Set<S> tasks, Set<S> ends) {
         List<String> plugins = new ArrayList<>();
         plugins.add(Coasts.PLUGIN_DIGEST_LOG);
         plugins.add(Coasts.PLUGIN_ERROR_LOG);
-        Fsm<S> flow = new Fsm<>(name, descr, nodesType, Profile.devOf());
+        Fsm<S> flow = new Fsm<>(name, descr, init, tasks, ends, Profile.devOf());
         flow.plugins = InfraUtils.getByCodesOfType(plugins, Plugin.class);
         return flow;
     }
 
 
     public <T> Transition<S> execute(FsmContext<S, ?> ctx) throws FsmEndException, StatusException, ActionException {
-        State<S> node = ctx.getStatus();
-        if (!node.isRunnable()) {
+        S state = ctx.getState();
+        if (!ctx.getFlow().isRunnable(state)) {
             throw new FsmEndException();
         }
-        Transition<S> transition = eventTable.find(node.state, ctx.getEvent());
-        Assert.notNull(transition, String.format("找不到事件处理器%s@%s", ctx.getEvent(), ctx.getStatus().state));
+        Transition<S> transition = eventTable.find(state, ctx.getEvent());
+        Assert.notNull(transition, String.format("找不到事件处理器%s@%s", ctx.getEvent(), ctx.getState()));
         ctx.setExecutor(transition.initExecutor(ctx));
         transition.execute(ctx);
         return transition;
+    }
+
+    public boolean isRunnable(S node) {
+        return node.equals(init) || tasks.containsKey(node);
     }
 
 
@@ -97,25 +104,19 @@ public class Fsm<S extends Enum<S>> {
 
 
     public Set<String> nodeNames() {
-        return nodes.keySet().stream().map(Enum::name).collect(Collectors.toSet());
+        return tasks.keySet().stream().map(Enum::name).collect(Collectors.toSet());
     }
 
 
     public Node<S> getNode(S state) {
-        return nodes.get(state);
+        return tasks.get(state);
     }
 
-    public boolean isRouter(S node) {
-        if (!nodes.containsKey(node)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+
 
     @Override
     public String toString() {
-        return "{" + "name:'" + name + '\'' + ", descr:'" + descr + '\'' + ", init:" + init + ",nodes:" + nodes + ", fsmTable:" + Arrays.toString(eventTable.records.toArray(new Transition[eventTable.records.size()])) + '}';
+        return "{" + "name:'" + name + '\'' + ", descr:'" + descr + '\'' + ", init:" + init + ",nodes:" + tasks + ", fsmTable:" + Arrays.toString(eventTable.records.toArray(new Transition[eventTable.records.size()])) + '}';
     }
 
 

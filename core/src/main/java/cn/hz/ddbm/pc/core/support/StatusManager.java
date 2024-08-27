@@ -1,8 +1,10 @@
 package cn.hz.ddbm.pc.core.support;
 
 
+import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.State;
+import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
 
 import java.io.IOException;
@@ -19,13 +21,13 @@ import java.io.Serializable;
 public interface StatusManager {
     Type code();
 
-    void setStatus(String flow, Serializable flowId, State<?> status, Integer timeout, FsmContext<?, ?> ctx) throws IOException;
+    void setStatus(String flow, Serializable flowId, Pair<FlowStatus,?> statusPair, Integer timeout, FsmContext<?, ?> ctx) throws IOException;
 
-    State<?> getStatus(String flow, Serializable flowId) throws IOException;
+    Pair<FlowStatus,?> getStatus(String flow, Serializable flowId) throws IOException;
 
     default void flush(FsmContext<?, ?> ctx) throws StatusException {
         try {
-            setStatus(ctx.getFlow().getName(), ctx.getId(), ctx.getStatus(), ctx.getProfile().getStatusTimeout(), ctx);
+            setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(),ctx.getState()), ctx.getProfile().getStatusTimeout(), ctx);
         } catch (IOException e) {
             throw new StatusException(e);
         }

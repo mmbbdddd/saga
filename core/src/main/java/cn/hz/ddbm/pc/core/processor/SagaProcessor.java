@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.core.processor;
 
 
+import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.core.*;
 import cn.hz.ddbm.pc.core.action.SagaAction;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
@@ -40,13 +41,13 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S
         Fsm<S>       flow     = ctx.getFlow();
         Serializable id       = ctx.getId();
         String       event    = ctx.getEvent();
-        State<S>     lastNode = ctx.getStatus();
+        S            lastNode = ctx.getState();
         try {
             StatusManager statusManager = getStatusManager(ctx);
-            statusManager.setStatus(flow.getName(), id, new State<S>(getFsmRecord().getFailover(), FlowStatus.RUNNABLE), 10, ctx);
-            ctx.getStatus().flush(event, getFsmRecord().getFailover(), flow);
+            statusManager.setStatus(flow.getName(), id, Pair.of(FlowStatus.RUNNABLE,getFsmRecord().getFailover()), 10, ctx);
+            ctx.setState( getFsmRecord().getFailover());
         } catch (Exception e) {
-            ctx.getStatus().flush(event, getFsmRecord().getFailover(), flow);
+            ctx.setState( getFsmRecord().getFailover());
             throw new StatusException(e);
         }
         try {
@@ -59,12 +60,12 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S
                 if (null == nextNode) {
                     nextNode = getFsmRecord().getFailover();
                 }
-                ctx.getStatus().flush(event, nextNode, flow);
+                ctx.setState( nextNode);
             }
-            postActionPlugin(flow, lastNode.getState(), ctx);
+            postActionPlugin(flow, lastNode, ctx);
         } catch (Exception e) {
-            ctx.getStatus().flush(event, getFsmRecord().getFailover(), flow);
-            onActionExceptionPlugin(flow, lastNode.getState(), e, ctx);
+            ctx.setState( getFsmRecord().getFailover());
+            onActionExceptionPlugin(flow, lastNode, e, ctx);
             throw new ActionException(e);
         } finally {
             onActionFinallyPlugin(flow, ctx);

@@ -29,18 +29,18 @@ public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<QueryActio
         Fsm<S>       flow     = ctx.getFlow();
         Serializable id       = ctx.getId();
         String       event    = ctx.getEvent();
-        State<S>     lastNode = ctx.getStatus();
+        S            lastNode = ctx.getState();
         try {
             preActionPlugin(flow, ctx);
             S nextNode = action(ctx).query(ctx);
             if (null == nextNode) {
                 nextNode = getFsmRecord().getFrom();
             }
-            ctx.getStatus().flush(event, nextNode, flow);
-            postActionPlugin(flow, lastNode.getState(), ctx);
+            ctx.setState( nextNode);
+            postActionPlugin(flow, lastNode, ctx);
         } catch (Exception e) {
-            ctx.getStatus().flush(event, getFsmRecord().getFrom(), flow);
-            onActionExceptionPlugin(flow, lastNode.getState(), e, ctx);
+            ctx.setState( getFsmRecord().getFrom());
+            onActionExceptionPlugin(flow, lastNode, e, ctx);
             throw new ActionException(e);
         } finally {
             onActionFinallyPlugin(flow, ctx);

@@ -111,21 +111,18 @@ public abstract class BaseService {
      * @return
      */
     public <S extends Enum<S>, T extends FsmPayload<S>> boolean isCanContinue(FsmContext<S, T> ctx) {
-        State<S> state    = ctx.getStatus();
-        String   flowName = ctx.getFlow().getName();
-        if (ctx.getFlow().isRouter(state.getState())) {
-            return true;
-        }
-        if (!state.isRunnable()) {
-            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), state.getStatus(), state.getState());
+        S      state    = ctx.getState();
+        String flowName = ctx.getFlow().getName();
+        if (!ctx.getFlow().isRunnable(state)) {
+            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), ctx.getStatus(), ctx.getState());
             return false;
         }
 
-        Long    exeRetry  = InfraUtils.getMetricsTemplate().get(ctx.getFlow().getName(), ctx.getId(), ctx.getStatus().getState(), Coasts.EXECUTE_COUNT);
-        Integer nodeRetry = ctx.getFlow().getNode(state.getState()).getRetry();
+        Long    exeRetry  = InfraUtils.getMetricsTemplate().get(ctx.getFlow().getName(), ctx.getId(), ctx.getState(), Coasts.EXECUTE_COUNT);
+        Integer nodeRetry = ctx.getFlow().getNode(state).getRetry();
 
         if (exeRetry > nodeRetry) {
-            Logs.flow.warn("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), state.getState(), exeRetry, nodeRetry);
+            Logs.flow.warn("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), ctx.getState(), exeRetry, nodeRetry);
             return false;
         }
         return true;

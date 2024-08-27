@@ -1,6 +1,8 @@
 package cn.hz.ddbm.pc.core;
 
 
+import cn.hz.ddbm.pc.core.enums.FlowStatus;
+
 import java.io.Serializable;
 
 /**
@@ -14,7 +16,9 @@ import java.io.Serializable;
 public interface FsmPayload<S extends Enum<S>> {
     Serializable getId();
 
-    State<S> getStatus();
+    FlowStatus getStatus();
 
-    void setStatus(State<S> status);
+    S getState();
+
+    void setStatusSate(FlowStatus status, S state);
 }
