@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class BaseService {
     Map<String, Fsm> flows = new HashMap<>();
@@ -44,6 +45,7 @@ public abstract class BaseService {
     }
 
     public <S extends Enum<S>, T extends FsmPayload<S>> void execute(FsmContext<S, T> ctx) throws StatusException, SessionException {
+
         if (Boolean.FALSE.equals(tryLock(ctx))) {
             return;
         }
@@ -76,9 +78,12 @@ public abstract class BaseService {
                     flush(ctx);
                 } else if (isPaused(e, ctx)) { //暂停异常，状态设置为暂停，等人工修复
                     Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    ctx.setStatus(FlowStatus.PAUSE);
                     flush(ctx);
                 } else if (isStoped(e, ctx)) {//流程结束或者取消
                     Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    FlowStatus status = ctx.getFlow().getEnds().contains(ctx.getState()) ? FlowStatus.FINISH : ctx.getStatus();
+                    ctx.setStatus(status);
                     flush(ctx);
                 }
             } catch (StatusException | SessionException e2) {
