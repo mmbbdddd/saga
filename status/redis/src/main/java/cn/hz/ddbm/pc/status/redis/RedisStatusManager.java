@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.status.redis;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +31,5 @@ public class RedisStatusManager implements StatusManager {
         return redisTemplate.opsForValue().get(String.format(keyTemplate, flow, flowId));
     }
 
-//    @Override
-//    public void setStatus(String flow, Serializable flowId, State<?> flowStatus, Integer timeout, FsmContext<?, ?> ctx) throws IOException {
-//
-//    }
-//
-//
-//    @Override
-//    public State<?> getStatus(String flow, Serializable flowId) throws IOException {
-//        return redisTemplate.opsForValue().get(String.format(keyTemplate, flow, flowId));
-//    }
 
 }

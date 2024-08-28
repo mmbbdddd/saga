@@ -37,11 +37,11 @@ public class PayTest {
         String event = Coasts.EVENT_DEFAULT;
         List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
             //注入业务逻辑异常，概率20%
-//            add(new ChaosRule(ChaosTarget.ACTION, "true", "action异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
-//                add(RuntimeException.class);
-//                add(Exception.class);
-//            }}));
-////            注入锁错误
+            add(new ChaosRule(ChaosTarget.ACTION, "true", "action异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
+                add(RuntimeException.class);
+                add(Exception.class);
+            }}));
+//            注入锁错误
 //            add(new ChaosRule(ChaosTarget.LOCK, "true", "锁异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
 //                add(RuntimeException.class);
 //                add(Exception.class);
