@@ -3,19 +3,21 @@ package cn.hz.ddbm.pc.plugin;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.Plugin;
 import cn.hz.ddbm.pc.core.log.Logs;
-import cn.hz.ddbm.pc.profile.ChaosSagaService;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
-import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 
-public class PerformancePlugin implements Plugin, ApplicationListener<ChaosSagaService.ChaosFinishedEvent> {
-    StopWatch sw = new StopWatch();
+public class PerformancePlugin implements Plugin, ApplicationListener<PerformancePlugin.Event> {
+    StopWatch sw;
 
+    public PerformancePlugin(){
+        this.sw = new StopWatch();
+    }
     @Override
     public String code() {
         return "performance";
@@ -23,6 +25,11 @@ public class PerformancePlugin implements Plugin, ApplicationListener<ChaosSagaS
 
 
     public void printReport() {
+        try {
+            Thread.sleep(1000l);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         sw.prettyPrint();
     }
 
@@ -48,14 +55,24 @@ public class PerformancePlugin implements Plugin, ApplicationListener<ChaosSagaS
     }
 
     @Override
-    public void onApplicationEvent(ChaosSagaService.ChaosFinishedEvent event) {
+    public void onApplicationEvent(Event event) {
         printReport();
+    }
+
+    public static class Event extends org.springframework.context.ApplicationEvent {
+
+        public Event() {
+            super("1");
+        }
     }
 }
 
 final class StopWatch {
-    private final Map<String, TaskInfo> tasks = new HashMap();
+    private final ConcurrentMap<String, TaskInfo> tasks ;
 
+    public StopWatch(){
+        this.tasks = new ConcurrentHashMap<>();
+    }
     public void prettyPrint() {
         Logs.report.info("性能统计报表");
         Logs.report.info("action             micros             times");
@@ -77,11 +94,10 @@ final class StopWatch {
 final class TaskInfo {
 
     private final String taskName;
-
-    private final long startNanos;
-    private       long currentStartNanos;
-    private       long executeCount;
-    private       long executeNanos;
+    private final long   startNanos;
+    private       long   currentStartNanos;
+    private       long   executeCount;
+    private       long   executeNanos;
 
     TaskInfo(String taskName) {
         this.taskName          = taskName;
@@ -101,7 +117,7 @@ final class TaskInfo {
     public void stop() {
         this.executeNanos += (System.nanoTime() - this.currentStartNanos);
         this.executeCount      = this.executeCount + 1;
-        this.currentStartNanos = 0l;
+//        this.currentStartNanos = 0l;
     }
 
     public void start() {

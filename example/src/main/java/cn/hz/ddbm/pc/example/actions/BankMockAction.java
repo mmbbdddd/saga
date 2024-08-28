@@ -6,21 +6,20 @@ import cn.hz.ddbm.pc.core.action.SagaAction;
 import cn.hz.ddbm.pc.core.utils.RandomUitl;
 import cn.hz.ddbm.pc.example.PayState;
 import cn.hz.ddbm.pc.example.PayTest;
-import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 @Component
-public class SendAction implements SagaAction<PayState> {
+public class BankMockAction implements SagaAction<PayState> {
 
-    public SendAction() {
+    public BankMockAction() {
     }
 
     @Override
     public String beanName() {
-        return "sendAction";
+        return "bankMockAction";
     }
 
     @Override
@@ -35,12 +34,14 @@ public class SendAction implements SagaAction<PayState> {
 
     @Override
     public PayState queryState(FsmContext<PayState, ?> ctx) throws Exception {
-//        return RandomUitl.random(Lists.newArrayList(PayState.freezed, PayState.sended, PayState.sended_failover));
-        return RandomUitl.selectByWeight("f5", Sets.set(
-                Pair.of(PayState.freezed,0.1),
-                Pair.of(PayState.sended,0.8),
-                Pair.of(PayState.sended_failover,0.1)
+//        return RandomUitl.random(Lists.newArrayList(PayState.payed, PayState.su, PayState.manual, PayState.payed_failover));
+        return RandomUitl.selectByWeight("f4", Sets.set(
+                Pair.of(PayState.payed,0.1),
+                Pair.of(PayState.su,0.7),
+                Pair.of(PayState.manual,0.1),
+                Pair.of(PayState.payed_failover,0.1)
         ));
+
     }
 
 

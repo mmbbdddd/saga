@@ -62,7 +62,6 @@ public class ChaosSagaService extends BaseService {
             throw new RuntimeException(e);
         }
         printStatisticsReport();
-        SpringUtil.publishEvent(new ChaosFinishedEvent());
     }
 
     private void printStatisticsReport() {
@@ -216,10 +215,4 @@ public class ChaosSagaService extends BaseService {
         }
     }
 
-    public static class ChaosFinishedEvent extends org.springframework.context.ApplicationEvent {
-
-        public ChaosFinishedEvent() {
-            super("1");
-        }
-    }
 }

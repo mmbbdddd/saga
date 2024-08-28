@@ -23,7 +23,8 @@ public class PayAction implements SagaAction {
     }
 
     @Override
-    public Boolean executeWhen(Enum queryResult) throws Exception {
+    public Boolean executeWhen(FsmContext  ctx) throws Exception {
+        //todo
         return null;
     }
 }

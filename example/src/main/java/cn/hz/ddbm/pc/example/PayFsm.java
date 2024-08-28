@@ -32,7 +32,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     @Override
     public List<Plugin> plugins() {
         List<Plugin> plugins = new ArrayList<Plugin>();
-        plugins.add(new DigestLogPluginMock());
+//        plugins.add(new DigestLogPluginMock());
 //        plugins.add(new PayAction());
         plugins.add(performancePlugin);
 //        plugins.add(new PayQueryAction());
@@ -93,13 +93,17 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     public Map<PayState, FlowStatus> nodes() {
         Map<PayState, FlowStatus> map = new HashMap<>();
         map.put(PayState.init, FlowStatus.INIT);
-        map.put(PayState.payed, FlowStatus.RUNNABLE);
+        map.put(PayState.freezed, FlowStatus.RUNNABLE);
         map.put(PayState.sended, FlowStatus.RUNNABLE);
-        map.put(PayState.payed_failover, FlowStatus.RUNNABLE);
+        map.put(PayState.payed, FlowStatus.RUNNABLE);
+        map.put(PayState.freezed_failover, FlowStatus.RUNNABLE);
         map.put(PayState.sended_failover, FlowStatus.RUNNABLE);
+        map.put(PayState.payed_failover, FlowStatus.RUNNABLE);
+        map.put(PayState.freezed_rollback, FlowStatus.RUNNABLE);
         map.put(PayState.su, FlowStatus.FINISH);
         map.put(PayState.fail, FlowStatus.FINISH);
-        map.put(PayState.error, FlowStatus.FINISH);
+        map.put(PayState.manual, FlowStatus.MANUAL)
+        ;
         return map;
     }
 
@@ -107,14 +111,12 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     public void transitions(Fsm.EventTable<PayState> t) {
 //        payAction:执行本地扣款
         t
-                .saga(PayState.init, PayState.payed_failover, "payAction")
-                //本地扣款容错payQueryAction 扣款结果查询
-//                .router(PayState.payed_failover, Coasts.EVENT_DEFAULT, "payQueryAction")
-                //发送异常，不明确是否发送
-                .saga(PayState.payed, PayState.sended_failover, "sendAction")
-//                .router(PayState.sended_failover, Coasts.EVENT_DEFAULT, "sendQueryAction")
-                //sendAction，执行远程发生&sendQueryAction。
-                .query(PayState.sended, "sendQueryAction");
+                .saga(PayState.init, PayState.freezed_failover, "freezedAction")
+                .saga(PayState.freezed, PayState.freezed_failover, "sendAction")
+                .saga(PayState.sended, PayState.sended_failover, "payActioin")
+                .saga(PayState.payed, PayState.payed_failover, "bankMockAction")
+                .saga(PayState.freezed_rollback, PayState.freezed_rollback_failover, "freezedRollbackAction")
+        ;
     }
 
 

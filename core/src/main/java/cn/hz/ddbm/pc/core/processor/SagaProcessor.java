@@ -51,7 +51,7 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S
         }
         try {
             preActionPlugin(flow, ctx);
-            if (getAction(ctx).executeCondition(ctx)) {
+            if (getAction(ctx).executeWhen(ctx)) {
                 getAction(ctx).execute(ctx);
                 S nextNode = getAction(ctx).queryState(ctx);
                 ctx.setState(nextNode);

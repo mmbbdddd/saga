@@ -1,5 +1,6 @@
 package cn.hz.ddbm.pc.example;
 
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.configuration.PcChaosConfiguration;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
@@ -71,13 +72,14 @@ public class PayTest {
         String event = Coasts.EVENT_DEFAULT;
         try {
             //执行10000次，查看流程中断概率
-            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 10000, 10, new ArrayList(), false);
+            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 1, 10, new ArrayList(), false);
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("account:" + account.get());
         System.out.println("freezed:" + freezed.get());
         System.out.println("bank:" + bank.get());
+        SpringUtil.publishEvent(new PerformancePlugin.Event());
     }
 
     static class CC {
@@ -85,8 +87,9 @@ public class PayTest {
         PayFsm test() {
             return new PayFsm();
         }
+
         @Bean
-        PerformancePlugin performancePlugin(){
+        PerformancePlugin performancePlugin() {
             return new PerformancePlugin();
         }
     }

@@ -48,7 +48,7 @@ public interface Actions {
      * @param actionDsl
      * @return
      */
-    String single_regexp       = "\\w{1,20}";
+    String single_regexp       = "\\w+";
     String parallel_any_regexp = "(\\w+|)+\\w+";
     String parallel_all_regexp = "(\\w+\\&)+\\w+";
     String serial_regexp       = "(\\w+,)+\\w+";

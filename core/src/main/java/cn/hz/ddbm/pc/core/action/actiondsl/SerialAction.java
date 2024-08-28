@@ -24,10 +24,10 @@ public class SerialAction extends MultiAction {
         this.sagaActions = actions.stream().filter(t -> t instanceof SagaAction).map(SagaAction.class::cast).collect(Collectors.toList());
     }
     @Override
-    public Boolean executeWhen(Enum queryResult) {
+    public Boolean executeWhen(FsmContext ctx) {
         return sagaActions.stream().allMatch(sagaAction -> {
             try {
-                return sagaAction.executeWhen(queryResult);
+                return sagaAction.executeWhen(ctx);
             } catch (Exception e) {
                 return false;
             }

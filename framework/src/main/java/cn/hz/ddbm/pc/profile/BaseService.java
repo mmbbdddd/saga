@@ -11,6 +11,7 @@ import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.exception.*;
 import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
 import cn.hz.ddbm.pc.core.log.Logs;
+import cn.hz.ddbm.pc.core.utils.ExceptionUtils;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 
 import java.io.IOException;
@@ -45,7 +46,6 @@ public abstract class BaseService {
     }
 
     public <S extends Enum<S>, T extends FsmPayload<S>> void execute(FsmContext<S, T> ctx) throws StatusException, SessionException {
-
         if (Boolean.FALSE.equals(tryLock(ctx))) {
             return;
         }
@@ -67,23 +67,25 @@ public abstract class BaseService {
             }
         } catch (Throwable e) {
             try {
-                if (isRetryable(e, ctx)) {  //可重试异常，直接连续执行
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
-                    flush(ctx);
-                    execute(ctx);
-                } else if (isInterrupted(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                if (isInterrupted(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     flush(ctx);
                 } else if (isPaused(e, ctx)) { //暂停异常，状态设置为暂停，等人工修复
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     ctx.setStatus(FlowStatus.PAUSE);
                     flush(ctx);
                 } else if (isStoped(e, ctx)) {//流程结束或者取消
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     FlowStatus status = ctx.getFlow().getEnds().contains(ctx.getState()) ? FlowStatus.FINISH : ctx.getStatus();
                     ctx.setStatus(status);
                     flush(ctx);
+                } else {
+                    //可重试异常
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                    flush(ctx);
+//                    ctx.getFlow().execute(ctx);
                 }
+                e.printStackTrace();
             } catch (StatusException | SessionException e2) {
                 Logs.status.error("", e2);
             }

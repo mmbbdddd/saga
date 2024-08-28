@@ -16,6 +16,4 @@ public interface Plugin<S extends Enum<S>> extends ValueObject {
     void onActionException(String actionName, S preNode, Exception e, FsmContext<S, ?> ctx);
 
     void onActionFinally(String name, FsmContext<S, ?> ctx);
-
-//    void interrupteFlow(String s, FsmContext<S, ?> ctx);
 }

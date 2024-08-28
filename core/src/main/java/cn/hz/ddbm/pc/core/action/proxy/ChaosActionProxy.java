@@ -46,7 +46,8 @@ public class ChaosActionProxy<S extends Enum<S>> implements QueryAction<S>, Saga
     }
 
     @Override
-    public Boolean executeWhen(S queryResult) {
-        return null;
+    public Boolean executeWhen(FsmContext ctx) {
+        //todo
+        return true;
     }
 }

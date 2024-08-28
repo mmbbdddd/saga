@@ -26,7 +26,7 @@ public class SagaActionProxy implements SagaAction {
     }
 
     @Override
-    public Boolean executeWhen(Enum queryResult) throws Exception {
-        return sagaAction.executeWhen(queryResult);
+    public Boolean executeWhen(FsmContext ctx) throws Exception {
+        return sagaAction.executeWhen(ctx);
     }
 }
