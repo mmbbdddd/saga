@@ -88,9 +88,6 @@ public abstract class BaseService {
                 Logs.status.error("", e2);
             }
         } finally {
-            if (null != ctx.getTransition()) {
-                ctx.getTransition().interruptedPlugins(ctx);
-            }
             releaseLock(ctx);
         }
 

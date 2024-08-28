@@ -55,9 +55,6 @@ public class Transition<S extends Enum<S>> {
         _getProcessor(ctx).execute(ctx);
     }
 
-    public void interruptedPlugins(FsmContext<S, ?> ctx) {
-        _getProcessor(ctx).interrupteFlowForPlugins(ctx);
-    }
 
     private <A extends Action<S>> BaseProcessor<?, S> _getProcessor(FsmContext<S, ?> ctx) {
         if (null == processor) {

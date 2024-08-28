@@ -12,10 +12,6 @@ public class DigestLogPlugin implements Plugin {
         return Coasts.PLUGIN_DIGEST_LOG;
     }
 
-    @Override
-    public void interrupteFlow(String s, FsmContext ctx) {
-
-    }
 
     @Override
     public void onActionFinally(String name, FsmContext ctx) {

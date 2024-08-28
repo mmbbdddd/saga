@@ -91,17 +91,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
         });
     }
 
-    public void interrupteFlowForPlugins(FsmContext<S, ?> ctx) {
-        plugins.forEach((plugin) -> {
-            InfraUtils.getPluginExecutorService().submit(() -> {
-                try {
-                    plugin.interrupteFlow(this.getAction(ctx).beanName(), ctx);
-                } catch (Exception e) {
-                    Logs.error.error("{},{}", ctx.getFlow().name, ctx.getId(), e);
-                }
-            });
-        });
-    }
+
 
     public abstract void execute(FsmContext<S, ?> ctx) throws ActionException, StatusException;
 

@@ -12,10 +12,6 @@ public class DigestLogPluginMock implements Plugin {
         return "digest";
     }
 
-    @Override
-    public void interrupteFlow(String s, FsmContext ctx) {
-
-    }
 
 
     @Override

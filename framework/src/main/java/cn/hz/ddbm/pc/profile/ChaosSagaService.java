@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.profile;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.core.Fsm;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.FsmPayload;
@@ -43,17 +44,14 @@ public class ChaosSagaService extends BaseService {
             MockPayLoad<S> mockPayLoad = payload.copy(i);
             mockPayLoad.setId(i);
             threadPool.submit(() -> {
-                Object result = null;
                 try {
                     FsmContext<S, MockPayLoad<S>> ctx = standalone(flowName, mockPayLoad, event, mock);
-                    result = ctx;
+                    statistics(mockPayLoad.getId(), new Object[]{flowName, mockPayLoad, event}, ctx);
                 } catch (Throwable t) {
                     Logs.error.error("", t);
-                    result = t;
+                    statistics(mockPayLoad.getId(), new Object[]{flowName, mockPayLoad, event}, t);
                 } finally {
                     cdl.countDown();
-//                    统计执行结果
-                    statistics(mockPayLoad.getId(), new Object[]{flowName, mockPayLoad, event}, result);
                 }
             });
         }
@@ -64,6 +62,7 @@ public class ChaosSagaService extends BaseService {
             throw new RuntimeException(e);
         }
         printStatisticsReport();
+        SpringUtil.publishEvent(new ChaosFinishedEvent());
     }
 
     private void printStatisticsReport() {
@@ -73,12 +72,15 @@ public class ChaosSagaService extends BaseService {
         groups.forEach((triple, list) -> {
             Logs.flow.info("{},{},{}", triple.getKey(), triple.getValue(), list.size());
         });
-
         statisticsLines.clear();
     }
 
-    private void statistics(Serializable i, Object requestInfo, Object result) {
+    private void statistics(Serializable i, Object requestInfo, FsmContext result) {
         statisticsLines.add(new StatisticsLine(i, requestInfo, result));
+    }
+
+    private void statistics(Serializable i, Object requestInfo, Throwable e) {
+        statisticsLines.add(new StatisticsLine(i, requestInfo, e));
     }
 
     private <S extends Enum<S>> FsmContext<S, MockPayLoad<S>> standalone(String flowName, MockPayLoad<S> payload, String event, Boolean mock) throws StatusException, SessionException {
@@ -165,16 +167,16 @@ public class ChaosSagaService extends BaseService {
         Object       requestInfo;
         TypeValue    result;
 
-        public StatisticsLine(Serializable i, Object o, Object result) {
+        public StatisticsLine(Serializable i, Object o, FsmContext result) {
             this.index       = i;
             this.requestInfo = o;
-            if (result instanceof Throwable) {
-                this.result = new TypeValue((Throwable) result);
-            } else if (result instanceof FsmContext) {
-                this.result = new TypeValue((FsmContext) result);
-            } else {
-                this.result = null;
-            }
+            this.result      = new TypeValue(result);
+        }
+
+        public StatisticsLine(Serializable i, Object o, Throwable e) {
+            this.index       = i;
+            this.requestInfo = o;
+            this.result      = new TypeValue(e);
         }
     }
 
@@ -211,6 +213,13 @@ public class ChaosSagaService extends BaseService {
                     "type='" + type + '\'' +
                     ", value='" + value + '\'' +
                     '}';
+        }
+    }
+
+    public static class ChaosFinishedEvent extends org.springframework.context.ApplicationEvent {
+
+        public ChaosFinishedEvent() {
+            super("1");
         }
     }
 }

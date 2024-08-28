@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.example;
 
 import cn.hz.ddbm.pc.configuration.PcChaosConfiguration;
 import cn.hz.ddbm.pc.core.coast.Coasts;
+import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
 import org.junit.Test;
@@ -83,6 +84,10 @@ public class PayTest {
         @Bean
         PayFsm test() {
             return new PayFsm();
+        }
+        @Bean
+        PerformancePlugin performancePlugin(){
+            return new PerformancePlugin();
         }
     }
 

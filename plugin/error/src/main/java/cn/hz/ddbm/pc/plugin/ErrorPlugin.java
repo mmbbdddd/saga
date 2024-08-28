@@ -12,10 +12,6 @@ public class ErrorPlugin implements Plugin {
         return Coasts.PLUGIN_ERROR_LOG;
     }
 
-    @Override
-    public void interrupteFlow(String s, FsmContext ctx) {
-
-    }
 
 
     @Override

@@ -18,6 +18,7 @@ import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -25,13 +26,15 @@ import java.util.*;
 public class PayFsm implements FSM<PayState>, InitializingBean {
     Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    PerformancePlugin performancePlugin;
 
     @Override
     public List<Plugin> plugins() {
         List<Plugin> plugins = new ArrayList<Plugin>();
         plugins.add(new DigestLogPluginMock());
 //        plugins.add(new PayAction());
-        plugins.add(new PerformancePlugin());
+        plugins.add(performancePlugin);
 //        plugins.add(new PayQueryAction());
 //        plugins.add(new SendAction());
 //        plugins.add(new SendQueryAction());

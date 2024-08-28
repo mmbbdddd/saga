@@ -2,13 +2,18 @@ package cn.hz.ddbm.pc.plugin;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.Plugin;
+import cn.hz.ddbm.pc.core.log.Logs;
+import cn.hz.ddbm.pc.profile.ChaosSagaService;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class PerformancePlugin implements Plugin {
+
+public class PerformancePlugin implements Plugin, ApplicationListener<ChaosSagaService.ChaosFinishedEvent> {
     StopWatch sw = new StopWatch();
 
     @Override
@@ -16,8 +21,8 @@ public class PerformancePlugin implements Plugin {
         return "performance";
     }
 
-    @Override
-    public void interrupteFlow(String s, FsmContext ctx) {
+
+    public void printReport() {
         sw.prettyPrint();
     }
 
@@ -41,32 +46,22 @@ public class PerformancePlugin implements Plugin {
     public void preAction(String name, FsmContext ctx) {
         sw.start(name);
     }
+
+    @Override
+    public void onApplicationEvent(ChaosSagaService.ChaosFinishedEvent event) {
+        printReport();
+    }
 }
 
 final class StopWatch {
     private final Map<String, TaskInfo> tasks = new HashMap();
 
-    public String prettyPrint() {
-        StringBuilder sb = new StringBuilder("");
-        sb.append('\n');
-
-        sb.append("---------------------------------------------\n");
-        sb.append("ns         %     Task name\n");
-        sb.append("---------------------------------------------\n");
-        NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setMinimumIntegerDigits(9);
-        nf.setGroupingUsed(false);
-        NumberFormat pf = NumberFormat.getPercentInstance();
-        pf.setMinimumIntegerDigits(3);
-        pf.setGroupingUsed(false);
+    public void prettyPrint() {
+        Logs.report.info("性能统计报表");
+        Logs.report.info("action             micros             times");
         for (TaskInfo task : tasks.values()) {
-            sb.append(task.getTaskName()).append("  ");
-            sb.append(pf.format((double) task.getExecuteSeconds())).append("  ");
-            sb.append(task.getTaskName()).append('\n');
+            Logs.report.info("{}             {}             {}", task.getTaskName(), task.getExecuteMicros(), task.getExecuteCount());
         }
-
-        return sb.toString();
-
     }
 
 
@@ -102,14 +97,6 @@ final class TaskInfo {
         return this.taskName;
     }
 
-    private static long nanosToMillis(long duration) {
-        return TimeUnit.NANOSECONDS.toMillis(duration);
-    }
-
-    private static double nanosToSeconds(long duration) {
-        return duration / 1_000_000_000.0;
-    }
-
 
     public void stop() {
         this.executeNanos += (System.nanoTime() - this.currentStartNanos);
@@ -130,6 +117,16 @@ final class TaskInfo {
     }
 
     public long getExecuteSeconds() {
-        return nanosToMillis(executeNanos);
+        return TimeUnit.NANOSECONDS.toSeconds(executeNanos);
     }
+
+    public Long getExecuteMillis() {
+        return TimeUnit.NANOSECONDS.toMillis(executeNanos);
+    }
+
+    public Long getExecuteMicros() {
+        return TimeUnit.NANOSECONDS.toMicros(executeNanos);
+    }
+
+
 }
