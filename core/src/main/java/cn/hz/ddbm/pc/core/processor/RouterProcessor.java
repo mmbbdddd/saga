@@ -36,10 +36,10 @@ public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<QueryActio
             if (null == nextNode) {
                 nextNode = getFsmRecord().getFrom();
             }
-            ctx.setState( nextNode);
+            ctx.setState(nextNode);
             postActionPlugin(flow, lastNode, ctx);
         } catch (Exception e) {
-            ctx.setState( getFsmRecord().getFrom());
+            ctx.setState(getFsmRecord().getFrom());
             onActionExceptionPlugin(flow, lastNode, e, ctx);
             throw new ActionException(e);
         } finally {

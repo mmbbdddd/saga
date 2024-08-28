@@ -20,13 +20,13 @@ import java.io.Serializable;
 public interface StatusManager {
     Type code();
 
-    void setStatus(String flow, Serializable flowId, Pair<FlowStatus,?> statusPair, Integer timeout, FsmContext<?, ?> ctx) throws IOException;
+    void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> statusPair, Integer timeout, FsmContext<?, ?> ctx) throws IOException;
 
-    Pair<FlowStatus,?> getStatus(String flow, Serializable flowId) throws IOException;
+    Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws IOException;
 
     default void flush(FsmContext<?, ?> ctx) throws StatusException {
         try {
-            setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(),ctx.getState()), ctx.getProfile().getStatusTimeout(), ctx);
+            setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(), ctx.getState()), ctx.getProfile().getStatusTimeout(), ctx);
         } catch (IOException e) {
             throw new StatusException(e);
         }

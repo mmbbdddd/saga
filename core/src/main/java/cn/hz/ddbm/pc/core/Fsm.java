@@ -4,9 +4,6 @@ import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.exception.ActionException;
 import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
-import cn.hz.ddbm.pc.core.processor.RouterProcessor;
-import cn.hz.ddbm.pc.core.processor.SagaProcessor;
-import cn.hz.ddbm.pc.core.processor.ToProcessor;
 import lombok.Data;
 import lombok.Getter;
 
@@ -154,60 +151,4 @@ public class Fsm<S extends Enum<S>> {
         }
     }
 
-//    @Data
-//    public static class Transition<S extends Enum<S>> {
-//        TransitionType      type;
-//        S                   from;
-//        String              event;
-//        String              actionDsl;
-//        S                   to;
-//        S                   failover;
-//        Set<S>              conditions;
-//        BaseProcessor<?, S> processor;
-//
-//        public Transition(TransitionType type, S from, String event, String action, S failover, S to, Set<S> conditions) {
-//            this.type       = type;
-//            this.from       = from;
-//            this.event      = event;
-//            this.actionDsl  = action;
-//            this.failover   = failover;
-//            this.conditions = conditions;
-//            this.to         = to;
-//        }
-//
-//
-//        public void execute(FsmContext<S, ?> ctx) throws StatusException, ActionException {
-//            processor.execute(ctx);
-//        }
-//
-//        public BaseProcessor<?, S> initExecutor(FsmContext<S, ?> ctx) {
-//            if (null == processor) {
-//                synchronized (this) {
-//                    switch (type) {
-//                        case TO: {
-//                            this.processor = new ToProcessor<S>(this, ctx.getProfile().getPlugins());
-//                            break;
-//                        }
-//                        case SAGA: {
-//                            this.processor = new SagaProcessor<S>(this, ctx.getProfile().getPlugins());
-//                            break;
-//                        }
-//                        default: {
-//                            this.processor = new RouterProcessor<S>(this, ctx.getProfile().getPlugins());
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//            return this.processor;
-//        }
-//
-//        public void interruptedPlugins(FsmContext<S, ?> ctx) {
-//            this.processor.interrupteFlowForPlugins(ctx);
-//        }
-//    }
-
-//    public enum TransitionType {
-//        TO, SAGA, QUERY
-//    }
 }

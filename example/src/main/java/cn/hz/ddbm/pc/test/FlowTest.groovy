@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.test
 
 import cn.hz.ddbm.pc.configuration.PcChaosConfiguration
 import cn.hz.ddbm.pc.core.Fsm
-import cn.hz.ddbm.pc.core.Node
 import cn.hz.ddbm.pc.core.enums.FlowStatus
 import cn.hz.ddbm.pc.example.PayState
 import org.junit.Assert
@@ -97,9 +96,8 @@ class FlowTest extends Specification {
         Fsm flow = Fsm.devOf("test", "测试流程", map)
         def names = flow.nodeNames()
         then:
-        Assert.assertTrue(EnumSet.allOf(PayState).stream().map {t->t.name()}.collect(Collectors.toSet()) == names)
+        Assert.assertTrue(EnumSet.allOf(PayState).stream().map { t -> t.name() }.collect(Collectors.toSet()) == names)
     }
-
 
 
 }

@@ -4,14 +4,10 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.core.action.Action;
 import cn.hz.ddbm.pc.core.action.QueryAction;
 import cn.hz.ddbm.pc.core.action.SagaAction;
-import cn.hz.ddbm.pc.core.action.proxy.QueryActionProxy;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-
-import java.util.HashMap;
 
 public class ActionsTest {
     AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();

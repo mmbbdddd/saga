@@ -44,10 +44,10 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S
         S            lastNode = ctx.getState();
         try {
             StatusManager statusManager = getStatusManager(ctx);
-            statusManager.setStatus(flow.getName(), id, Pair.of(FlowStatus.RUNNABLE,getFsmRecord().getFailover()), 10, ctx);
-            ctx.setState( getFsmRecord().getFailover());
+            statusManager.setStatus(flow.getName(), id, Pair.of(FlowStatus.RUNNABLE, getFsmRecord().getFailover()), 10, ctx);
+            ctx.setState(getFsmRecord().getFailover());
         } catch (Exception e) {
-            ctx.setState( getFsmRecord().getFailover());
+            ctx.setState(getFsmRecord().getFailover());
             throw new StatusException(e);
         }
         try {
@@ -60,11 +60,11 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S
                 if (null == nextNode) {
                     nextNode = getFsmRecord().getFailover();
                 }
-                ctx.setState( nextNode);
+                ctx.setState(nextNode);
             }
             postActionPlugin(flow, lastNode, ctx);
         } catch (Exception e) {
-            ctx.setState( getFsmRecord().getFailover());
+            ctx.setState(getFsmRecord().getFailover());
             onActionExceptionPlugin(flow, lastNode, e, ctx);
             throw new ActionException(e);
         } finally {

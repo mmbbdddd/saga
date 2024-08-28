@@ -4,7 +4,6 @@ import cn.hz.ddbm.pc.configuration.PcChaosConfiguration;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
-import cn.hz.ddbm.pc.profile.chaos.ChaosTarget;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

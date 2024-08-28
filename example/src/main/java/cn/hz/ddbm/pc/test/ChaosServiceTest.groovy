@@ -2,13 +2,9 @@ package cn.hz.ddbm.pc.test
 
 import cn.hz.ddbm.pc.configuration.PcChaosConfiguration
 import cn.hz.ddbm.pc.core.Fsm
-import cn.hz.ddbm.pc.core.FsmPayload
-import cn.hz.ddbm.pc.core.Node
-import cn.hz.ddbm.pc.core.coast.Coasts
 import cn.hz.ddbm.pc.core.enums.FlowStatus
 import cn.hz.ddbm.pc.example.PayState
 import cn.hz.ddbm.pc.profile.ChaosSagaService
-import org.assertj.core.util.Sets
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import spock.lang.Specification
 

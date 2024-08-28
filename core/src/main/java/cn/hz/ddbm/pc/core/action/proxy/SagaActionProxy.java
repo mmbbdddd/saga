@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc.core.action.proxy;
 
 import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.action.QueryAction;
 import cn.hz.ddbm.pc.core.action.SagaAction;
 
 public class SagaActionProxy implements SagaAction {

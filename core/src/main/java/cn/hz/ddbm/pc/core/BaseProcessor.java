@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
     final Transition<S> fsmRecord;
-    final List<Plugin>      plugins;
+    final List<Plugin>  plugins;
 
 
     public BaseProcessor(Transition<S> fsmRecord, List<Plugin> plugins) {

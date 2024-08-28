@@ -12,7 +12,6 @@ import cn.hz.ddbm.pc.core.support.StatusManager;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -46,11 +45,11 @@ public class InfraUtils {
     }
 
     public static ExecutorService getPluginExecutorService() {
-        return getBean(Coasts.PLUGIN_EXECUTOR_SERVICE,ExecutorService.class);
+        return getBean(Coasts.PLUGIN_EXECUTOR_SERVICE, ExecutorService.class);
     }
 
     public static ExecutorService getActionExecutorService() {
-        return getBean(Coasts.ACTION_EXECUTOR_SERVICE,ExecutorService.class);
+        return getBean(Coasts.ACTION_EXECUTOR_SERVICE, ExecutorService.class);
     }
 
     public static Locker getLocker() {

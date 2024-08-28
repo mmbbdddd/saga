@@ -31,7 +31,7 @@ public class PayAction implements SagaAction<PayState> {
 
     @Override
     public PayState query(FsmContext<PayState, ?> ctx) throws Exception {
-        return RandomUitl.random(Lists.newArrayList(PayState.init, PayState.payed,PayState.payed_failover));
+        return RandomUitl.random(Lists.newArrayList(PayState.init, PayState.payed, PayState.payed_failover));
     }
 
 }

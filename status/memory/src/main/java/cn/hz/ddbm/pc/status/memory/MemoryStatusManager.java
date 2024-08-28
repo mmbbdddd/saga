@@ -16,7 +16,7 @@ public class MemoryStatusManager implements StatusManager {
     private final Integer cacheSize;
     private final Integer hours;
     Cache<String, Pair<FlowStatus, ?>> cache;
-    String               keyTemplate = "%s:%s";
+    String                             keyTemplate = "%s:%s";
 
     public MemoryStatusManager(Integer cacheSize, Integer hours) {
         Assert.notNull(cacheSize, "cacheSize is null");

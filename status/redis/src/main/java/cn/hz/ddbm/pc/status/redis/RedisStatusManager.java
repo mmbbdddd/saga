@@ -9,7 +9,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
 
 public class RedisStatusManager implements StatusManager {
     @Autowired

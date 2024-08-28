@@ -3,7 +3,10 @@ package cn.hz.ddbm.pc.profile;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.StrUtil;
-import cn.hz.ddbm.pc.core.*;
+import cn.hz.ddbm.pc.core.Fsm;
+import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.FsmPayload;
+import cn.hz.ddbm.pc.core.Profile;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.exception.SessionException;
@@ -11,7 +14,6 @@ import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
 import cn.hz.ddbm.pc.core.log.Logs;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
-import jdk.nashorn.internal.objects.annotations.Getter;
 
 import java.io.Serializable;
 import java.util.*;
@@ -123,7 +125,7 @@ public class ChaosSagaService extends BaseService {
 
         public MockPayLoad(S init) {
             this.status = FlowStatus.INIT;
-            this.state = init;
+            this.state  = init;
         }
 
         @Override
