@@ -69,8 +69,8 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
     public void metricsNode(FsmContext<S, ?> ctx) {
         StatisticsSupport metricsWindows = InfraUtils.getMetricsTemplate();
         ///todo 待优化。这块有比较大的IO，可以合并到session中。
-        AtomicLong atomic = getSessionOrDefault(Coasts.EXECUTE_COUNT, new AtomicLong(0));
-        atomic.incrementAndGet();
+//        AtomicLong atomic = getSessionOrDefault(Coasts.EXECUTE_COUNT, new AtomicLong(0));
+        metricsWindows.increment(ctx.getFlow().getName(),ctx.getId(),ctx.getState(),Coasts.EXECUTE_COUNT);
     }
 
     private <T> T getSessionOrDefault(String key, T deft) {
@@ -85,9 +85,6 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
         data.setStatusSate(status,state);
     }
 
-    public Map<String, Object> buildExpressionContext() {
-        return null;
-    }
 
     public void getSession(String key) {
         session.get(key);

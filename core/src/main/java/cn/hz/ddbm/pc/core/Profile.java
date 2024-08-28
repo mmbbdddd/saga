@@ -11,9 +11,7 @@ import cn.hz.ddbm.pc.core.support.SessionManager;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import lombok.Data;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class Profile<S extends Enum<S>> {
@@ -27,6 +25,7 @@ public class Profile<S extends Enum<S>> {
     private Map<S, StepAttrs>                                    states;
     private Map<String, ActionAttrs>                             actions;
     private Map<S, Triple<ScheduleManger.Type, Double, Integer>> scheduleRules;
+    private List<Plugin>                                         plugins;
 
 
     public Profile(SessionManager.Type sessionManager, StatusManager.Type statusManager) {
@@ -35,6 +34,7 @@ public class Profile<S extends Enum<S>> {
         this.actions        = new HashMap<>();
         this.states         = new HashMap<>();
         this.maybeResults   = new RowKeyTable<>();
+        this.plugins        = new ArrayList<>();
     }
 
     public static Profile defaultOf() {

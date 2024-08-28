@@ -4,9 +4,9 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 import cn.hz.ddbm.pc.core.*;
 import cn.hz.ddbm.pc.core.coast.Coasts;
-import cn.hz.ddbm.pc.core.exception.InterruptedFlowException;
-import cn.hz.ddbm.pc.core.exception.SessionException;
-import cn.hz.ddbm.pc.core.exception.wrap.ActionException;
+import cn.hz.ddbm.pc.core.enums.FlowStatus;
+import cn.hz.ddbm.pc.core.exception.*;
+import cn.hz.ddbm.pc.core.exception.ActionException;
 import cn.hz.ddbm.pc.core.exception.wrap.PauseFlowException;
 import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
 import cn.hz.ddbm.pc.core.log.Logs;
@@ -56,34 +56,34 @@ public abstract class BaseService {
                 ctx.setEvent(Coasts.EVENT_DEFAULT);
                 transition = ctx.getFlow().execute(ctx);
             }
-        } catch (FsmEndException e) {
-            //即PauseFlowException
-            Logs.error.error("{},{},{}", ctx.getFlow().getName(), ctx.getId(), e.getMessage());
-            flush(ctx);
-        } catch (ActionException e) {
-            //io异常 = 可重试
-            if (e.getRaw() instanceof IOException) {
-                Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
-                flush(ctx);
-                execute(ctx);
-            } else
-                //中断流程除（内部错误：不可重复执行，执行次数受限……）再次调度可触发：
-                if (e.getRaw() instanceof InterruptedFlowException) {
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
-                    flush(ctx);
-                } else
-                    //中断流程（内部程序错误：配置错误，代码错误）再次调度不响应：
-                    if (e.getRaw() instanceof PauseFlowException) {
-                        Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
-                        flush(ctx);
-                    } else {
-                        e.printStackTrace();
-                    }
         } catch (StatusException e) {
             //todo
             //即PauseFlowException
             Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e.getRaw());
-            flush(ctx);
+            try {
+                flush(ctx);
+            } catch (StatusException | SessionException e2) {
+                Logs.status.error("", e2);
+            }
+        } catch (Throwable e) {
+            try {
+                if (isRetryable(e, ctx)) {  //可重试异常，直接连续执行
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    flush(ctx);
+                    execute(ctx);
+                } else if (isInterrupted(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    flush(ctx);
+                } else if (isPaused(e, ctx)) { //暂停异常，状态设置为暂停，等人工修复
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    flush(ctx);
+                } else if (isStoped(e, ctx)) {//流程结束或者取消
+                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), e);
+                    flush(ctx);
+                }
+            } catch (StatusException | SessionException e2) {
+                Logs.status.error("", e2);
+            }
         } finally {
             if (null != transition) {
                 transition.interruptedPlugins(ctx);
@@ -91,6 +91,39 @@ public abstract class BaseService {
             releaseLock(ctx);
         }
 
+    }
+
+    private boolean isRetryable(Throwable e, FsmContext ctx) {
+        if (e instanceof WrapedException) {
+            e = ((WrapedException) e).getRaw();
+        }
+        Boolean isRetryException = false;
+        isRetryException |= e instanceof IOException;
+        return isRetryException;
+    }
+
+    private boolean isInterrupted(Throwable e, FsmContext ctx) {
+        if (e instanceof WrapedException) {
+            e = ((WrapedException) e).getRaw();
+        }
+        Boolean isInterruptedException = false;
+        isInterruptedException |= e instanceof LockException;
+        return isInterruptedException;
+    }
+
+    private boolean isPaused(Throwable e, FsmContext ctx) {
+        if (e instanceof WrapedException) {
+            e = ((WrapedException) e).getRaw();
+        }
+        Boolean isPausedException = false;
+        isPausedException |= e instanceof IllegalArgumentException;
+        isPausedException |= e instanceof FlowConfigException;
+        isPausedException |= e instanceof FlowSystemException;
+        return isPausedException;
+    }
+
+    private boolean isStoped(Throwable e, FsmContext ctx) {
+        return e instanceof FsmEndException || FlowStatus.isEnd(ctx.getStatus());
     }
 
     public void addFlow(Fsm flow) {

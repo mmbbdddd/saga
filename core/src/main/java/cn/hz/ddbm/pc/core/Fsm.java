@@ -2,15 +2,13 @@ package cn.hz.ddbm.pc.core;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.core.coast.Coasts;
-import cn.hz.ddbm.pc.core.exception.wrap.ActionException;
+import cn.hz.ddbm.pc.core.exception.ActionException;
 import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
 import cn.hz.ddbm.pc.core.processor.RouterProcessor;
 import cn.hz.ddbm.pc.core.processor.SagaProcessor;
 import cn.hz.ddbm.pc.core.processor.ToProcessor;
-import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,9 +29,6 @@ public class Fsm<S extends Enum<S>> {
     //状态机节点对象。
     final Map<S, Node<S>> tasks;
     final Set<S>          ends;
-    //状态机插件
-    @Setter
-    List<Plugin> plugins;
     //状态机事件定义表
     EventTable<S> eventTable;
 
@@ -50,7 +45,6 @@ public class Fsm<S extends Enum<S>> {
         this.init       = init;
         this.tasks      = tasks.stream().collect(Collectors.toMap(t -> t, t -> new Node<>(t, profile)));
         this.eventTable = new EventTable<>();
-        this.plugins    = new ArrayList<>();
     }
 
 
@@ -76,7 +70,6 @@ public class Fsm<S extends Enum<S>> {
         plugins.add(Coasts.PLUGIN_DIGEST_LOG);
         plugins.add(Coasts.PLUGIN_ERROR_LOG);
         Fsm<S> flow = new Fsm<>(name, descr, init, tasks, ends, Profile.devOf());
-        flow.plugins = InfraUtils.getByCodesOfType(plugins, Plugin.class);
         return flow;
     }
 
@@ -190,15 +183,15 @@ public class Fsm<S extends Enum<S>> {
                 synchronized (this) {
                     switch (type) {
                         case TO: {
-                            this.processor = new ToProcessor<S>(this, ctx.getFlow().getPlugins());
+                            this.processor = new ToProcessor<S>(this, ctx.getProfile().getPlugins());
                             break;
                         }
                         case SAGA: {
-                            this.processor = new SagaProcessor<S>(this, ctx.getFlow().getPlugins());
+                            this.processor = new SagaProcessor<S>(this, ctx.getProfile().getPlugins());
                             break;
                         }
                         default: {
-                            this.processor = new RouterProcessor<S>(this, ctx.getFlow().getPlugins());
+                            this.processor = new RouterProcessor<S>(this, ctx.getProfile().getPlugins());
                             break;
                         }
                     }

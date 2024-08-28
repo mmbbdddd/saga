@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ComponentScan("cn.hz.ddbm.pc.example.actions")
 @SpringBootTest
-@Import({PcChaosConfiguration.class})
+@Import({PcChaosConfiguration.class, PayTest.CC.class})
 @RunWith(SpringRunner.class)
 public class PayTest {
 
@@ -49,7 +49,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 100, 10, rules, true);
+            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 1, 10, rules, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,6 +80,12 @@ public class PayTest {
         System.out.println("bank:" + bank.get());
     }
 
+    static class CC {
+        @Bean
+        PayFsm test() {
+            return new PayFsm();
+        }
+    }
 
 
 }

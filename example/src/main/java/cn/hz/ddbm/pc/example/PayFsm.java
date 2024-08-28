@@ -129,10 +129,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
         return profile;
     }
 
-    @Override
-    public Map<PayState, Integer> thresholds() {
-        return null;
-    }
+
 
 
     public String fsmId() {

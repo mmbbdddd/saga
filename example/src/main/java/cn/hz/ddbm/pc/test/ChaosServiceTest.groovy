@@ -8,14 +8,16 @@ import cn.hz.ddbm.pc.core.coast.Coasts
 import cn.hz.ddbm.pc.core.enums.FlowStatus
 import cn.hz.ddbm.pc.example.PayState
 import cn.hz.ddbm.pc.profile.ChaosSagaService
+import org.assertj.core.util.Sets
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import spock.lang.Specification
 
 public class ChaosServiceTest extends Specification {
 
     ChaosSagaService chaosService = new ChaosSagaService();
-    Fsm flow
+    Fsm                       flow
     Map<PayState, FlowStatus> map = new HashMap<>();
+
     public void setup() {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext()
         ctx.register(PcChaosConfiguration.class)
@@ -31,12 +33,14 @@ public class ChaosServiceTest extends Specification {
         map.put(PayState.error, FlowStatus.FINISH);
 
 
-        flow = Fsm.devOf("test", "测试流程", map)
+        flow = Fsm.
+                devOf("test", "测试流程", PayState.init,
+                        [PayState.payed, PayState.sended, PayState.payed_failover, PayState.sended_failover] as Set,
+                        [PayState.su, PayState.fail, PayState.error] as Set)
 
 
         chaosService.addFlow(flow)
     }
-
 
 
 }

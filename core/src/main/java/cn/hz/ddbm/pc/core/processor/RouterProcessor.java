@@ -2,7 +2,7 @@ package cn.hz.ddbm.pc.core.processor;
 
 import cn.hz.ddbm.pc.core.*;
 import cn.hz.ddbm.pc.core.action.QueryAction;
-import cn.hz.ddbm.pc.core.exception.wrap.ActionException;
+import cn.hz.ddbm.pc.core.exception.ActionException;
 
 import java.io.Serializable;
 import java.util.List;

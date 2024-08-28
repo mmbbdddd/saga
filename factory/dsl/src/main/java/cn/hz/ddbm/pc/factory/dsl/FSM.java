@@ -101,15 +101,6 @@ public interface FSM<S extends Enum<S>> {
      */
     Profile<S> profile();
 
-    /**
-     * 节点>限流
-     * <p>
-     * 实时任务不受调度规则限制，但调用回累计到调度规则中。
-     *
-     * @return
-     */
-    Map<S, Integer> thresholds();
-
 
     default Fsm<S> build() throws Exception {
         Map<S, Profile.StepAttrs> stepAttrsMap = stateAttrs();
@@ -118,18 +109,18 @@ public interface FSM<S extends Enum<S>> {
         profile.setSessionManager(session());
         profile.setActions(actionAttrs());
         profile.setStates(stepAttrsMap);
+        profile.setPlugins(plugins());
         Table<S, String, Set<Pair<S, Double>>> maybeResults = new RowKeyTable<>();
         profile.setMaybeResults(maybeResults(maybeResults));
         Map<S, FlowStatus> nodes = nodes();
         S                  init  = nodes.entrySet().stream().filter(e -> e.getValue().equals(FlowStatus.INIT)).map(Map.Entry::getKey).findFirst().get();
-        Set<S>             tasks = nodes.entrySet()
+        Set<S> tasks = nodes.entrySet()
                 .stream()
                 .filter(e -> FlowStatus.isRunnable(e.getValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
-        Set<S>             ends  = nodes.entrySet().stream().filter(e -> FlowStatus.isEnd(e.getValue())).map(Map.Entry::getKey).collect(Collectors.toSet());
-        Fsm<S>             fsm   = Fsm.of(fsmId(), describe(), init, tasks, ends, profile);
-        fsm.setPlugins(plugins());
+        Set<S>         ends        = nodes.entrySet().stream().filter(e -> FlowStatus.isEnd(e.getValue())).map(Map.Entry::getKey).collect(Collectors.toSet());
+        Fsm<S>         fsm         = Fsm.of(fsmId(), describe(), init, tasks, ends, profile);
         Transitions<S> transitions = new Transitions<>();
         transitions(transitions);
         transitions.transitions.forEach(t -> {

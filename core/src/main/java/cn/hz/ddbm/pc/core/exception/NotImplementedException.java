@@ -1,4 +1,4 @@
 package cn.hz.ddbm.pc.core.exception;
 
-public class NotImplementedException extends RuntimeException {
+public class NotImplementedException extends FlowSystemException {
 }

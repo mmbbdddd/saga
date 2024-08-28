@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.core.exception.wrap;
+package cn.hz.ddbm.pc.core.exception;
 
 import cn.hz.ddbm.pc.core.exception.WrapedException;
 
