@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ComponentScan("cn.hz.ddbm.pc.example.actions")
 @SpringBootTest
-@Import({PcChaosConfiguration.class, PayTest.DemoConfig.class})
+@Import({PcChaosConfiguration.class})
 @RunWith(SpringRunner.class)
 public class PayTest {
 
@@ -80,13 +80,6 @@ public class PayTest {
         System.out.println("bank:" + bank.get());
     }
 
-
-    public static class DemoConfig {
-        @Bean
-        PayFsm pcConfig() {
-            return new PayFsm();
-        }
-    }
 
 
 }
