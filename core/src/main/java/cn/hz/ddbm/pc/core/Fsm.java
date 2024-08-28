@@ -130,17 +130,19 @@ public class Fsm<S extends Enum<S>> {
          */
         public EventTable<S> to(S from, String event, String toAction, S to) {
             this.records.add(Transition.toOf(from, event, toAction, to));
+            this.records.add(Transition.toOf(from, Coasts.EVENT_DEFAULT, toAction, to));
             return this;
         }
 
-        public EventTable<S> query(S from, String event, String actionDsl) {
-            this.records.add(Transition.queryOf(from, event, actionDsl));
+        public EventTable<S> query(S from, String actionDsl) {
+            this.records.add(Transition.queryOf(from, Coasts.EVENT_DEFAULT, actionDsl));
             return this;
         }
 
         public EventTable<S> saga(S from, String event, Set<S> conditions, S failover, String actionDsl) {
             this.records.add(Transition.sagaOf(from, event, conditions, failover, actionDsl));
-            this.records.add(Transition.queryOf(failover, event, actionDsl));
+            this.records.add(Transition.sagaOf(from, Coasts.EVENT_DEFAULT, conditions, failover, actionDsl));
+            this.records.add(Transition.queryOf(failover, Coasts.EVENT_DEFAULT, actionDsl));
             return this;
         }
 
