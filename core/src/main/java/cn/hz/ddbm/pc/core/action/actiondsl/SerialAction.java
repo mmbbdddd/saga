@@ -23,7 +23,16 @@ public class SerialAction extends MultiAction {
         this.queryAction = queryActions.get(0);
         this.sagaActions = actions.stream().filter(t -> t instanceof SagaAction).map(SagaAction.class::cast).collect(Collectors.toList());
     }
-
+    @Override
+    public Boolean executeWhen(Enum queryResult) {
+        return sagaActions.stream().allMatch(sagaAction -> {
+            try {
+                return sagaAction.executeWhen(queryResult);
+            } catch (Exception e) {
+                return false;
+            }
+        });
+    }
     @Override
     public void execute(FsmContext ctx) throws Exception {
         for (CommandAction sCommandAction : commandActions) {
@@ -32,18 +41,10 @@ public class SerialAction extends MultiAction {
     }
 
     @Override
-    public Enum query(FsmContext ctx) throws Exception {
-        return queryAction.query(ctx);
+    public Enum queryState(FsmContext ctx) throws Exception {
+        return queryAction.queryState(ctx);
     }
 
-    @Override
-    public Boolean condition(FsmContext ctx) throws Exception {
-        return sagaActions.stream().allMatch(sagaAction -> {
-            try {
-                return sagaAction.condition(ctx);
-            } catch (Exception e) {
-                return false;
-            }
-        });
-    }
+
+
 }

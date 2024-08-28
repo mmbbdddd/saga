@@ -40,13 +40,12 @@ public class Transition<S extends Enum<S>> {
         return t;
     }
 
-    public static <S extends Enum<S>> Transition<S> sagaOf(S node, String event, Set<S> conditions, S failover, String action) {
+    public static <S extends Enum<S>> Transition<S> sagaOf(S node, String event, S failover, String action) {
         Transition<S> t = new Transition<S>();
         t.type       = Type.SAGA;
         t.from       = node;
         t.event      = event;
         t.actionDsl  = action;
-        t.conditions = conditions;
         t.failover   = failover;
         return t;
     }

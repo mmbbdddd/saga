@@ -18,7 +18,7 @@ public class SendQueryAction implements QueryAction<PayState> {
 
 
     @Override
-    public PayState query(FsmContext<PayState, ?> ctx) throws Exception {
+    public PayState queryState(FsmContext<PayState, ?> ctx) throws Exception {
         PayState queryState = RandomUitl.random(Lists.newArrayList(PayState.sended_failover, PayState.payed, PayState.sended, PayState.su, PayState.fail));
         switch (queryState) {
             case sended_failover: {

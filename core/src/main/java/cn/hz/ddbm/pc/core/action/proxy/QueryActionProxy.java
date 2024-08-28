@@ -16,7 +16,7 @@ public class QueryActionProxy implements QueryAction {
     }
 
     @Override
-    public Enum query(FsmContext ctx) throws Exception {
-        return queryAction.query(ctx);
+    public Enum queryState(FsmContext ctx) throws Exception {
+        return queryAction.queryState(ctx);
     }
 }

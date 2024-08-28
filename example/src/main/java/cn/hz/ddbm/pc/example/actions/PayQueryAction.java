@@ -21,7 +21,7 @@ public class PayQueryAction implements QueryAction<PayState> {
 
 
     @Override
-    public PayState query(FsmContext<PayState, ?> ctx) throws Exception {
+    public PayState queryState(FsmContext<PayState, ?> ctx) throws Exception {
 
         PayState queryState = RandomUitl.random(Lists.newArrayList(PayState.payed_failover, PayState.init, PayState.payed));
         switch (queryState) {

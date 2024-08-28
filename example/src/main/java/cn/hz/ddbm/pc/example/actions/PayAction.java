@@ -9,6 +9,8 @@ import cn.hz.ddbm.pc.example.PayTest;
 import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class PayAction implements SagaAction<PayState> {
 
@@ -21,6 +23,10 @@ public class PayAction implements SagaAction<PayState> {
     }
 
     @Override
+    public Boolean executeWhen(PayState state) throws Exception {
+        return Objects.equals(state,PayState.init);
+    }
+    @Override
     public void execute(FsmContext<PayState, ?> ctx) throws Exception {
         PayTest.account.decrementAndGet();
         PayTest.freezed.incrementAndGet();
@@ -30,7 +36,7 @@ public class PayAction implements SagaAction<PayState> {
 
 
     @Override
-    public PayState query(FsmContext<PayState, ?> ctx) throws Exception {
+    public PayState queryState(FsmContext<PayState, ?> ctx) throws Exception {
         return RandomUitl.random(Lists.newArrayList(PayState.init, PayState.payed, PayState.payed_failover));
     }
 

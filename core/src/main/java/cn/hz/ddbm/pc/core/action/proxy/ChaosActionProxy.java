@@ -31,7 +31,7 @@ public class ChaosActionProxy<S extends Enum<S>> implements QueryAction<S>, Saga
 
 
     @Override
-    public S query(FsmContext<S, ?> ctx) throws Exception {
+    public S queryState(FsmContext<S, ?> ctx) throws Exception {
         Profile<S>    profile    = ctx.getProfile();
         Transition<S> transition = ctx.getTransition();
         if (transition.getType().equals(Transition.Type.TO)) {
@@ -45,4 +45,8 @@ public class ChaosActionProxy<S extends Enum<S>> implements QueryAction<S>, Saga
         }
     }
 
+    @Override
+    public Boolean executeWhen(S queryResult) {
+        return null;
+    }
 }

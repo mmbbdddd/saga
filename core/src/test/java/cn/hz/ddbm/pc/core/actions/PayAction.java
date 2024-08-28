@@ -18,7 +18,12 @@ public class PayAction implements SagaAction {
 
 
     @Override
-    public Enum query(FsmContext ctx) throws Exception {
+    public Enum queryState(FsmContext ctx) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Boolean executeWhen(Enum queryResult) throws Exception {
         return null;
     }
 }

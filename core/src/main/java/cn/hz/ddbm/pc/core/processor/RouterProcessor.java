@@ -32,7 +32,7 @@ public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<QueryActio
         S            lastNode = ctx.getState();
         try {
             preActionPlugin(flow, ctx);
-            S nextNode = getAction(ctx).query(ctx);
+            S nextNode = getAction(ctx).queryState(ctx);
             if (null == nextNode) {
                 nextNode = getTransition().getFrom();
             }

@@ -5,7 +5,10 @@ import cn.hz.ddbm.pc.core.action.SagaAction;
 import cn.hz.ddbm.pc.core.utils.RandomUitl;
 import cn.hz.ddbm.pc.example.PayState;
 import org.assertj.core.util.Lists;
+import org.assertj.core.util.Sets;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class SendAction implements SagaAction<PayState> {
@@ -25,8 +28,14 @@ public class SendAction implements SagaAction<PayState> {
 
 
     @Override
-    public PayState query(FsmContext<PayState, ?> ctx) throws Exception {
+    public PayState queryState(FsmContext<PayState, ?> ctx) throws Exception {
         return RandomUitl.random(Lists.newArrayList(PayState.sended_failover, PayState.sended, PayState.su, PayState.fail));
     }
 
+
+
+    @Override
+    public Boolean executeWhen(PayState state) {
+        return Objects.equals(state,PayState.payed);
+    }
 }

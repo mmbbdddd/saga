@@ -21,12 +21,12 @@ public class SagaActionProxy implements SagaAction {
     }
 
     @Override
-    public Enum query(FsmContext ctx) throws Exception {
-        return sagaAction.query(ctx);
+    public Enum queryState(FsmContext ctx) throws Exception {
+        return sagaAction.queryState(ctx);
     }
 
     @Override
-    public Boolean condition(FsmContext ctx) throws Exception {
-        return sagaAction.condition(ctx);
+    public Boolean executeWhen(Enum queryResult) throws Exception {
+        return sagaAction.executeWhen(queryResult);
     }
 }
