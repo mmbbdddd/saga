@@ -12,6 +12,7 @@ import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.factory.dsl.FSM;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import cn.hz.ddbm.pc.profile.BaseService;
+import cn.hz.ddbm.pc.support.DigestLogPluginMock;
 import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     @Override
     public List<Plugin> plugins() {
         List<Plugin> plugins = new ArrayList<Plugin>();
-//        plugins.add(new DigestLogPluginMock());
+        plugins.add(new DigestLogPluginMock());
 //        plugins.add(new PayAction());
         plugins.add(new PerformancePlugin());
 //        plugins.add(new PayQueryAction());
@@ -57,7 +58,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     public Table<PayState, String, Set<Pair<PayState, Double>>> maybeResults(Table<PayState, String, Set<Pair<PayState, Double>>> table) {
         table.put(PayState.init, Coasts.EVENT_DEFAULT, Sets.newSet(
                 Pair.of(PayState.payed_failover, 0.1),
-                Pair.of(PayState.payed_failover, 0.9)));
+                Pair.of(PayState.payed, 0.9)));
         table.put(PayState.payed_failover, Coasts.EVENT_DEFAULT, Sets.newSet(
                 Pair.of(PayState.payed_failover, 0.1),
                 Pair.of(PayState.init, 0.1),
@@ -125,7 +126,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     @Override
     public Profile<PayState> profile() {
         Profile<PayState> profile = new Profile(session(), status());
-        profile.setRetry(1);
+        profile.setRetry(20);
         return profile;
     }
 

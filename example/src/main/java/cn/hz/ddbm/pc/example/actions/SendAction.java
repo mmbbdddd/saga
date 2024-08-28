@@ -26,7 +26,7 @@ public class SendAction implements SagaAction<PayState> {
 
     @Override
     public PayState query(FsmContext<PayState, ?> ctx) throws Exception {
-        return RandomUitl.random(Lists.newArrayList(PayState.sended_failover, PayState.sended));
+        return RandomUitl.random(Lists.newArrayList(PayState.sended_failover, PayState.sended,PayState.su,PayState.fail));
     }
 
 }
