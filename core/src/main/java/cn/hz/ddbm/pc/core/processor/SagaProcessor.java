@@ -12,7 +12,6 @@ import cn.hz.ddbm.pc.core.utils.InfraUtils;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 业务一致性类业务通用流程
@@ -33,8 +32,8 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S
     }
 
     @Override
-    public SagaAction<S> action(FsmContext<S, ?> ctx) {
-        return Actions.typeOf(getFsmRecord(), SagaAction.class, ctx.getMockBean());
+    public SagaAction<S> createAction(FsmContext<S, ?> ctx) {
+        return Actions.typeOf(getTransition(), SagaAction.class, ctx.getMockBean());
     }
 
     public void execute(FsmContext<S, ?> ctx) throws StatusException, ActionException {
@@ -44,27 +43,21 @@ public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S
         S            lastNode = ctx.getState();
         try {
             StatusManager statusManager = getStatusManager(ctx);
-            statusManager.setStatus(flow.getName(), id, Pair.of(FlowStatus.RUNNABLE, getFsmRecord().getFailover()), 10, ctx);
-            ctx.setState(getFsmRecord().getFailover());
+            statusManager.setStatus(flow.getName(), id, Pair.of(FlowStatus.RUNNABLE, getTransition().getFailover()), 10, ctx);
+            ctx.setState(getTransition().getFailover());
         } catch (Exception e) {
-            ctx.setState(getFsmRecord().getFailover());
+            ctx.setState(getTransition().getFailover());
             throw new StatusException(e);
         }
         try {
             preActionPlugin(flow, ctx);
-            S      currentState = action(ctx).query(ctx);
-            Set<S> conditions   = getFsmRecord().getConditions();
-            if (conditions.contains(currentState)) {
-                action(ctx).execute(ctx);
-                S nextNode = action(ctx).query(ctx);
-                if (null == nextNode) {
-                    nextNode = getFsmRecord().getFailover();
-                }
+            if (getAction(ctx).condition(ctx)) {
+                getAction(ctx).execute(ctx);
+                S nextNode = getAction(ctx).query(ctx);
                 ctx.setState(nextNode);
             }
             postActionPlugin(flow, lastNode, ctx);
         } catch (Exception e) {
-            ctx.setState(getFsmRecord().getFailover());
             onActionExceptionPlugin(flow, lastNode, e, ctx);
             throw new ActionException(e);
         } finally {

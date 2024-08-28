@@ -103,14 +103,15 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     @Override
     public void transitions(Fsm.EventTable<PayState> t) {
 //        payAction:执行本地扣款
-        t.saga(PayState.init, Coasts.EVENT_DEFAULT, Sets.newSet(PayState.init), PayState.payed_failover, "payAction")
+        t
+                .saga(PayState.init, Sets.newSet(PayState.init), PayState.payed_failover, "payAction")
                 //本地扣款容错payQueryAction 扣款结果查询
 //                .router(PayState.payed_failover, Coasts.EVENT_DEFAULT, "payQueryAction")
                 //发送异常，不明确是否发送
-                .saga(PayState.payed, Coasts.EVENT_DEFAULT, Sets.newSet(PayState.payed), PayState.sended_failover, "sendAction")
+                .saga(PayState.payed, Sets.newSet(PayState.payed), PayState.sended_failover, "sendAction")
 //                .router(PayState.sended_failover, Coasts.EVENT_DEFAULT, "sendQueryAction")
                 //sendAction，执行远程发生&sendQueryAction。
-                .query(PayState.sended, Coasts.EVENT_DEFAULT, "sendQueryAction");
+                .query(PayState.sended, "sendQueryAction");
     }
 
 

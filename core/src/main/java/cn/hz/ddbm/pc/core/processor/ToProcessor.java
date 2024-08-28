@@ -20,8 +20,8 @@ public class ToProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S>,
     }
 
     @Override
-    public SagaAction<S> action(FsmContext<S, ?> ctx) {
-        return Actions.typeOf(getFsmRecord(), SagaAction.class, ctx.getMockBean());
+    public SagaAction<S> createAction(FsmContext<S, ?> ctx) {
+        return Actions.typeOf(getTransition(), SagaAction.class, ctx.getMockBean());
     }
 
     public void execute(FsmContext<S, ?> ctx) throws ActionException {
@@ -31,11 +31,11 @@ public class ToProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S>,
         S            lastNode = ctx.getState();
         try {
             preActionPlugin(flow, ctx);
-            action(ctx).execute(ctx);
-            ctx.setState(getFsmRecord().getTo());
+            getAction(ctx).execute(ctx);
+            ctx.setState(getTransition().getTo());
             postActionPlugin(flow, lastNode, ctx);
         } catch (Exception e) {
-            ctx.setState(getFsmRecord().getFrom());
+            ctx.setState(getTransition().getFrom());
             onActionExceptionPlugin(flow, lastNode, e, ctx);
             throw new ActionException(e);
         } finally {

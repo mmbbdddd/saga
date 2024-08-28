@@ -19,23 +19,35 @@ import java.util.List;
 
 @Getter
 public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
-    final Transition<S> fsmRecord;
+    final Transition<S> transition;
     final List<Plugin>  plugins;
+    A action;
 
 
-    public BaseProcessor(Transition<S> fsmRecord, List<Plugin> plugins) {
-        this.plugins   = plugins;
-        this.fsmRecord = fsmRecord;
+    public BaseProcessor(Transition<S> transition, List<Plugin> plugins) {
+        this.plugins    = plugins;
+        this.transition = transition;
     }
 
 
-    public abstract A action(FsmContext<S, ?> ctx);
+    public A getAction(FsmContext<S, ?> ctx) {
+        if (null == action) {
+            synchronized (this) {
+                if(null == action) {
+                    this.action =  createAction(ctx);
+                }
+            }
+        }
+        return action;
+    }
+
+    public abstract A createAction(FsmContext<S, ?> ctx);
 
     protected void preActionPlugin(Fsm<S> flow, FsmContext<S, ?> ctx) {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
-                    plugin.preAction(this.action(ctx).beanName(), ctx);
+                    plugin.preAction(this.getAction(ctx).beanName(), ctx);
                 } catch (Exception e) {
                     Logs.error.error("{},{}", ctx.getFlow().name, ctx.getId(), e);
                 }
@@ -47,7 +59,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
-                    plugin.postAction(this.action(ctx).beanName(), lastNode, ctx);
+                    plugin.postAction(this.getAction(ctx).beanName(), lastNode, ctx);
                 } catch (Exception e) {
                     Logs.error.error("{},{}", ctx.getFlow().name, ctx.getId(), e);
                 }
@@ -59,7 +71,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
-                    plugin.onActionException(this.action(ctx).beanName(), preNode, e, ctx);
+                    plugin.onActionException(this.getAction(ctx).beanName(), preNode, e, ctx);
                 } catch (Exception e2) {
                     Logs.error.error("{},{}", ctx.getFlow().name, ctx.getId(), e2);
                 }
@@ -71,7 +83,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
-                    plugin.onActionFinally(this.action(ctx).beanName(), ctx);
+                    plugin.onActionFinally(this.getAction(ctx).beanName(), ctx);
                 } catch (Exception e) {
                     Logs.error.error("{},{}", ctx.getFlow().name, ctx.getId(), e);
                 }
@@ -83,7 +95,7 @@ public abstract class BaseProcessor<A extends Action<S>, S extends Enum<S>> {
         plugins.forEach((plugin) -> {
             InfraUtils.getPluginExecutorService().submit(() -> {
                 try {
-                    plugin.interrupteFlow(this.action(ctx).beanName(), ctx);
+                    plugin.interrupteFlow(this.getAction(ctx).beanName(), ctx);
                 } catch (Exception e) {
                     Logs.error.error("{},{}", ctx.getFlow().name, ctx.getId(), e);
                 }

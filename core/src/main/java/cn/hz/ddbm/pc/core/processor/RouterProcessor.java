@@ -20,8 +20,8 @@ public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<QueryActio
 
 
     @Override
-    public QueryAction<S> action(FsmContext<S, ?> ctx) {
-        return Actions.typeOf(getFsmRecord(), QueryAction.class, ctx.getMockBean());
+    public QueryAction<S> createAction(FsmContext<S, ?> ctx) {
+        return Actions.typeOf(getTransition(), QueryAction.class, ctx.getMockBean());
     }
 
 
@@ -32,14 +32,14 @@ public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<QueryActio
         S            lastNode = ctx.getState();
         try {
             preActionPlugin(flow, ctx);
-            S nextNode = action(ctx).query(ctx);
+            S nextNode = getAction(ctx).query(ctx);
             if (null == nextNode) {
-                nextNode = getFsmRecord().getFrom();
+                nextNode = getTransition().getFrom();
             }
             ctx.setState(nextNode);
             postActionPlugin(flow, lastNode, ctx);
         } catch (Exception e) {
-            ctx.setState(getFsmRecord().getFrom());
+            ctx.setState(getTransition().getFrom());
             onActionExceptionPlugin(flow, lastNode, e, ctx);
             throw new ActionException(e);
         } finally {
