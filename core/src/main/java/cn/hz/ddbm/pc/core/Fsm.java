@@ -74,16 +74,15 @@ public class Fsm<S extends Enum<S>> {
     }
 
 
-    public <T> Transition<S> execute(FsmContext<S, ?> ctx) throws FsmEndException, StatusException, ActionException {
+    public <T> void execute(FsmContext<S, ?> ctx) throws FsmEndException, StatusException, ActionException {
         S state = ctx.getState();
         if (!ctx.getFlow().isRunnable(state)) {
             throw new FsmEndException();
         }
         Transition<S> transition = eventTable.find(state, ctx.getEvent());
         Assert.notNull(transition, String.format("找不到事件处理器%s@%s", ctx.getEvent(), ctx.getState()));
-        ctx.setExecutor(transition.initExecutor(ctx));
+        ctx.setTransition(transition);
         transition.execute(ctx);
-        return transition;
     }
 
     public boolean isRunnable(S node) {
@@ -104,7 +103,6 @@ public class Fsm<S extends Enum<S>> {
     public Node<S> getNode(S state) {
         return tasks.get(state);
     }
-
 
 
     @Override
@@ -133,16 +131,20 @@ public class Fsm<S extends Enum<S>> {
          * 2,nodeOf(action,router)==>routerResultEvent==>routerResultNode
          * 参见onInner
          */
-        public void to(S from, String event, String toAction, S to) {
-            this.records.add(new Transition<>(TransitionType.TO, from, event, toAction, null, to, null));
+        public EventTable<S> to(S from, String event, String toAction, S to) {
+            this.records.add(Transition.toOf(from, event, toAction, to));
+            return this;
         }
 
-        public void router(S from, String event, String actionDsl) {
-            this.records.add(new Transition<>(TransitionType.QUERY, from, event, actionDsl, null, null, null));
+        public EventTable<S> query(S from, String event, String actionDsl) {
+            this.records.add(Transition.queryOf(from, event, actionDsl));
+            return this;
         }
 
-        public void saga(S from, String event, Set<S> conditions, S failover, String actionDsl) {
-            this.records.add(new Transition<>(TransitionType.SAGA, from, event, actionDsl, failover, null, conditions));
+        public EventTable<S> saga(S from, String event, Set<S> conditions, S failover, String actionDsl) {
+            this.records.add(Transition.sagaOf(from, event, conditions, failover, actionDsl));
+            this.records.add(Transition.queryOf(failover, event, actionDsl));
+            return this;
         }
 
 
@@ -152,60 +154,60 @@ public class Fsm<S extends Enum<S>> {
         }
     }
 
-    @Data
-    public static class Transition<S extends Enum<S>> {
-        TransitionType      type;
-        S                   from;
-        String              event;
-        String              actionDsl;
-        S                   to;
-        S                   failover;
-        Set<S>              conditions;
-        BaseProcessor<?, S> processor;
+//    @Data
+//    public static class Transition<S extends Enum<S>> {
+//        TransitionType      type;
+//        S                   from;
+//        String              event;
+//        String              actionDsl;
+//        S                   to;
+//        S                   failover;
+//        Set<S>              conditions;
+//        BaseProcessor<?, S> processor;
+//
+//        public Transition(TransitionType type, S from, String event, String action, S failover, S to, Set<S> conditions) {
+//            this.type       = type;
+//            this.from       = from;
+//            this.event      = event;
+//            this.actionDsl  = action;
+//            this.failover   = failover;
+//            this.conditions = conditions;
+//            this.to         = to;
+//        }
+//
+//
+//        public void execute(FsmContext<S, ?> ctx) throws StatusException, ActionException {
+//            processor.execute(ctx);
+//        }
+//
+//        public BaseProcessor<?, S> initExecutor(FsmContext<S, ?> ctx) {
+//            if (null == processor) {
+//                synchronized (this) {
+//                    switch (type) {
+//                        case TO: {
+//                            this.processor = new ToProcessor<S>(this, ctx.getProfile().getPlugins());
+//                            break;
+//                        }
+//                        case SAGA: {
+//                            this.processor = new SagaProcessor<S>(this, ctx.getProfile().getPlugins());
+//                            break;
+//                        }
+//                        default: {
+//                            this.processor = new RouterProcessor<S>(this, ctx.getProfile().getPlugins());
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
+//            return this.processor;
+//        }
+//
+//        public void interruptedPlugins(FsmContext<S, ?> ctx) {
+//            this.processor.interrupteFlowForPlugins(ctx);
+//        }
+//    }
 
-        public Transition(TransitionType type, S from, String event, String action, S failover, S to, Set<S> conditions) {
-            this.type       = type;
-            this.from       = from;
-            this.event      = event;
-            this.actionDsl  = action;
-            this.failover   = failover;
-            this.conditions = conditions;
-            this.to         = to;
-        }
-
-
-        public void execute(FsmContext<S, ?> ctx) throws StatusException, ActionException {
-            processor.execute(ctx);
-        }
-
-        public BaseProcessor<?, S> initExecutor(FsmContext<S, ?> ctx) {
-            if (null == processor) {
-                synchronized (this) {
-                    switch (type) {
-                        case TO: {
-                            this.processor = new ToProcessor<S>(this, ctx.getProfile().getPlugins());
-                            break;
-                        }
-                        case SAGA: {
-                            this.processor = new SagaProcessor<S>(this, ctx.getProfile().getPlugins());
-                            break;
-                        }
-                        default: {
-                            this.processor = new RouterProcessor<S>(this, ctx.getProfile().getPlugins());
-                            break;
-                        }
-                    }
-                }
-            }
-            return this.processor;
-        }
-
-        public void interruptedPlugins(FsmContext<S, ?> ctx) {
-            this.processor.interrupteFlowForPlugins(ctx);
-        }
-    }
-
-    public enum TransitionType {
-        TO, SAGA, QUERY
-    }
+//    public enum TransitionType {
+//        TO, SAGA, QUERY
+//    }
 }

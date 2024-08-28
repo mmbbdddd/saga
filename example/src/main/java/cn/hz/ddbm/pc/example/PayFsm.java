@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.example;
 
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.map.multi.Table;
+import cn.hz.ddbm.pc.core.Fsm;
 import cn.hz.ddbm.pc.core.Plugin;
 import cn.hz.ddbm.pc.core.Profile;
 import cn.hz.ddbm.pc.core.coast.Coasts;
@@ -100,7 +101,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     }
 
     @Override
-    public void transitions(Transitions<PayState> t) {
+    public void transitions(Fsm.EventTable<PayState> t) {
 //        payAction:执行本地扣款
         t.saga(PayState.init, Coasts.EVENT_DEFAULT, Sets.newSet(PayState.init), PayState.payed_failover, "payAction")
                 //本地扣款容错payQueryAction 扣款结果查询
@@ -129,8 +130,6 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
         profile.setRetry(20);
         return profile;
     }
-
-
 
 
     public String fsmId() {

@@ -18,17 +18,17 @@ public interface Actions {
      * 将各种action配置语法转换为特定的Action实现
      */
 
-    public static <T extends Action<S>, S extends Enum<S>> T typeOf(Fsm.Transition<S> t, Class<T> type, Boolean mockBean) {
+    public static <T extends Action<S>, S extends Enum<S>> T typeOf(Transition<S> t, Class<T> type, Boolean mockBean) {
         if (mockBean) {
             return (T) new ChaosActionProxy<S>(t.getActionDsl());
         }
-        if (t.getType().equals(Fsm.TransitionType.SAGA)) {
+        if (t.getType().equals(Transition.Type.SAGA)) {
             return (T) new SagaActionProxy(actionDsl(t, SagaAction.class));
         }
-        if (t.getType().equals(Fsm.TransitionType.QUERY)) {
+        if (t.getType().equals(Transition.Type.QUERY)) {
             return (T) new QueryActionProxy(actionDsl(t, QueryAction.class));
         }
-        if (t.getType().equals(Fsm.TransitionType.TO)) {
+        if (t.getType().equals(Transition.Type.TO)) {
             return (T) new CommandActionProxy(actionDsl(t, CommandAction.class));
         }
         return null;
@@ -50,7 +50,7 @@ public interface Actions {
     String parallel_all_regexp = "(\\w+\\&)+\\w+";
     String serial_regexp       = "(\\w+,)+\\w+";
 
-    static <T extends Action<S>, S extends Enum<S>> T actionDsl(Fsm.Transition<S> t, Class<T> type) {
+    static <T extends Action<S>, S extends Enum<S>> T actionDsl(Transition<S> t, Class<T> type) {
         String actionDsl = t.getActionDsl();
         if (actionDsl.matches(single_regexp)) {
             return InfraUtils.getBean(actionDsl, type);

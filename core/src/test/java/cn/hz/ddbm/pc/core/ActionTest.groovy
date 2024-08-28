@@ -19,7 +19,7 @@ class ActionTest extends Specification {
 //
     def "test of"() {
         expect:
-        Actions.typeOf(new Fsm.Transition(type, null, null, actionDsl, null, null, null), Action.class, false).beanName() == result
+        Actions.typeOf(new Transition(type, null, null, actionDsl, null, null, null), Action.class, false).beanName() == result
         where:
         type                    | actionDsl               | result
         Fsm.TransitionType.SAGA | "payAction"             | "payAction"

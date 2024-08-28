@@ -25,7 +25,7 @@ public class ActionsTest {
 
     @Test
     public void testTypeOf() throws Exception {
-        Actions.actionDsl(new Fsm.Transition(null, null, null, "a,b,c", null, null, null), SagaAction.class);
+        Actions.actionDsl(null, SagaAction.class);
     }
 
     @Test

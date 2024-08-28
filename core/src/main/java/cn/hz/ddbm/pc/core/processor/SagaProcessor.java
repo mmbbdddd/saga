@@ -28,7 +28,7 @@ import java.util.Set;
 public class SagaProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S>, S> {
 
 
-    public SagaProcessor(Fsm.Transition<S> f, List<Plugin> plugins) {
+    public SagaProcessor(Transition<S> f, List<Plugin> plugins) {
         super(f, plugins);
     }
 

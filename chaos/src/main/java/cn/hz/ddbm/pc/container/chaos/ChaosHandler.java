@@ -1,10 +1,7 @@
 package cn.hz.ddbm.pc.container.chaos;
 
 import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.core.BaseProcessor;
-import cn.hz.ddbm.pc.core.Fsm;
-import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.Profile;
+import cn.hz.ddbm.pc.core.*;
 import cn.hz.ddbm.pc.core.action.Action;
 import cn.hz.ddbm.pc.core.support.Locker;
 import cn.hz.ddbm.pc.core.support.SessionManager;
@@ -53,13 +50,13 @@ public class ChaosHandler {
             FsmContext<S, ?> ctx     = (FsmContext<S, ?>) args[0];
             Profile<S>       profile = ctx.getProfile();
             if (ctx.getIsChaos()) {
-                BaseProcessor<?, S> actionBase = ctx.getExecutor();
-                S                   nextNode   = null;
-                if (actionBase.getFsmRecord().getType().equals(Fsm.TransitionType.TO)) {
-                    nextNode = actionBase.getFsmRecord().getTo();
+                Transition<S> transition = ctx.getTransition();
+                S             nextNode   = null;
+                if (transition.getType().equals(Transition.Type.TO)) {
+                    nextNode = transition.getTo();
                 } else {
-                    S                    from        = actionBase.getFsmRecord().getFrom();
-                    String               event       = actionBase.getFsmRecord().getEvent();
+                    S                    from        = transition.getFrom();
+                    String               event       = transition.getEvent();
                     Set<Pair<S, Double>> statusRadio = profile.getMaybeResults().get(from, event);
                     String               key         = String.format("%s_%s", from.name(), event);
                     nextNode = RandomUitl.selectByWeight(key, statusRadio);

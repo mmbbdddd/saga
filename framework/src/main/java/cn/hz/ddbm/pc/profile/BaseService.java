@@ -49,14 +49,12 @@ public abstract class BaseService {
         if (Boolean.FALSE.equals(tryLock(ctx))) {
             return;
         }
-        Fsm.Transition<S> transition = null;
         try {
             Boolean fluent = ctx.getFluent();
-            transition = ctx.getFlow().execute(ctx);
-
+            ctx.getFlow().execute(ctx);
             if (fluent && isCanContinue(ctx)) {
                 ctx.setEvent(Coasts.EVENT_DEFAULT);
-                transition = ctx.getFlow().execute(ctx);
+                ctx.getFlow().execute(ctx);
             }
         } catch (StatusException e) {
             //todo
@@ -90,8 +88,8 @@ public abstract class BaseService {
                 Logs.status.error("", e2);
             }
         } finally {
-            if (null != transition) {
-                transition.interruptedPlugins(ctx);
+            if (null != ctx.getTransition()) {
+                ctx.getTransition().interruptedPlugins(ctx);
             }
             releaseLock(ctx);
         }

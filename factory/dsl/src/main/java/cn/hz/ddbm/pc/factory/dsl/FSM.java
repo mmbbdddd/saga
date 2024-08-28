@@ -6,6 +6,7 @@ import cn.hutool.core.map.multi.Table;
 import cn.hz.ddbm.pc.core.Fsm;
 import cn.hz.ddbm.pc.core.Plugin;
 import cn.hz.ddbm.pc.core.Profile;
+import cn.hz.ddbm.pc.core.Transition;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.support.SessionManager;
@@ -78,9 +79,9 @@ public interface FSM<S extends Enum<S>> {
      * 非事务业务：to
      * 查询业务：router
      *
-     * @param transitions
+     * @param eventTable
      */
-    void transitions(Transitions<S> transitions);
+    void transitions(Fsm.EventTable<S> eventTable);
 
     /**
      * 参见profile
@@ -119,97 +120,12 @@ public interface FSM<S extends Enum<S>> {
                 .filter(e -> FlowStatus.isRunnable(e.getValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
-        Set<S>         ends        = nodes.entrySet().stream().filter(e -> FlowStatus.isEnd(e.getValue())).map(Map.Entry::getKey).collect(Collectors.toSet());
-        Fsm<S>         fsm         = Fsm.of(fsmId(), describe(), init, tasks, ends, profile);
-        Transitions<S> transitions = new Transitions<>();
-        transitions(transitions);
-        transitions.transitions.forEach(t -> {
-            if (t.getType().equals(Fsm.TransitionType.SAGA)) {
-                fsm.getEventTable().saga(t.getFrom(), t.event, t.conditions, t.failover, t.action);
-            }
-            if (t.getType().equals(Fsm.TransitionType.QUERY)) {
-                fsm.getEventTable().router(t.getFrom(), t.getEvent(), t.getAction());
-            }
-            if (t.getType().equals(Fsm.TransitionType.TO)) {
-                fsm.getEventTable().to(t.getFrom(), t.getEvent(), t.getAction(), t.to);
-            }
-        });
+        Set<S> ends = nodes.entrySet().stream().filter(e -> FlowStatus.isEnd(e.getValue())).map(Map.Entry::getKey).collect(Collectors.toSet());
+        Fsm<S> fsm  = Fsm.of(fsmId(), describe(), init, tasks, ends, profile);
+        transitions(fsm.getEventTable());
 //        InfraUtils.getBean(PcService.class).addFlow(flow);
         return fsm;
     }
 
-
-    class Transitions<S> {
-        List<FSM.Transition<S>> transitions;
-
-        public Transitions() {
-            this.transitions = new ArrayList<>();
-        }
-
-
-        public Transitions<S> to(S from, String event, S to) {
-            transitions.add(Transition.toOf(from, event, Coasts.NONE_ACTION, to));
-            return this;
-        }
-
-        public Transitions<S> to(S from, String event, String action, S to) {
-            transitions.add(Transition.toOf(from, event, action, to));
-            return this;
-        }
-
-        public Transitions<S> query(S node, String event, String action) {
-            transitions.add(Transition.queryOf(node, event, action));
-            return this;
-        }
-
-        public Transitions<S> saga(S node, String event, Set<S> conditions, S failover, String action) {
-            transitions.add(Transition.sagaOf(node, event, conditions, failover, action));
-            transitions.add(Transition.queryOf(failover, event, action));
-            return this;
-        }
-
-    }
-
-    @Getter
-    class Transition<S> {
-        Fsm.TransitionType type;
-        S                  from;
-        String             event;
-        Set<S>             conditions;
-        S                  failover;
-        String             action;
-        S                  to;
-
-
-        public static <S> Transition<S> queryOf(S node, String event, String action) {
-            Transition<S> t = new Transition<S>();
-            t.type   = Fsm.TransitionType.QUERY;
-            t.from   = node;
-            t.event  = event;
-            t.action = action;
-            return t;
-        }
-
-        public static <S> Transition<S> toOf(S from, String event, String action, S to) {
-            Transition<S> t = new Transition<S>();
-            t.type   = Fsm.TransitionType.TO;
-            t.from   = from;
-            t.event  = event;
-            t.action = action;
-            t.to     = to;
-            return t;
-        }
-
-        public static <S> Transition<S> sagaOf(S node, String event, Set<S> conditions, S failover, String action) {
-            Transition<S> t = new Transition<S>();
-            t.type       = Fsm.TransitionType.SAGA;
-            t.from       = node;
-            t.event      = event;
-            t.action     = action;
-            t.conditions = conditions;
-            t.failover   = failover;
-            return t;
-        }
-    }
 
 }

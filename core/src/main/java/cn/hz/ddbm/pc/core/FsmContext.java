@@ -30,7 +30,7 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
     @Setter
     private S                   state;
     @Setter
-    private BaseProcessor<?, S> executor;
+    private Transition<S>       transition;
     @Setter
     private Profile<S>          profile;
     @Setter
@@ -70,7 +70,7 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
         StatisticsSupport metricsWindows = InfraUtils.getMetricsTemplate();
         ///todo 待优化。这块有比较大的IO，可以合并到session中。
 //        AtomicLong atomic = getSessionOrDefault(Coasts.EXECUTE_COUNT, new AtomicLong(0));
-        metricsWindows.increment(ctx.getFlow().getName(),ctx.getId(),ctx.getState(),Coasts.EXECUTE_COUNT);
+        metricsWindows.increment(ctx.getFlow().getName(), ctx.getId(), ctx.getState(), Coasts.EXECUTE_COUNT);
     }
 
     private <T> T getSessionOrDefault(String key, T deft) {
@@ -82,7 +82,7 @@ public class FsmContext<S extends Enum<S>, T extends FsmPayload<S>> {
      * 1，status ==> entity
      */
     public void syncPayLoad() {
-        data.setStatusSate(status,state);
+        data.setStatusSate(status, state);
     }
 
 

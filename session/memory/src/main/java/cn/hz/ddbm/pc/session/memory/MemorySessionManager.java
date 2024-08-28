@@ -37,11 +37,11 @@ public class MemorySessionManager implements SessionManager {
 
     @Override
     public void set(String flowName, Serializable id, Map<String, Object> session) {
-        cache.put(String.format(keyTemplate, id), session);
+        cache.put(String.format(keyTemplate, flowName,id), session);
     }
 
     @Override
     public Map<String, Object> get(String flowName, Serializable flowId) {
-        return cache.getIfPresent(String.format(keyTemplate, flowId));
+        return cache.getIfPresent(String.format(keyTemplate,flowName, flowId));
     }
 }

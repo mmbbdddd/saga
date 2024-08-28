@@ -15,7 +15,7 @@ import java.util.List;
 public class ToProcessor<S extends Enum<S>> extends BaseProcessor<SagaAction<S>, S> {
 
 
-    public ToProcessor(Fsm.Transition<S> f, List<Plugin> plugins) {
+    public ToProcessor(Transition<S> f, List<Plugin> plugins) {
         super(f, plugins);
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class RouterProcessor<S extends Enum<S>> extends BaseProcessor<QueryAction<S>, S> {
 
-    public RouterProcessor(Fsm.Transition<S> f, List<Plugin> plugins) {
+    public RouterProcessor(Transition<S> f, List<Plugin> plugins) {
         super(f, plugins);
     }
 
