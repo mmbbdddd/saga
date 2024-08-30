@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.newcore.infra;
+package cn.hz.ddbm.pc.newcore.exception;
 
 import java.io.IOException;
 

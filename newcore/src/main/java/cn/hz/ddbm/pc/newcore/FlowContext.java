@@ -50,4 +50,10 @@ public abstract class FlowContext<F extends FlowModel<S>, S extends State, W ext
         return processor;
     }
 
+    public void setState(S state) {
+        if(getFlow().getEnds().contains(state)){
+            this.setStatus(FlowStatus.FINISH);
+        }
+        this.state = state;
+    }
 }

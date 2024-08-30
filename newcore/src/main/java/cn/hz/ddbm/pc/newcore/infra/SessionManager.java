@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.infra;
 
 
 import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.exception.SessionException;
 
 import java.io.IOException;
 import java.io.Serializable;

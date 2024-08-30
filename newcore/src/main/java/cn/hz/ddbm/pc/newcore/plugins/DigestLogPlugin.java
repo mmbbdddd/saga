@@ -3,10 +3,10 @@ package cn.hz.ddbm.pc.newcore.plugins;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.State;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class DigestLogPlugin implements Plugin {
     @Override
     public String code() {
@@ -22,12 +22,12 @@ public class DigestLogPlugin implements Plugin {
     public void postAction(State lastNode, FlowContext ctx) {
         Boolean forward   = ((SagaState) ctx.getState()).getIsForward();
         String  directStr = forward ? ">>>>" : "<<<<";
-        log.info("{},{},{},{},{}=>{}", directStr, ctx.getFlow().getName(), ctx.getId(), ctx.getStatus(), lastNode, ctx.getState());
+        Logs.digest.info("{},{},{},{},{}=>{}", directStr, ctx.getFlow().getName(), ctx.getId(), ctx.getStatus(), lastNode, ctx.getState());
     }
 
     @Override
     public void errorAction(State preNode, Exception e, FlowContext ctx) {
-        log.info("{},{}:", ctx.getFlow()
+        Logs.digest.info("{},{}:", ctx.getFlow()
                 .getName(), ctx.getId(), e);
     }
 
