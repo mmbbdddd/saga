@@ -7,7 +7,7 @@ import cn.hz.ddbm.pc.newcore.support.ActionResult;
 import cn.hz.ddbm.pc.newcore.test.NoneSagaAction;
 
 
-public class SagaActionProxy implements Action {
+public class SagaActionProxy implements SagaAction {
     String     action;
     SagaAction sagaAction;
 

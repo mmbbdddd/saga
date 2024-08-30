@@ -11,7 +11,7 @@ class SagaProcessorTest {
     void testWorkerProcess() {
         MockSagaPayload payload = new MockSagaPayload();
         SagaContext ctx = new SagaContext(
-                MockSagaPipeline.toSagaFlow(), 1, payload, new Profile(), new HashMap<String, Object>()
+                MockSagaPipeline.toSagaFlow(),   payload, new Profile(), new HashMap<String, Object>()
         )
         sagaProcessor.workerProcess(ctx)
     }

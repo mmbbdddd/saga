@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.newcore;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.PauseException;
+import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
 
 public interface FlowProcessor<C extends FlowContext> {
 
@@ -16,7 +17,7 @@ public interface FlowProcessor<C extends FlowContext> {
      * @throws InterruptedException 可调度重试
      * @throws PauseException       暂停，需人工
      */
-    void workerProcess(C ctx) throws FlowEndException, InterruptedException, PauseException;
+    void workerProcess(C ctx) throws FlowEndException, InterruptedException, PauseException, TransitionNotFoundException;
 
     /**
      * 流程连续执行，直至异常

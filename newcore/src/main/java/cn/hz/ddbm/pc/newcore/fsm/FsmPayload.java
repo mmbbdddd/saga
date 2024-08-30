@@ -7,15 +7,27 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class FsmPayload implements Payload<FsmState> {
+public class FsmPayload<S extends Serializable> implements Payload<FsmState<S>> {
     Serializable id;
     FlowStatus   status;
-    FsmState     state;
+    S            fsmState;
+
+    public FsmPayload(Serializable id, FlowStatus status, S fsmState) {
+        this.id       = id;
+        this.status   = status;
+        this.fsmState = fsmState;
+    }
 
     @Override
     public Serializable getId() {
         return id;
     }
 
+    public FsmState<S> getState() {
+        return new FsmState<>(fsmState);
+    }
 
+    public void setState(FsmState<S> state) {
+        this.fsmState = state.getState();
+    }
 }
