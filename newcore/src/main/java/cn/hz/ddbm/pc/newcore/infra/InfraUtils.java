@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.infra;
 
 
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,9 @@ import java.util.stream.Collectors;
  * 基础设施类（隔离层，屏蔽对基础设施的依赖）
  */
 public class InfraUtils {
-    static ExecutorService                          es = null;
-    static Map<SessionManager.Type, SessionManager> sessionManagerMap;
-    static Map<StatusManager.Type, StatusManager>   statusManagerMap;
+    static ExecutorService                        es = null;
+    static Map<Coast.SessionType, SessionManager> sessionManagerMap;
+    static Map<Coast.StatusType, StatusManager>   statusManagerMap;
 
     public InfraUtils() {
         sessionManagerMap = SpringUtil.getBeansOfType(SessionManager.class).values().stream().collect(Collectors.toMap(
@@ -29,11 +30,11 @@ public class InfraUtils {
         es                = Executors.newFixedThreadPool(2);
     }
 
-    public static SessionManager getSessionManager(SessionManager.Type code) {
+    public static SessionManager getSessionManager(Coast.SessionType code) {
         return sessionManagerMap.get(code);
     }
 
-    public static StatusManager getStatusManager(StatusManager.Type code) {
+    public static StatusManager getStatusManager(Coast.StatusType code) {
         return statusManagerMap.get(code);
     }
 

@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.infra;
 
 
 import cn.hz.ddbm.pc.newcore.State;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -23,18 +24,11 @@ public interface StatisticsSupport {
 
     @Data
     class VariableCalcConfig<A extends VariableConfig> {
-        String         variable;
-        StatisticsAlgo algo;
-        A              args;
+        String               variable;
+        Coast.StatisticsType algo;
+        A                    args;
     }
 
-
-    /**
-     * todo
-     */
-    enum StatisticsAlgo {
-        WINDOWS, RANGE
-    }
 
     @Data
     class Windows implements VariableConfig {

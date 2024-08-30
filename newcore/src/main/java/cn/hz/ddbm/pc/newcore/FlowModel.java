@@ -27,4 +27,7 @@ public abstract class FlowModel<S extends State> {
         return 5;
     }
 
+    public boolean isEnd(State state) {
+        return false;
+    }
 }

@@ -5,7 +5,6 @@ import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
-import lombok.extern.slf4j.Slf4j;
 
 public class DigestLogPlugin implements Plugin {
     @Override

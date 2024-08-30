@@ -6,7 +6,6 @@ import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.exception.StatusException;
 import lombok.Data;
 
 import java.util.Objects;
@@ -29,7 +28,7 @@ public class SagaWorker<S> extends Worker<SagaContext<S>> {
     }
 
     @Override
-    public void execute(SagaContext<S> ctx) throws StatusException, IdempotentException, ActionException {
+    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException {
         if (ctx.getState().getIsForward()) {
             forward.onEvent((SagaProcessor) ctx.getProcessor(), ctx);
         } else {
@@ -59,7 +58,7 @@ class ForwardQuantum<S> {
         this.rollback = new SagaState<>(curr, SagaState.Offset.task, false);
     }
 
-    public void onEvent(SagaProcessor processor, SagaContext<S> ctx) throws StatusException, IdempotentException, ActionException {
+    public void onEvent(SagaProcessor processor, SagaContext<S> ctx) throws IdempotentException, ActionException {
 
         SagaState<S>     lastState    = ctx.getState().cloneSelf();
         SagaActionProxy  sagaAction   = (SagaActionProxy) ctx.getAction();
@@ -153,7 +152,7 @@ class BackoffQuantum<S> {
         this.manual           = FlowStatus.MANUAL;
     }
 
-    public void onEvent(SagaProcessor processor, SagaContext<S> ctx) throws StatusException, IdempotentException {
+    public void onEvent(SagaProcessor processor, SagaContext<S> ctx) throws IdempotentException {
 
         SagaState<S>     lastState    = ctx.getState().cloneSelf();
         SagaActionProxy  sagaAction   = (SagaActionProxy) ctx.getAction();

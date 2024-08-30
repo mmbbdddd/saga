@@ -45,7 +45,6 @@ public class SagaModel<S> extends FlowModel<SagaState<S>> {
     }
 
     public SagaWorker<S> getWorker(S state) throws FlowEndException {
-        SagaWorker<S> worker = pipeline.get(state);
         return pipeline.get(state);
     }
 

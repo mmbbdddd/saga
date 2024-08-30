@@ -1,12 +1,15 @@
 package cn.hz.ddbm.pc;
 
+import cn.hutool.core.util.ReflectUtil;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowProcessor;
+import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.State;
-import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
-import cn.hz.ddbm.pc.newcore.exception.StatusException;
+import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public abstract class FlowProcessorService<C extends FlowContext> implements FlowProcessor<C> {
@@ -39,6 +42,46 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
 
     public void unLock(FlowContext ctx) {
 
+    }
+
+    /**
+     * 刷新状态到基础设施
+     */
+    public void flush(FlowContext ctx) throws SessionException, StatusException {
+        ctx.syncpayload();
+        InfraUtils.getSessionManager(ctx.getProfile().getSession()).flush(ctx);
+        InfraUtils.getStatusManager(ctx.getProfile().getStatus()).flush(ctx);
+    }
+
+    public boolean isRetryable(Throwable e, FlowContext ctx) {
+        if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
+            e = (Exception) ReflectUtil.getFieldValue(e, "raw");
+        }
+        Boolean isRetryException = false;
+        isRetryException |= e instanceof IOException;
+        return isRetryException;
+    }
+
+    public boolean isInterrupted(Throwable e, FlowContext ctx) {
+        if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
+            e = (Exception) ReflectUtil.getFieldValue(e, "raw");
+        }
+        Boolean isInterruptedException = false;
+        isInterruptedException |= e instanceof LockException;
+        return isInterruptedException;
+    }
+
+    public boolean isPaused(Throwable e, FlowContext ctx) {
+        if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
+            e = (Exception) ReflectUtil.getFieldValue(e, "raw");
+        }
+        Boolean isPausedException = false;
+        isPausedException |= e instanceof IllegalArgumentException;
+        return isPausedException;
+    }
+
+    public boolean isStoped(Throwable e, FlowContext ctx) {
+        return e instanceof FlowEndException || FlowStatus.isEnd(ctx.getStatus());
     }
 
 

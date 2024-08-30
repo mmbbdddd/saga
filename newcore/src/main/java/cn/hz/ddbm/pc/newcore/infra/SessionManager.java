@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.infra;
 
 
 import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.SessionException;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.Map;
  * @Version 1.0.0
  **/
 public interface SessionManager {
-    Type code();
+    Coast.SessionType code();
 
     void set(String flowName, Serializable flowId, Map<String, Object> session) throws IOException;
 
@@ -29,7 +30,5 @@ public interface SessionManager {
         }
     }
 
-    enum Type {
-        memory, redis
-    }
+
 }

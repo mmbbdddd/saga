@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.infra;
 
 import cn.hz.ddbm.pc.newcore.Payload;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  * 调度接口
  */
 public interface ScheduleManger {
-    Type type();
+    Coast.ScheduleType type();
 
     /**
      * 批量调度（定时，spring-cron，xxljob）
@@ -28,11 +29,5 @@ public interface ScheduleManger {
      */
     void notifyMe(String flow, Payload payload, String event, Integer delay, TimeUnit timeUnit);
 
-    enum Type {
-        //        定时调度
-        SPRING_CRON, XXL,
 
-        //        精确调度
-        TIMER, NOTIFY, DELAY_QUEUE
-    }
 }

@@ -4,6 +4,7 @@ package cn.hz.ddbm.pc.newcore.infra;
 import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.io.Serializable;
 
 
 public interface StatusManager {
-    Type code();
+    Coast.StatusType code();
 
     void setStatus(String flow, Serializable flowId, FlowContext ctx, Integer timeout) throws IOException;
 
@@ -33,7 +34,5 @@ public interface StatusManager {
         }
     }
 
-    enum Type {
-        memory, redis, dao
-    }
+
 }

@@ -13,4 +13,24 @@ public class Coast {
     public static class FSM {
         public final static String EVENT_DEFAULT = "push";
     }
+
+    public enum ScheduleType {
+        //        定时调度
+        SPRING_CRON, XXL,
+
+        //        精确调度
+        TIMER, NOTIFY, DELAY_QUEUE
+    }
+
+    public enum SessionType {
+        memory, redis
+    }
+
+    public enum StatusType {
+        memory, redis, dao
+    }
+
+    public enum StatisticsType {
+        WINDOWS, RANGE
+    }
 }
