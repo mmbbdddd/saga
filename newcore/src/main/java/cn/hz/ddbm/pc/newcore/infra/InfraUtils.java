@@ -3,6 +3,9 @@ package cn.hz.ddbm.pc.newcore.infra;
 
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.infra.proxy.LockProxy;
+import cn.hz.ddbm.pc.newcore.infra.proxy.SessionManagerProxy;
+import cn.hz.ddbm.pc.newcore.infra.proxy.StatusManagerProxy;
 
 import java.util.List;
 import java.util.Map;
@@ -17,17 +20,23 @@ public class InfraUtils {
     static ExecutorService                        es = null;
     static Map<Coast.SessionType, SessionManager> sessionManagerMap;
     static Map<Coast.StatusType, StatusManager>   statusManagerMap;
+    static Map<Coast.LockType, Locker>            lockerMap;
 
     public InfraUtils() {
+        es                = Executors.newFixedThreadPool(2);
+
         sessionManagerMap = SpringUtil.getBeansOfType(SessionManager.class).values().stream().collect(Collectors.toMap(
                 SessionManager::code,
-                t -> t
+                t -> new SessionManagerProxy(t)
         ));
         statusManagerMap  = SpringUtil.getBeansOfType(StatusManager.class).values().stream().collect(Collectors.toMap(
                 StatusManager::code,
-                t -> t
+                t -> new StatusManagerProxy(t)
         ));
-        es                = Executors.newFixedThreadPool(2);
+        lockerMap  = SpringUtil.getBeansOfType(Locker.class).values().stream().collect(Collectors.toMap(
+                Locker::code,
+                t -> new LockProxy(t)
+        ));
     }
 
     public static SessionManager getSessionManager(Coast.SessionType code) {

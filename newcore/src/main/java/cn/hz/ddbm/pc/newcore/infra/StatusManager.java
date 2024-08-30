@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.infra;
 
 
+import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
@@ -21,17 +22,12 @@ import java.io.Serializable;
 public interface StatusManager {
     Coast.StatusType code();
 
-    void setStatus(String flow, Serializable flowId, FlowContext ctx, Integer timeout) throws IOException;
+    void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> status, Integer timeout) throws StatusException;
 
-    Triple<FlowStatus, ?, String> getStatus(String flow, Serializable flowId) throws IOException;
+    Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws StatusException;
 
     default void flush(FlowContext ctx) throws StatusException {
-        try {
-            setStatus(ctx.getFlow().getName(), ctx.getId(), ctx, ctx.getProfile()
-                    .getStatusTimeout());
-        } catch (IOException e) {
-            throw new StatusException(e);
-        }
+        setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(),ctx.getState()), ctx.getProfile().getStatusTimeout());
     }
 
 

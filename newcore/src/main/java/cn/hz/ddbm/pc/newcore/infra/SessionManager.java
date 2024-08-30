@@ -18,16 +18,13 @@ import java.util.Map;
 public interface SessionManager {
     Coast.SessionType code();
 
-    void set(String flowName, Serializable flowId, Map<String, Object> session) throws IOException;
+    void set(String flowName, Serializable flowId, Map<String, Object> session) throws SessionException;
 
-    Map<String, Object> get(String flowName, Serializable flowId) throws IOException;
+    Map<String, Object> get(String flowName, Serializable flowId) throws SessionException;
 
     default void flush(FlowContext ctx) throws SessionException {
-        try {
             set(ctx.getFlow().getName(), ctx.getId(), ctx.getSession());
-        } catch (IOException e) {
-            throw new SessionException(e);
-        }
+
     }
 
 

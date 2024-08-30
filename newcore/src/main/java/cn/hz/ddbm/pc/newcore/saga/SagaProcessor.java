@@ -3,15 +3,32 @@ package cn.hz.ddbm.pc.newcore.saga;
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
+import cn.hz.ddbm.pc.newcore.infra.SessionManager;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
 
-    @Override
+    public void workerProcess(String flowName, SagaPayload<S> payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
+        SagaModel<S>        flow           = (SagaModel<S>) getFlow(flowName);
+        SessionManager      sessionManager = InfraUtils.getSessionManager(profile.getSession());
+        Map<String, Object> session        = sessionManager.get(flowName, payload.getId());
+
+        SagaContext<S> ctx = new SagaContext<>(flow, payload, profile, session);
+        workerProcess(ctx);
+    }
+
+
     public void workerProcess(SagaContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
@@ -61,7 +78,6 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
                     flush(ctx);
 //                    ctx.getFlow().execute(ctx);
                 }
-                e.printStackTrace();
             } catch (StatusException | SessionException e2) {
                 Logs.status.error("", e2);
             }

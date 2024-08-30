@@ -14,23 +14,34 @@ public class Coast {
         public final static String EVENT_DEFAULT = "push";
     }
 
+    public enum LockType {
+        zk,
+        redis,
+        db,
+    }
+
     public enum ScheduleType {
         //        定时调度
-        SPRING_CRON, XXL,
-
+        spring_cron,
+        xxl,
         //        精确调度
-        TIMER, NOTIFY, DELAY_QUEUE
+        timer,
+        delay_queue
     }
 
     public enum SessionType {
-        memory, redis
+        memory,
+        redis
     }
 
     public enum StatusType {
-        memory, redis, dao
+        memory,
+        redis,
+        dao
     }
 
     public enum StatisticsType {
-        WINDOWS, RANGE
+        windows,
+        range
     }
 }

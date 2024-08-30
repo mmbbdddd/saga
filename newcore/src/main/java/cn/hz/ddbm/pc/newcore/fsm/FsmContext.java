@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class FsmContext extends FlowContext<FsmModel, FsmState, FsmWorker> {
 
-    public FsmContext(FsmModel flow, Serializable id, Payload<FsmState> payload, Profile profile, Map<String, Object> session) {
-        super(flow, id, payload, profile, session);
+    public FsmContext(FsmModel flow,  Payload<FsmState> payload, Profile profile, Map<String, Object> session) {
+        super(flow,  payload, profile, session);
     }
 
     @Override

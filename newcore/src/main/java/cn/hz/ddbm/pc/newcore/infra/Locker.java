@@ -1,10 +1,15 @@
 package cn.hz.ddbm.pc.newcore.infra;
 
+import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.exception.LockException;
+
 /**
  * 锁接口
  */
 public interface Locker {
-    void tryLock(String key, Integer timeout) throws Exception;
+    Coast.LockType code();
 
-    void releaseLock(String key) throws Exception;
+    void tryLock(String key, Integer timeout) throws LockException;
+
+    void releaseLock(String key) throws LockException;
 }

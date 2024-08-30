@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 调度接口
  */
-public interface ScheduleManger {
+public interface ScheduleManger extends ValueObject {
     Coast.ScheduleType type();
 
     /**
