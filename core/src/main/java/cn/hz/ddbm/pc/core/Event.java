@@ -15,7 +15,7 @@ public class Event {
 
     public static Event of(String event) {
         Type type;
-        if (event.equalsIgnoreCase(Coasts.EVENT_CANCEL) || event.equalsIgnoreCase(Coasts.EVENT_PAUSE)) {
+        if (event.equalsIgnoreCase(Coasts.EVENT_PAUSE)) {
             type = Type.FLOW_EVENT;
         } else {
             type = Type.NODE_EVENT;

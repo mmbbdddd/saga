@@ -6,14 +6,14 @@ package cn.hz.ddbm.pc.core;
  * ___2,如果业务和插件之间需要信息交互，通过上下文完成。
  */
 
-public interface Plugin<S extends Enum<S>> extends ValueObject {
+public interface Plugin {
     String code();
 
-    void preAction(String name, FsmContext<S, ?> ctx);
+    void preAction(FsmContext ctx);
 
-    void postAction(String name, S lastNode, FsmContext<S, ?> ctx);
+    void postAction(State lastNode, FsmContext ctx);
 
-    void onActionException(String actionName, S preNode, Exception e, FsmContext<S, ?> ctx);
+    void onActionException(State preNode, Exception e, FsmContext ctx);
 
-    void onActionFinally(String name, FsmContext<S, ?> ctx);
+    void onActionFinally(FsmContext ctx);
 }

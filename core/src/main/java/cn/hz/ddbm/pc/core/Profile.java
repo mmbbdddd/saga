@@ -1,8 +1,5 @@
 package cn.hz.ddbm.pc.core;
 
-import cn.hutool.core.lang.Pair;
-import cn.hutool.core.map.multi.RowKeyTable;
-import cn.hutool.core.map.multi.Table;
 import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
@@ -14,30 +11,26 @@ import lombok.Data;
 import java.util.*;
 
 @Data
-public class Profile<S extends Enum<S>> {
-    private Integer                                              retry         = Coasts.DEFAULT_RETRY;
-    private Integer                                              statusTimeout = Coasts.DEFAULT_STATUS_TIMEOUT;
-    private Integer                                              lockTimeout   = Coasts.DEFAULT_LOCK_TIMEOUT;
-    private SessionManager.Type                                  sessionManager;
-    private StatusManager.Type                                   statusManager;
-    private Map<S, Set<FlowStatus>>                              stateTypes;
-    private Table<S, String, Set<Pair<S, Double>>>               maybeResults;
-    private Map<S, StepAttrs>                                    states;
-    private Map<String, ActionAttrs>                             actions;
-    private Map<S, Triple<ScheduleManger.Type, Double, Integer>> scheduleRules;
-    private List<Plugin>                                         plugins;
+public class Profile {
+    private Integer                  retry         = Coasts.DEFAULT_RETRY;
+    private Integer                  statusTimeout = Coasts.DEFAULT_STATUS_TIMEOUT;
+    private Integer                  lockTimeout   = Coasts.DEFAULT_LOCK_TIMEOUT;
+    private SessionManager.Type      sessionManager;
+    private StatusManager.Type       statusManager;
+    private Map<State, StateAttrs>   stateAttrs;
+    private Map<String, ActionAttrs> actionAttrs;
+    private List<Plugin>             plugins;
 
 
     public Profile(SessionManager.Type sessionManager, StatusManager.Type statusManager) {
         this.sessionManager = sessionManager == null ? SessionManager.Type.redis : sessionManager;
         this.statusManager  = statusManager == null ? StatusManager.Type.redis : statusManager;
-        this.actions        = new HashMap<>();
-        this.states         = new HashMap<>();
-        this.maybeResults   = new RowKeyTable<>();
+        this.actionAttrs    = new HashMap<>();
+        this.stateAttrs     = new HashMap<>();
         this.plugins        = new ArrayList<>();
     }
 
-    public static Profile defaultOf() {
+    public static Profile defaultOf(Map<State, FlowStatus.Type> stateTypes) {
         return new Profile(SessionManager.Type.redis, StatusManager.Type.redis);
     }
 
@@ -49,30 +42,26 @@ public class Profile<S extends Enum<S>> {
         return new Profile(SessionManager.Type.memory, StatusManager.Type.memory);
     }
 
-    public void setStepAttrs(S state, StepAttrs stepAttrs) {
-        stepAttrs.profile = this;
-        this.states.put(state, stepAttrs);
+    public void setStepAttrs(State state, StateAttrs stepAttrs) {
+        this.stateAttrs.put(state, stepAttrs);
     }
 
-    public StepAttrs getStepAttrsOrDefault(S state) {
-        return this.states.getOrDefault(state, new StepAttrs(this));
+    public StateAttrs getStepAttrsOrDefault(State state) {
+        return this.stateAttrs.getOrDefault(state, new StateAttrs());
     }
 
-
-    public static class StepAttrs {
-        Profile profile;
-        Integer retry;
-
-        public StepAttrs(Profile profile) {
-            this.profile = profile;
-        }
-
-        public Integer getRetry() {
-            if (null == retry) {
-                return profile.getRetry();
-            }
+    public Integer getStateRetry(State state) {
+        StateAttrs attrs =  stateAttrs.get(state);
+        if(null == attrs || attrs.getRetry() == null){
             return retry;
+        }else{
+            return attrs.getRetry();
         }
+    }
+
+    @Data
+    public static class StateAttrs {
+        Integer retry;
     }
 
     @Data

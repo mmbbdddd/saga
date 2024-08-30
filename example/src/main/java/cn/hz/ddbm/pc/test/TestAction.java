@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.test;
 
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.action.QueryAction;
 
 public class TestAction implements QueryAction {
@@ -9,9 +10,14 @@ public class TestAction implements QueryAction {
         return "test";
     }
 
-
     @Override
-    public Enum queryState(FsmContext ctx) throws Exception {
+    public State queryState(FsmContext ctx) throws Exception {
         return null;
     }
+
+
+//    @Override
+//    public Enum queryState(FsmContext ctx) throws Exception {
+//        return null;
+//    }
 }

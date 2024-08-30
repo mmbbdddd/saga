@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.support;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.Plugin;
+import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.log.Logs;
 import org.springframework.stereotype.Component;
 
@@ -12,27 +13,28 @@ public class DigestLogPluginMock implements Plugin {
         return "digest";
     }
 
-
-
     @Override
-    public void onActionFinally(String name, FsmContext ctx) {
-    }
-
-    @Override
-    public void onActionException(String actionName, Enum preNode, Exception e, FsmContext ctx) {
+    public void preAction(FsmContext ctx) {
 
     }
 
     @Override
-    public void postAction(String name, Enum lastNode, FsmContext ctx) {
+    public void postAction(State lastNode, FsmContext ctx) {
         Logs.digest.info("{},{},{},{}", ctx.getFlow()
                 .getName(), ctx.getId(), lastNode, ctx.getState());
     }
 
     @Override
-    public void preAction(String name, FsmContext ctx) {
+    public void onActionException(State preNode, Exception e, FsmContext ctx) {
 
     }
+
+    @Override
+    public void onActionFinally(FsmContext ctx) {
+
+    }
+
+
 
 
 }

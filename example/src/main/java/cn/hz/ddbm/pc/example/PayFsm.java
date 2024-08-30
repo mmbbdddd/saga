@@ -1,20 +1,19 @@
 package cn.hz.ddbm.pc.example;
 
-import cn.hutool.core.lang.Pair;
+import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
-import cn.hz.ddbm.pc.core.Fsm;
-import cn.hz.ddbm.pc.core.Plugin;
-import cn.hz.ddbm.pc.core.Profile;
-import cn.hz.ddbm.pc.core.coast.Coasts;
+import cn.hz.ddbm.pc.common.lang.Triple;
+import cn.hz.ddbm.pc.core.*;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
+import cn.hz.ddbm.pc.core.processor.saga.SagaState;
+import cn.hz.ddbm.pc.core.processor.saga.SagaTransitionBuilder;
 import cn.hz.ddbm.pc.core.support.SessionManager;
 import cn.hz.ddbm.pc.core.support.StatusManager;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
-import cn.hz.ddbm.pc.factory.dsl.FSM;
+import cn.hz.ddbm.pc.factory.dsl.SagaFSM;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import cn.hz.ddbm.pc.profile.BaseService;
 import cn.hz.ddbm.pc.support.DigestLogPluginMock;
-import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -23,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
 
-public class PayFsm implements FSM<PayState>, InitializingBean {
+public class PayFsm implements SagaFSM<PayState>, InitializingBean {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -32,7 +31,7 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     @Override
     public List<Plugin> plugins() {
         List<Plugin> plugins = new ArrayList<Plugin>();
-//        plugins.add(new DigestLogPluginMock());
+        plugins.add(new DigestLogPluginMock());
 //        plugins.add(new PayAction());
         plugins.add(performancePlugin);
 //        plugins.add(new PayQueryAction());
@@ -55,73 +54,42 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     /**
      * 定义混沌模式下
      *
-     * @param table
      * @return
      */
+
     @Override
-    public Table<PayState, String, Set<Pair<PayState, Double>>> maybeResults(Table<PayState, String, Set<Pair<PayState, Double>>> table) {
-        table.put(PayState.init, Coasts.EVENT_DEFAULT, Sets.newSet(
-                Pair.of(PayState.payed_failover, 0.1),
-                Pair.of(PayState.payed, 0.9)));
-        table.put(PayState.payed_failover, Coasts.EVENT_DEFAULT, Sets.newSet(
-                Pair.of(PayState.payed_failover, 0.1),
-                Pair.of(PayState.init, 0.1),
-                Pair.of(PayState.payed, 0.8)
-        ));
-        table.put(PayState.payed, Coasts.EVENT_DEFAULT, Sets.newSet(
-                Pair.of(PayState.sended_failover, 0.1),
-                Pair.of(PayState.su, 0.7),
-                Pair.of(PayState.fail, 0.1),
-                Pair.of(PayState.sended, 0.1)
-        ));
-        table.put(PayState.sended_failover, Coasts.EVENT_DEFAULT, Sets.newSet(
-                Pair.of(PayState.sended_failover, 0.1),
-                Pair.of(PayState.su, 0.7),
-                Pair.of(PayState.fail, 0.1),
-                Pair.of(PayState.sended, 0.1)
-        ));
-        table.put(PayState.sended, Coasts.EVENT_DEFAULT, Sets.newSet(
-                Pair.of(PayState.sended_failover, 0.1),
-                Pair.of(PayState.su, 0.7),
-                Pair.of(PayState.fail, 0.1),
-                Pair.of(PayState.sended, 0.1)
-        ));
+    public List<Triple<PayState, SagaState.Offset, FlowStatus.Type>> nodes() {
+        List<Triple<PayState, SagaState.Offset, FlowStatus.Type>> nodeTypes = new ArrayList<>();
+        nodeTypes.add(Triple.of(PayState.init, SagaState.Offset.task, FlowStatus.Type.init));
+        nodeTypes.add(Triple.of(PayState.payed, SagaState.Offset.su, FlowStatus.Type.end));
+        nodeTypes.add(Triple.of(PayState.init, SagaState.Offset.rollback, FlowStatus.Type.end));
+        return nodeTypes;
+    }
+
+    @Override
+    public Table<PayState, SagaState.Offset, Double> errorProbability() {
+        Table<PayState, SagaState.Offset, Double> table = new RowKeyTable<>();
+        EnumSet.allOf(stateType()).forEach(sagaState -> {
+            table.put(sagaState, SagaState.Offset.failover, 0.1);
+            table.put(sagaState, SagaState.Offset.su, 0.8);
+            table.put(sagaState, SagaState.Offset.rollback, 0.1);
+        });
         return table;
     }
 
     @Override
-    public Map<PayState, FlowStatus> nodes() {
-        Map<PayState, FlowStatus> map = new HashMap<>();
-        map.put(PayState.init, FlowStatus.INIT);
-        map.put(PayState.freezed, FlowStatus.RUNNABLE);
-        map.put(PayState.sended, FlowStatus.RUNNABLE);
-        map.put(PayState.payed, FlowStatus.RUNNABLE);
-        map.put(PayState.freezed_failover, FlowStatus.RUNNABLE);
-        map.put(PayState.sended_failover, FlowStatus.RUNNABLE);
-        map.put(PayState.payed_failover, FlowStatus.RUNNABLE);
-        map.put(PayState.freezed_rollback, FlowStatus.RUNNABLE);
-        map.put(PayState.su, FlowStatus.FINISH);
-        map.put(PayState.fail, FlowStatus.FINISH);
-        map.put(PayState.manual, FlowStatus.MANUAL)
-        ;
-        return map;
-    }
-
-    @Override
-    public void transitions(Fsm.EventTable<PayState> t) {
-//        payAction:执行本地扣款
-        t
-                .saga(PayState.init, PayState.freezed_failover, "freezedAction")
-                .saga(PayState.freezed, PayState.freezed_failover, "sendAction")
-                .saga(PayState.sended, PayState.sended_failover, "payActioin")
-                .saga(PayState.payed, PayState.payed_failover, "bankMockAction")
-                .saga(PayState.freezed_rollback, PayState.freezed_rollback_failover, "freezedRollbackAction")
-        ;
+    public List<Triple<PayState, String, Integer>> pipeline() {
+        List<Triple<PayState, String, Integer>> line = new ArrayList<>();
+        line.add(Triple.of(PayState.init, "freezedAction", 10));
+        line.add(Triple.of(PayState.freezed, "sendAction", 10));
+        line.add(Triple.of(PayState.sended, "payAction", 10));
+        line.add(Triple.of(PayState.payed, "", 10));
+        return line;
     }
 
 
     @Override
-    public Map<PayState, Profile.StepAttrs> stateAttrs() {
+    public Map<State, Profile.StateAttrs> stateAttrs() {
         return new HashMap<>();
     }
 
@@ -131,10 +99,15 @@ public class PayFsm implements FSM<PayState>, InitializingBean {
     }
 
     @Override
-    public Profile<PayState> profile() {
-        Profile<PayState> profile = new Profile(session(), status());
+    public Profile profile() {
+        Profile profile = new Profile(session(), status());
         profile.setRetry(20);
         return profile;
+    }
+
+    @Override
+    public Class<PayState> stateType() {
+        return PayState.class;
     }
 
 

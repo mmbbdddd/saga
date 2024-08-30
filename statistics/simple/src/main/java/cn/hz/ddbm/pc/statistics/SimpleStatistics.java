@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.statistics;
 
 import cn.hutool.core.lang.Assert;
+import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.support.StatisticsSupport;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -30,14 +31,14 @@ public class SimpleStatistics implements StatisticsSupport {
 
 
     @Override
-    public void increment(String flowName, Serializable flowId, Enum node, String variable) {
-        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.name(), variable);
+    public void increment(String flowName, Serializable flowId, State node, String variable) {
+        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node, variable);
         cache.get(realKey, s -> new AtomicLong(0)).incrementAndGet();
     }
 
     @Override
-    public Long get(String flowName, Serializable flowId, Enum node, String variable) {
-        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.name(), variable);
+    public Long get(String flowName, Serializable flowId, State node, String variable) {
+        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node, variable);
         return cache.get(realKey, s -> new AtomicLong(0)).get();
     }
 }

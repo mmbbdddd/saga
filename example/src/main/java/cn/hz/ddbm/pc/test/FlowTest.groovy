@@ -53,7 +53,7 @@ class FlowTest extends Specification {
 
         then:
 //        System.out.println(JSON.toJSONString(f.getFsmTable().getRecords(), SerializerFeature.PrettyFormat))
-        System.out.println(Arrays.toString(f.getEventTable().getRecords()))
+        System.out.println(Arrays.toString(f.getEventTable().getEventTables()))
 
     }
 

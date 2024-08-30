@@ -1,19 +1,11 @@
 package cn.hz.ddbm.pc.core;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hz.ddbm.pc.core.action.Action;
-import cn.hz.ddbm.pc.core.action.CommandAction;
-import cn.hz.ddbm.pc.core.action.QueryAction;
 import cn.hz.ddbm.pc.core.action.SagaAction;
-import cn.hz.ddbm.pc.core.action.actiondsl.SerialAction;
-import cn.hz.ddbm.pc.core.action.proxy.ChaosActionProxy;
-import cn.hz.ddbm.pc.core.action.proxy.CommandActionProxy;
-import cn.hz.ddbm.pc.core.action.proxy.QueryActionProxy;
+import cn.hz.ddbm.pc.core.action.proxy.ChaosMockActionProxy;
+import cn.hz.ddbm.pc.core.action.proxy.FsmActionProxy;
 import cn.hz.ddbm.pc.core.action.proxy.SagaActionProxy;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public interface Actions {
 
@@ -21,18 +13,15 @@ public interface Actions {
      * 将各种action配置语法转换为特定的Action实现
      */
 
-    public static <T extends Action<S>, S extends Enum<S>> T typeOf(Transition<S> t, Class<T> type, Boolean mockBean) {
+    public static <T> T typeOf(String actionDsl, Class<T> type, Boolean mockBean) {
         if (mockBean) {
-            return (T) new ChaosActionProxy<S>(t.getActionDsl());
+            return (T) new ChaosMockActionProxy<>(actionDsl);
         }
-        if (t.getType().equals(Transition.Type.SAGA)) {
-            return (T) new SagaActionProxy(actionDsl(t, SagaAction.class));
+        if (type.equals(ProcessorType.SAGA)) {
+            return (T) new SagaActionProxy(actionDsl(actionDsl, SagaAction.class));
         }
-        if (t.getType().equals(Transition.Type.QUERY)) {
-            return (T) new QueryActionProxy(actionDsl(t, QueryAction.class));
-        }
-        if (t.getType().equals(Transition.Type.TO)) {
-            return (T) new CommandActionProxy(actionDsl(t, CommandAction.class));
+        if (type.equals(ProcessorType.FSM)) {
+            return (T) new FsmActionProxy(actionDsl(actionDsl, Action.class));
         }
         return null;
     }
@@ -53,8 +42,8 @@ public interface Actions {
     String parallel_all_regexp = "(\\w+\\&)+\\w+";
     String serial_regexp       = "(\\w+,)+\\w+";
 
-    static <T extends Action<S>, S extends Enum<S>> T actionDsl(Transition<S> t, Class<T> type) {
-        String actionDsl = t.getActionDsl();
+    static <T extends Action> T actionDsl(String actionDsl, Class<T> type) {
+
         if (actionDsl.matches(single_regexp)) {
             return InfraUtils.getBean(actionDsl, type);
         }
@@ -67,11 +56,11 @@ public interface Actions {
 //            List<Action> actions = StrUtil.split(actionDsl, "&").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
 //            return (T) new ParallelAction(true, t, actions);
 //        }
-        if (actionDsl.matches(serial_regexp)) {
-            List<Action> actions = StrUtil.split(actionDsl, ",").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
-            return (T) new SerialAction(t, actions);
-
-        }
+//        if (actionDsl.matches(serial_regexp)) {
+//            List<Action> actions = StrUtil.split(actionDsl, ",").stream().map(a -> InfraUtils.getBean(a, Action.class)).collect(Collectors.toList());
+//            return (T) new SerialAction(t, actions);
+//
+//        }
         throw new RuntimeException(String.format("no such action:%s # %s", actionDsl, type.getSimpleName()));
     }
 }

@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.example;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.configuration.PcChaosConfiguration;
 import cn.hz.ddbm.pc.core.coast.Coasts;
+import cn.hz.ddbm.pc.core.processor.saga.SagaState;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import cn.hz.ddbm.pc.profile.ChaosSagaService;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
@@ -35,7 +36,7 @@ public class PayTest {
 
     @Test
     public void chaos() throws Exception {
-        String event = Coasts.EVENT_DEFAULT;
+        String event = Coasts.EVENT_FORWARD;
         List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
             //注入业务逻辑异常，概率20%
 //            add(new ChaosRule(ChaosTarget.ACTION, "true", "action异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
@@ -50,7 +51,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 1, 10, rules, false);
+            chaosService.execute("test", new ChaosSagaService.MockPayLoad(SagaState.of(PayState.init)), event, 2, 10, rules, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,10 +70,10 @@ public class PayTest {
         freezed = new AtomicInteger(0);
         bank    = new AtomicInteger(0);
 
-        String event = Coasts.EVENT_DEFAULT;
+        String event = Coasts.EVENT_FORWARD;
         try {
             //执行10000次，查看流程中断概率
-            chaosService.execute("test", new ChaosSagaService.MockPayLoad(PayState.init), event, 1, 10, new ArrayList(), false);
+            chaosService.execute("test", new ChaosSagaService.MockPayLoad(SagaState.of(PayState.init)), event, 1, 10, new ArrayList(), false);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -67,11 +67,11 @@ class TimerWheelScheduleNotifyTest {
         // 等待所有任务执行完毕，然后关闭定时器
         // 注意：实际压测时，可能需要更复杂的逻辑来确保所有任务都被执行
         // 例如，可以通过计数或其他同步机制来确保任务执行完毕
-        try {
-            Thread.sleep(4); // 假设等待10秒能够保证所有任务执行
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(4); // 假设等待10秒能够保证所有任务执行
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         timer.stop();
     }
 }

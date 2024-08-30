@@ -2,9 +2,10 @@ package cn.hz.ddbm.pc.core.plugins;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.Plugin;
+import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.action.Action;
 
-public interface ActionPluginAdapter<S extends Enum<S>> extends Plugin<S>, Action<S> {
+public interface ActionPluginAdapter  extends Plugin , Action  {
 
     @Override
     default String code() {
@@ -12,22 +13,22 @@ public interface ActionPluginAdapter<S extends Enum<S>> extends Plugin<S>, Actio
     }
 
     @Override
-    default void preAction(String name, FsmContext<S, ?> ctx) {
+    default void preAction( FsmContext  ctx) {
 
     }
 
     @Override
-    default void postAction(String name, S lastNode, FsmContext<S, ?> ctx) {
+    default void postAction( State lastNode, FsmContext  ctx) {
 
     }
 
     @Override
-    default void onActionException(String actionName, S preNode, Exception e, FsmContext<S, ?> ctx) {
+    default void onActionException(  State preNode, Exception e, FsmContext ctx) {
 
     }
 
     @Override
-    default void onActionFinally(String name, FsmContext<S, ?> ctx) {
+    default void onActionFinally( FsmContext ctx) {
 
     }
 

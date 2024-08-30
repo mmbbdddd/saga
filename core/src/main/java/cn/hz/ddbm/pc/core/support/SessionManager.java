@@ -21,7 +21,7 @@ public interface SessionManager {
 
     Map<String, Object> get(String flowName, Serializable flowId) throws IOException;
 
-    default void flush(FsmContext<?, ?> ctx) throws SessionException {
+    default void flush(FsmContext  ctx) throws SessionException {
         try {
             set(ctx.getFlow().getName(), ctx.getId(), ctx.getSession());
         } catch (IOException e) {

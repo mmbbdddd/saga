@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.status.redis;
 
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.support.StatusManager;
@@ -12,7 +13,7 @@ import java.io.Serializable;
 
 public class RedisStatusManager implements StatusManager {
     @Autowired
-    RedisTemplate<String, Pair<FlowStatus, ?>> redisTemplate;
+    RedisTemplate<String, Triple<FlowStatus, ?, String>> redisTemplate;
     String keyTemplate = "%s:%s";
 
     @Override
@@ -21,12 +22,12 @@ public class RedisStatusManager implements StatusManager {
     }
 
     @Override
-    public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> statusPair, Integer timeout, FsmContext<?, ?> ctx) throws IOException {
-        redisTemplate.opsForValue().set(String.format(keyTemplate, flow, flowId), statusPair, timeout);
+    public void setStatus(String flow, Serializable flowId, Triple<FlowStatus, ?, String> triple, Integer timeout, FsmContext  ctx) throws IOException {
+        redisTemplate.opsForValue().set(String.format(keyTemplate, flow, flowId), triple, timeout);
     }
 
     @Override
-    public Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws IOException {
+    public Triple<FlowStatus, ?, String>   getStatus(String flow, Serializable flowId) throws IOException {
         return redisTemplate.opsForValue().get(String.format(keyTemplate, flow, flowId));
     }
 

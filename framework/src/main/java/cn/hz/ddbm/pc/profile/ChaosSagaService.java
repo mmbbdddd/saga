@@ -3,16 +3,14 @@ package cn.hz.ddbm.pc.profile;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.core.Fsm;
-import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.FsmPayload;
-import cn.hz.ddbm.pc.core.Profile;
+import cn.hz.ddbm.pc.common.lang.Triple;
+import cn.hz.ddbm.pc.core.*;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.exception.SessionException;
-import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
+import cn.hz.ddbm.pc.core.exception.StatusException;
 import cn.hz.ddbm.pc.core.log.Logs;
+import cn.hz.ddbm.pc.core.processor.saga.SagaState;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
 import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
 
@@ -34,18 +32,18 @@ public class ChaosSagaService extends BaseService {
         this.chaosRules = new ArrayList<>();
     }
 
-    public <S extends Enum<S>> void execute(String flowName, MockPayLoad<S> payload, String event, Integer times, Integer timeout, List<ChaosRule> rules, Boolean mock) {
+    public void execute(String flowName, MockPayLoad payload, String event, Integer times, Integer timeout, List<ChaosRule> rules, Boolean mock) {
         Assert.notNull(flowName, "flowName is null");
         Assert.notNull(payload, "FlowPayload is null");
         CountDownLatch cdl = new CountDownLatch(times);
         this.chaosRules = rules;
         statisticsLines = Collections.synchronizedList(new ArrayList<>(times));
         for (int i = 0; i < times; i++) {
-            MockPayLoad<S> mockPayLoad = payload.copy(i);
+            MockPayLoad  mockPayLoad = payload.copy(i);
             mockPayLoad.setId(i);
             threadPool.submit(() -> {
                 try {
-                    FsmContext<S, MockPayLoad<S>> ctx = standalone(flowName, mockPayLoad, event, mock);
+                    FsmContext ctx = standalone(flowName, mockPayLoad, event, mock);
                     statistics(mockPayLoad.getId(), new Object[]{flowName, mockPayLoad, event}, ctx);
                 } catch (Throwable t) {
                     Logs.error.error("", t);
@@ -82,29 +80,35 @@ public class ChaosSagaService extends BaseService {
         statisticsLines.add(new StatisticsLine(i, requestInfo, e));
     }
 
-    private <S extends Enum<S>> FsmContext<S, MockPayLoad<S>> standalone(String flowName, MockPayLoad<S> payload, String event, Boolean mock) throws StatusException, SessionException {
-        event = StrUtil.isBlank(event) ? Coasts.EVENT_DEFAULT : event;
-        Fsm                           flow = getFlow(flowName);
-        FsmContext<S, MockPayLoad<S>> ctx  = new FsmContext<S, MockPayLoad<S>>(flow, payload, event, Profile.chaosOf());
+    private FsmContext standalone(String flowName, MockPayLoad payload, String event, Boolean mock) throws StatusException, SessionException {
+        event = StrUtil.isBlank(event) ? Coasts.EVENT_FORWARD : event;
+        Fsm        flow = getFlow(flowName);
+        FsmContext ctx  = new FsmContext(flow, payload, event, Profile.chaosOf());
         ctx.setMockBean(mock);
         ctx.setIsChaos(true);
-        while (chaosIsContine(ctx)) {
+        ctx.setFluent(true);
+        while (ctx.getFluent() && chaosIsContine(ctx)) {
             execute(ctx);
         }
         return ctx;
     }
 
-    public <S extends Enum<S>> boolean chaosIsContine(FsmContext<S, MockPayLoad<S>> ctx) {
+    public <S extends Enum<S>> boolean chaosIsContine(FsmContext ctx) {
 
-        String flowName = ctx.getFlow().getName();
-        S      state    = ctx.getState();
-        if (!ctx.getFlow().isRunnable(state)) {
+        String     flowName = ctx.getFlow().getName();
+        FlowStatus status   = ctx.getFlowStatus();
+        if (FlowStatus.isEnd(status)) {
+            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), ctx.getStatus(), ctx.getState());
+            return false;
+        }
+        State state = ctx.getState();
+        if (!ctx.getFlow().isRunnableState(state)) {
             Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), ctx.getStatus(), ctx.getState());
             return false;
         }
 
         Long    executeCount = InfraUtils.getMetricsTemplate().get(ctx.getFlow().getName(), ctx.getId(), state, Coasts.EXECUTE_COUNT);
-        Integer nodeRetry    = ctx.getFlow().getNode(state).getRetry();
+        Integer nodeRetry    = ctx.getProfile().getStateRetry(state);
 
         if (executeCount > nodeRetry) {
             Logs.flow.warn("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), state, executeCount, nodeRetry);
@@ -119,38 +123,16 @@ public class ChaosSagaService extends BaseService {
     }
 
 
-    public static class MockPayLoad<S extends Enum<S>> implements FsmPayload<S> {
+    public static class MockPayLoad<S extends State> implements FsmPayload<S> {
         Integer    id;
         FlowStatus status;
-        S          state;
+        S      state;
+        String     event;
 
         public MockPayLoad(S init) {
             this.status = FlowStatus.INIT;
             this.state  = init;
-        }
-
-        @Override
-        public Serializable getId() {
-            return id;
-        }
-
-        public void setId(int i) {
-            this.id = i;
-        }
-
-        @Override
-        public FlowStatus getStatus() {
-            return status;
-        }
-
-        @Override
-        public S getState() {
-            return state;
-        }
-
-        @Override
-        public void setStatusSate(FlowStatus status, S state) {
-
+            this.event  = Coasts.EVENT_DEFAULT;
         }
 
 
@@ -158,6 +140,38 @@ public class ChaosSagaService extends BaseService {
             MockPayLoad<S> copy = new MockPayLoad<>(this.state);
             copy.setId(id);
             return copy;
+        }
+
+        @Override
+        public Serializable getId() {
+            return id;
+        }
+
+        @Override
+        public Triple<FlowStatus, S, String> getStatus() {
+            return Triple.of(status,state,event);
+        }
+
+        @Override
+        public void setStatus(Triple<FlowStatus, S, String> status) {
+            //todo
+        }
+
+
+//        @Override
+//        public void setStatus(Triple status) {
+//
+//        }
+//
+//        @Override
+//        public void setStatus(Triple<FlowStatus, State, String> triple) {
+//            this.state  = triple.getMiddle();
+//            this.status = triple.getLeft();
+//            this.event  = triple.getRight();
+//        }
+
+        public void setId(int i) {
+            this.id = i;
         }
     }
 
@@ -188,7 +202,7 @@ public class ChaosSagaService extends BaseService {
             this.value = t.getMessage();
         }
 
-        public TypeValue(FsmContext<?, ?> ctx) {
+        public TypeValue(FsmContext  ctx) {
             this.type  = ctx.getClass().getSimpleName();
             this.value = String.format("%s:%s", ctx.getState(), ctx.getStatus());
         }

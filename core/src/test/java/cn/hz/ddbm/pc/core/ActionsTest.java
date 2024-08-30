@@ -66,8 +66,9 @@ public class ActionsTest {
             return null;
         }
 
+
         @Override
-        public Enum queryState(FsmContext ctx) throws Exception {
+        public State queryState(FsmContext ctx) throws Exception {
             return null;
         }
     }

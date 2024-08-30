@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.plugin;
 
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.Plugin;
+import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.log.Logs;
 import org.springframework.context.ApplicationListener;
 
@@ -23,36 +24,56 @@ public class PerformancePlugin implements Plugin, ApplicationListener<Performanc
         return "performance";
     }
 
+    @Override
+    public void preAction(FsmContext ctx) {
+        sw.start(ctx.getAction().beanName());
+    }
+
+    @Override
+    public void postAction(State lastNode, FsmContext ctx) {
+
+    }
+
+    @Override
+    public void onActionException(State preNode, Exception e, FsmContext ctx) {
+
+    }
+
+    @Override
+    public void onActionFinally(FsmContext ctx) {
+        sw.stop(ctx.getAction().beanName());
+    }
+
 
     public void printReport() {
-        try {
-            Thread.sleep(1000l);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Thread.sleep(1000l);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         sw.prettyPrint();
     }
 
 
-    @Override
-    public void onActionFinally(String name, FsmContext ctx) {
-        sw.stop(name);
-    }
-
-    @Override
-    public void onActionException(String actionName, Enum preNode, Exception e, FsmContext ctx) {
-
-    }
-
-    @Override
-    public void postAction(String name, Enum lastNode, FsmContext ctx) {
-
-    }
-
-    @Override
-    public void preAction(String name, FsmContext ctx) {
-        sw.start(name);
-    }
+//    @Override
+//    public void onActionFinally(String name, FsmContext ctx) {
+//        sw.stop(name);
+//    }
+//
+//    @Override
+//    public void onActionException(String actionName, Enum preNode, Exception e, FsmContext ctx) {
+//
+//    }
+//
+//    @Override
+//    public void postAction(String name, Enum lastNode, FsmContext ctx) {
+//
+//    }
+//
+//    @Override
+//    public void preAction(String name, FsmContext ctx) {
+//        sw.start(name);
+//    }
 
     @Override
     public void onApplicationEvent(Event event) {

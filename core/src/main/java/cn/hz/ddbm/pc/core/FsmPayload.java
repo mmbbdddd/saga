@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.core;
 
 
+import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 
 import java.io.Serializable;
@@ -13,12 +14,11 @@ import java.io.Serializable;
  **/
 
 
-public interface FsmPayload<S extends Enum<S>> {
+public interface FsmPayload<S extends State> {
+
     Serializable getId();
 
-    FlowStatus getStatus();
+    Triple<FlowStatus,S,String> getStatus();
 
-    S getState();
-
-    void setStatusSate(FlowStatus status, S state);
+    void setStatus(Triple<FlowStatus,S,String> status);
 }

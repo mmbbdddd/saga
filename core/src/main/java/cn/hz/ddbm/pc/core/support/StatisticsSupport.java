@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.core.support;
 
 
+import cn.hz.ddbm.pc.core.State;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 
 public interface StatisticsSupport {
-    void increment(String flowName, Serializable flowId, Enum node, String variable);
+    void increment(String flowName, Serializable flowId, State node, String variable);
 
-    Long get(String flowName, Serializable flowId, Enum node, String variable);
+    Long get(String flowName, Serializable flowId, State node, String variable);
 
     @Data
     class VariableCalcConfig<A extends VariableConfig> {

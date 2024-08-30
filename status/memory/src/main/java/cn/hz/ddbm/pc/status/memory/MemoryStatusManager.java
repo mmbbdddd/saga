@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.status.memory;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.core.FsmContext;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.support.StatusManager;
@@ -15,7 +16,7 @@ import java.time.Duration;
 public class MemoryStatusManager implements StatusManager {
     private final Integer cacheSize;
     private final Integer hours;
-    Cache<String, Pair<FlowStatus, ?>> cache;
+    Cache<String, Triple<FlowStatus, ?, String>> cache;
     String                             keyTemplate = "%s:%s";
 
     public MemoryStatusManager(Integer cacheSize, Integer hours) {
@@ -36,12 +37,12 @@ public class MemoryStatusManager implements StatusManager {
     }
 
     @Override
-    public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> statusPair, Integer timeout, FsmContext<?, ?> ctx) throws IOException {
-        cache.put(String.format(keyTemplate, flow, flowId), statusPair);
+    public void setStatus(String flow, Serializable flowId, Triple<FlowStatus, ?, String> triple, Integer timeout, FsmContext  ctx) throws IOException {
+        cache.put(String.format(keyTemplate, flow, flowId), triple);
     }
 
     @Override
-    public Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws IOException {
+    public Triple<FlowStatus, ?, String> getStatus(String flow, Serializable flowId) throws IOException {
         return cache.getIfPresent(String.format(keyTemplate, flow, flowId));
     }
 

@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.core.action.proxy;
 
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.action.NoSuchRecordException;
 import cn.hz.ddbm.pc.core.action.SagaAction;
 
 public class SagaActionProxy implements SagaAction {
@@ -15,18 +16,24 @@ public class SagaActionProxy implements SagaAction {
         return sagaAction.beanName();
     }
 
+
     @Override
-    public void execute(FsmContext ctx) throws Exception {
-        sagaAction.execute(ctx);
+    public void exec(FsmContext ctx) throws Exception {
+
     }
 
     @Override
-    public Enum queryState(FsmContext ctx) throws Exception {
-        return sagaAction.queryState(ctx);
+    public Boolean executeQuery(FsmContext ctx) throws NoSuchRecordException {
+        return null;
     }
 
     @Override
-    public Boolean executeWhen(FsmContext ctx) throws Exception {
-        return sagaAction.executeWhen(ctx);
+    public void rollback(FsmContext ctx) {
+
+    }
+
+    @Override
+    public Boolean rollbackQuery(FsmContext ctx) throws NoSuchRecordException {
+        return null;
     }
 }

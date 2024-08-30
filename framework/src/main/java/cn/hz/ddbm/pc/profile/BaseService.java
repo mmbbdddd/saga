@@ -2,14 +2,11 @@ package cn.hz.ddbm.pc.profile;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
-import cn.hz.ddbm.pc.core.Fsm;
-import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.FsmEndException;
-import cn.hz.ddbm.pc.core.FsmPayload;
+import cn.hz.ddbm.pc.core.*;
 import cn.hz.ddbm.pc.core.coast.Coasts;
 import cn.hz.ddbm.pc.core.enums.FlowStatus;
 import cn.hz.ddbm.pc.core.exception.*;
-import cn.hz.ddbm.pc.core.exception.wrap.StatusException;
+import cn.hz.ddbm.pc.core.exception.StatusException;
 import cn.hz.ddbm.pc.core.log.Logs;
 import cn.hz.ddbm.pc.core.utils.ExceptionUtils;
 import cn.hz.ddbm.pc.core.utils.InfraUtils;
@@ -23,29 +20,29 @@ public abstract class BaseService {
     Map<String, Fsm> flows = new HashMap<>();
 
 
-    public <S extends Enum<S>, T extends FsmPayload<S>> void batchExecute(String flowName, List<T> payloads, String event) throws StatusException, SessionException {
+    public   void batchExecute(String flowName, List<FsmPayload> payloads, String event) throws StatusException, SessionException {
         Assert.notNull(flowName, "flowName is null");
         Assert.notNull(payloads, "FlowPayload is null");
-        event = StrUtil.isBlank(event) ? Coasts.EVENT_DEFAULT : event;
-        Fsm<S> flow = flows.get(flowName);
+        event = StrUtil.isBlank(event) ? Coasts.EVENT_FORWARD : event;
+        Fsm  flow = flows.get(flowName);
 
-        for (T payload : payloads) {
-            FsmContext<S, T> ctx = new FsmContext<>(flow, payload, event, flow.getProfile());
+        for (FsmPayload payload : payloads) {
+            FsmContext  ctx = new FsmContext(flow, payload, event, flow.getProfile());
             execute(ctx);
         }
     }
 
 
-    public <S extends Enum<S>, T extends FsmPayload<S>> void execute(String flowName, T payload, String event) throws StatusException, SessionException {
+    public   void execute(String flowName, FsmPayload payload, String event) throws StatusException, SessionException {
         Assert.notNull(flowName, "flowName is null");
         Assert.notNull(payload, "FlowPayload is null");
-        event = StrUtil.isBlank(event) ? Coasts.EVENT_DEFAULT : event;
-        Fsm<S>           flow = flows.get(flowName);
-        FsmContext<?, ?> ctx  = new FsmContext<>(flow, payload, event, flow.getProfile());
+        event = StrUtil.isBlank(event) ? Coasts.EVENT_FORWARD : event;
+        Fsm            flow = flows.get(flowName);
+        FsmContext  ctx  = new FsmContext(flow, payload, event, flow.getProfile());
         execute(ctx);
     }
 
-    public <S extends Enum<S>, T extends FsmPayload<S>> void execute(FsmContext<S, T> ctx) throws StatusException, SessionException {
+    public   void execute(FsmContext  ctx) throws StatusException, SessionException {
         if (Boolean.FALSE.equals(tryLock(ctx))) {
             return;
         }
@@ -53,7 +50,7 @@ public abstract class BaseService {
             Boolean fluent = ctx.getFluent();
             ctx.getFlow().execute(ctx);
             if (fluent && isCanContinue(ctx)) {
-                ctx.setEvent(Coasts.EVENT_DEFAULT);
+                ctx.setEvent(getFluentEvent(ctx));
                 ctx.getFlow().execute(ctx);
             }
         } catch (StatusException e) {
@@ -72,12 +69,12 @@ public abstract class BaseService {
                     flush(ctx);
                 } else if (isPaused(e, ctx)) { //暂停异常，状态设置为暂停，等人工修复
                     Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    ctx.setStatus(FlowStatus.PAUSE);
+                    ctx.setFlowStatus(FlowStatus.PAUSE);
                     flush(ctx);
                 } else if (isStoped(e, ctx)) {//流程结束或者取消
                     Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    FlowStatus status = ctx.getFlow().getEnds().contains(ctx.getState()) ? FlowStatus.FINISH : ctx.getStatus();
-                    ctx.setStatus(status);
+                    FlowStatus status = ctx.getFlow().getEnds().contains(ctx.getState()) ? FlowStatus.FINISH : ctx.getFlowStatus();
+                    ctx.setFlowStatus(status);
                     flush(ctx);
                 } else {
                     //可重试异常
@@ -93,6 +90,10 @@ public abstract class BaseService {
             releaseLock(ctx);
         }
 
+    }
+
+    private String getFluentEvent(FsmContext ctx) {
+        return ctx.getProcessor().getFluentEvent(ctx);
     }
 
     private boolean isRetryable(Throwable e, FsmContext ctx) {
@@ -125,7 +126,7 @@ public abstract class BaseService {
     }
 
     private boolean isStoped(Throwable e, FsmContext ctx) {
-        return e instanceof FsmEndException || FlowStatus.isEnd(ctx.getStatus());
+        return e instanceof FsmEndException || FlowStatus.isEnd(ctx.getFlowStatus());
     }
 
     public void addFlow(Fsm flow) {
@@ -145,16 +146,22 @@ public abstract class BaseService {
      * @param ctx
      * @return
      */
-    public <S extends Enum<S>, T extends FsmPayload<S>> boolean isCanContinue(FsmContext<S, T> ctx) {
-        S      state    = ctx.getState();
-        String flowName = ctx.getFlow().getName();
-        if (!ctx.getFlow().isRunnable(state)) {
+    public   boolean isCanContinue(FsmContext  ctx) {
+
+        String     flowName = ctx.getFlow().getName();
+        FlowStatus status   = ctx.getFlowStatus();
+        if (FlowStatus.isEnd(status)) {
+            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), ctx.getStatus(), ctx.getState());
+            return false;
+        }
+        State state = ctx.getState();
+        if (!ctx.getFlow().isRunnableState(state)) {
             Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), ctx.getStatus(), ctx.getState());
             return false;
         }
 
         Long    exeRetry  = InfraUtils.getMetricsTemplate().get(ctx.getFlow().getName(), ctx.getId(), ctx.getState(), Coasts.EXECUTE_COUNT);
-        Integer nodeRetry = ctx.getFlow().getNode(state).getRetry();
+        Integer nodeRetry = ctx.getProfile().getStateRetry(state);
 
         if (exeRetry > nodeRetry) {
             Logs.flow.warn("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), ctx.getState(), exeRetry, nodeRetry);
@@ -166,14 +173,14 @@ public abstract class BaseService {
     /**
      * 刷新状态到基础设施
      */
-    private void flush(FsmContext<?, ?> ctx) throws SessionException, StatusException {
+    private void flush(FsmContext ctx) throws SessionException, StatusException {
         ctx.syncPayLoad();
         InfraUtils.getSessionManager(ctx.getProfile().getSessionManager()).flush(ctx);
         InfraUtils.getStatusManager(ctx.getProfile().getStatusManager()).flush(ctx);
     }
 
 
-    private void releaseLock(FsmContext<?, ?> ctx) {
+    private void releaseLock(FsmContext ctx) {
         String key = String.format("%s:%s:%s", InfraUtils.getDomain(), ctx.getFlow().getName(), ctx.getId());
         try {
             InfraUtils.getLocker().releaseLock(key);
@@ -183,7 +190,7 @@ public abstract class BaseService {
         }
     }
 
-    private Boolean tryLock(FsmContext<?, ?> ctx) {
+    private Boolean tryLock(FsmContext ctx) {
         String key = String.format("%s:%s:%s", InfraUtils.getDomain(), ctx.getFlow().getName(), ctx.getId());
         try {
             InfraUtils.getLocker().tryLock(key, ctx.getProfile().getLockTimeout());

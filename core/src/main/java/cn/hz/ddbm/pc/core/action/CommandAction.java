@@ -1,9 +1,10 @@
 package cn.hz.ddbm.pc.core.action;
 
 import cn.hz.ddbm.pc.core.FsmContext;
+import cn.hz.ddbm.pc.core.State;
 
-public interface CommandAction<S extends Enum<S>> extends Action<S> {
+public interface CommandAction<S extends State> extends Action {
 
-    void execute(FsmContext<S, ?> ctx) throws Exception;
+    S execute(FsmContext ctx) throws Exception;
 
 }
