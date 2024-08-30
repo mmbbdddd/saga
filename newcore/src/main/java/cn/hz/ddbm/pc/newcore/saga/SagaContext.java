@@ -5,13 +5,12 @@ import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 
-import java.io.Serializable;
 import java.util.Map;
 
 public class SagaContext<S> extends FlowContext<SagaModel<S>, SagaState<S>, SagaWorker<S>> {
 
-    public SagaContext(SagaModel<S> flow,   Payload<SagaState<S>> payload, Profile profile, Map<String, Object> session) {
-        super(flow,  payload, profile, session);
+    public SagaContext(SagaModel<S> flow, Payload<SagaState<S>> payload, Profile profile, Map<String, Object> session) {
+        super(flow, payload, profile, session);
     }
 
     public String getEvent() {

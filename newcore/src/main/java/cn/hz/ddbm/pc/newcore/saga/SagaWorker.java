@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Assert;
+import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
@@ -30,9 +31,9 @@ public class SagaWorker<S> extends Worker<SagaContext<S>> {
     @Override
     public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException {
         if (ctx.getState().getIsForward()) {
-            forward.onEvent((SagaProcessor) ctx.getProcessor(), ctx);
+            forward.onEvent(ctx);
         } else {
-            backoff.onEvent((SagaProcessor) ctx.getProcessor(), ctx);
+            backoff.onEvent(ctx);
         }
     }
 
@@ -58,11 +59,11 @@ class ForwardQuantum<S> {
         this.rollback = new SagaState<>(curr, SagaState.Offset.task, false);
     }
 
-    public void onEvent(SagaProcessor processor, SagaContext<S> ctx) throws IdempotentException, ActionException {
-
-        SagaState<S>     lastState    = ctx.getState().cloneSelf();
-        SagaActionProxy  sagaAction   = (SagaActionProxy) ctx.getAction();
-        SagaState.Offset currentState = lastState.getOffset();
+    public void onEvent(SagaContext<S> ctx) throws IdempotentException, ActionException {
+        FlowProcessorService processor    = ctx.getProcessor();
+        SagaState<S>         lastState    = ctx.getState().cloneSelf();
+        SagaActionProxy      sagaAction   = (SagaActionProxy) ctx.getAction();
+        SagaState.Offset     currentState = lastState.getOffset();
         //如果任务可执行
         if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
             //加锁
@@ -152,11 +153,11 @@ class BackoffQuantum<S> {
         this.manual           = FlowStatus.MANUAL;
     }
 
-    public void onEvent(SagaProcessor processor, SagaContext<S> ctx) throws IdempotentException {
-
-        SagaState<S>     lastState    = ctx.getState().cloneSelf();
-        SagaActionProxy  sagaAction   = (SagaActionProxy) ctx.getAction();
-        SagaState.Offset currentState = lastState.getOffset();
+    public void onEvent(SagaContext<S> ctx) throws IdempotentException {
+        FlowProcessorService processor    = ctx.getProcessor();
+        SagaState<S>         lastState    = ctx.getState().cloneSelf();
+        SagaActionProxy      sagaAction   = (SagaActionProxy) ctx.getAction();
+        SagaState.Offset     currentState = lastState.getOffset();
         //如果任务可执行
         if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
             //加锁

@@ -4,13 +4,12 @@ import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.Profile;
 
-import java.io.Serializable;
 import java.util.Map;
 
 public class FsmContext extends FlowContext<FsmModel, FsmState, FsmWorker> {
 
-    public FsmContext(FsmModel flow,  Payload<FsmState> payload, Profile profile, Map<String, Object> session) {
-        super(flow,  payload, profile, session);
+    public FsmContext(FsmModel flow, Payload<FsmState> payload, Profile profile, Map<String, Object> session) {
+        super(flow, payload, profile, session);
     }
 
     @Override

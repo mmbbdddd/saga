@@ -2,13 +2,11 @@ package cn.hz.ddbm.pc.newcore.infra;
 
 
 import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -27,7 +25,7 @@ public interface StatusManager {
     Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws StatusException;
 
     default void flush(FlowContext ctx) throws StatusException {
-        setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(),ctx.getState()), ctx.getProfile().getStatusTimeout());
+        setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(), ctx.getState()), ctx.getProfile().getStatusTimeout());
     }
 
 

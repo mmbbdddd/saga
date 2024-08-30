@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Assert;
+import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
 import lombok.Data;
 
@@ -11,21 +12,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 public abstract class FlowContext<F extends FlowModel<S>, S extends State, W extends Worker<?>> {
-    final     Serializable        id;
-    final     F                   flow;
-    final     Map<String, Object> session;
-    final     Payload<S>          payload;
-    final     Profile             profile;
-    transient FlowStatus          status;
-    transient S                   state;
-    transient W                   worker;
-    transient FlowProcessor<?>    processor;
-    transient Action              action;
-    transient ActionResult        actionResult;
+    final     Serializable         id;
+    final     F                    flow;
+    final     Map<String, Object>  session;
+    final     Payload<S>           payload;
+    final     Profile              profile;
+    transient FlowStatus           status;
+    transient S                    state;
+    transient W                    worker;
+    transient FlowProcessorService processor;
+    transient Action               action;
+    transient ActionResult         actionResult;
     //todo
     AtomicInteger executeTimes;
 
-    public FlowContext(F flow,  Payload<S> payload, Profile profile, Map<String, Object> session) {
+    public FlowContext(F flow, Payload<S> payload, Profile profile, Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
         Assert.notNull(payload, "payload is null");
         Assert.notNull(profile, "profile is null");
@@ -45,9 +46,6 @@ public abstract class FlowContext<F extends FlowModel<S>, S extends State, W ext
 
     public abstract Integer getRetry(S state);
 
-    public FlowProcessor<?> getProcessor() {
-        return processor;
-    }
 
     public void setState(S state) {
         if (getFlow().getEnds().contains(state)) {

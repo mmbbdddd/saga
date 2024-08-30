@@ -23,7 +23,7 @@ public class InfraUtils {
     static Map<Coast.LockType, Locker>            lockerMap;
 
     public InfraUtils() {
-        es                = Executors.newFixedThreadPool(2);
+        es = Executors.newFixedThreadPool(2);
 
         sessionManagerMap = SpringUtil.getBeansOfType(SessionManager.class).values().stream().collect(Collectors.toMap(
                 SessionManager::code,
@@ -33,7 +33,7 @@ public class InfraUtils {
                 StatusManager::code,
                 t -> new StatusManagerProxy(t)
         ));
-        lockerMap  = SpringUtil.getBeansOfType(Locker.class).values().stream().collect(Collectors.toMap(
+        lockerMap         = SpringUtil.getBeansOfType(Locker.class).values().stream().collect(Collectors.toMap(
                 Locker::code,
                 t -> new LockProxy(t)
         ));
