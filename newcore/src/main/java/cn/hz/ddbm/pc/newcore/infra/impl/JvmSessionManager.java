@@ -1,28 +1,24 @@
 package cn.hz.ddbm.pc.newcore.infra.impl;
 
-import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.SessionException;
 import cn.hz.ddbm.pc.newcore.infra.SessionManager;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.io.Serializable;
-import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 
 public class JvmSessionManager implements SessionManager {
 
     String keyTemplate = "%s:%s";
 
-    Cache<String, Map<String, Object>> cache;
+    ConcurrentMap<String, Map<String, Object>> cache;
 
     public JvmSessionManager() {
-        this.cache     = Caffeine.newBuilder()
-                .initialCapacity(1000)
-                .maximumSize(1000)
-                .expireAfterWrite(Duration.ofHours(2))
-                .build();
+        cache = new ConcurrentHashMap<>();
     }
 
 
@@ -35,7 +31,7 @@ public class JvmSessionManager implements SessionManager {
     public void set(String flowName, Serializable id, Map<String, Object> session) throws SessionException {
         try {
             cache.put(String.format(keyTemplate, flowName, id), session);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new SessionException(e);
         }
     }
@@ -43,8 +39,8 @@ public class JvmSessionManager implements SessionManager {
     @Override
     public Map<String, Object> get(String flowName, Serializable flowId) throws SessionException {
         try {
-            return cache.getIfPresent(String.format(keyTemplate, flowName, flowId));
-        }catch (Exception e){
+            return cache.computeIfAbsent(String.format(keyTemplate, flowName, flowId), s -> new HashMap<>());
+        } catch (Exception e) {
             throw new SessionException(e);
         }
     }

@@ -9,19 +9,17 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class JvmStatisticsSupport implements StatisticsSupport {
 
 
-    Cache<String, AtomicLong> cache;
+    ConcurrentMap<String, AtomicLong> cache;
 
     public JvmStatisticsSupport() {
-        this.cache = Caffeine.newBuilder()
-                .initialCapacity(1000)
-                .maximumSize(1000)
-                .expireAfterWrite(Duration.ofHours(2))
-                .build();
+        cache = new ConcurrentHashMap<>();
     }
 
 
@@ -33,12 +31,12 @@ public class JvmStatisticsSupport implements StatisticsSupport {
     @Override
     public void increment(String flowName, Serializable flowId, State node, String variable) {
         String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.code(), variable);
-        cache.get(realKey, s -> new AtomicLong(0)).incrementAndGet();
+        cache.computeIfAbsent(realKey, s -> new AtomicLong(0)).incrementAndGet();
     }
 
     @Override
     public Long get(String flowName, Serializable flowId, State node, String variable) {
         String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.code(), variable);
-        return cache.get(realKey, s -> new AtomicLong(0)).get();
+        return cache.computeIfAbsent(realKey, s -> new AtomicLong(0)).get();
     }
 }

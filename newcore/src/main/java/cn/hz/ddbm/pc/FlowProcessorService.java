@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class FlowProcessorService<C extends FlowContext> implements FlowProcessor<C> {
-    Map<String, FlowModel>                       flows;
+    protected Map<String, FlowModel>                       flows;
     Map<Coast.SessionType, SessionManager>       sessionManagerMap;
     Map<Coast.StatusType, StatusManager>         statusManagerMap;
     Map<Coast.LockType, Locker>                  lockerMap;
@@ -69,9 +69,6 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         });
         SpringUtil.getBeansOfType(StatisticsSupport.class).forEach((key, bean) -> {
             this.statisticsSupportMap.put(bean.code(), new StatisticsSupportProxy(bean));
-        });
-        SpringUtil.getBeansOfType(FlowFactory.class).forEach((key, flowFactory) -> {
-            this.flows.putAll(flowFactory.getFlows());
         });
     }
 

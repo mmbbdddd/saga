@@ -16,16 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class JvmStatusManager implements StatusManager {
-    Cache<String, Pair<FlowStatus, ?>> statusMap;
-    ConcurrentMap<String, Boolean>     actionTables;
-    String                             keyTemplate = "%s:%s";
+    ConcurrentMap<String, Pair<FlowStatus, ?>> statusMap;
+    ConcurrentMap<String, Boolean>             actionTables;
+    String                                     keyTemplate = "%s:%s";
 
     public JvmStatusManager() {
-        this.statusMap    = Caffeine.newBuilder()
-                .initialCapacity(1000)
-                .maximumSize(1000)
-                .expireAfterWrite(Duration.ofHours(2))
-                .build();
+        this.statusMap = new ConcurrentHashMap<>();
         this.actionTables = new ConcurrentHashMap<>();
     }
 
@@ -37,7 +33,7 @@ public class JvmStatusManager implements StatusManager {
     @Override
     public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> status, Integer timeout) throws StatusException {
         try {
-            Logs.status.debug("状态变迁到{}",status.getValue());
+            Logs.status.debug("状态变迁到{}", status.getValue());
             statusMap.put(String.format(keyTemplate, flow, flowId), status);
         } catch (Exception e) {
             throw new StatusException(e);
@@ -48,7 +44,7 @@ public class JvmStatusManager implements StatusManager {
     @Override
     public Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws StatusException {
         try {
-            return statusMap.getIfPresent(String.format(keyTemplate, flow, flowId));
+            return statusMap.get(String.format(keyTemplate, flow, flowId));
         } catch (Exception e) {
             throw new StatusException(e);
         }
@@ -60,8 +56,8 @@ public class JvmStatusManager implements StatusManager {
             if (actionTables.containsKey(key)) {
                 throw new IdempotentException(String.format("交易已发生:" + key));
             }
-        }catch (Exception e){
-            throw new IdempotentException(String.format("交易已发生:" + key),e);
+        } catch (Exception e) {
+            throw new IdempotentException(String.format("交易已发生:" + key), e);
         }
     }
 

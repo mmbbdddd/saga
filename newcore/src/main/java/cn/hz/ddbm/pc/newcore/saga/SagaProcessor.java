@@ -1,20 +1,20 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.PluginService;
-import cn.hz.ddbm.pc.newcore.FlowContext;
-import cn.hz.ddbm.pc.newcore.FlowStatus;
-import cn.hz.ddbm.pc.newcore.Plugin;
-import cn.hz.ddbm.pc.newcore.Profile;
+import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
 import cn.hz.ddbm.pc.newcore.infra.SessionManager;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
+    @PostConstruct
+    public void init(){
+        SpringUtil.getBeansOfType(SagaFlowFactory.class).forEach((key, flowFactory) -> {
+            this.flows.putAll(flowFactory.getFlows());
+        });
+    }
 
     public SagaContext<S> workerProcess(String flowName, SagaPayload<S> payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
         Assert.notNull(flowName,"flowName is null");

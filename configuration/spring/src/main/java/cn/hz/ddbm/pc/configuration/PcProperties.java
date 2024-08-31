@@ -6,14 +6,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "dddd.pc")
 @Data
 public class PcProperties {
-    DefineStyle    defineStyle    = DefineStyle.dsl;
     StatusManager  statusManager  = new StatusManager();
     SessionManager sessionManager = new SessionManager();
     Statistics     statistics     = new Statistics();
 
-    public enum DefineStyle {
-        dsl, json, xml
-    }
+
 
     @Data
     public static class StatusManager {

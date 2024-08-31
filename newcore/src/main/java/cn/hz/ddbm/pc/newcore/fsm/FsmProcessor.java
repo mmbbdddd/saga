@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
@@ -8,16 +9,25 @@ import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
+import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class FsmProcessor<S extends Serializable> extends FlowProcessorService<FsmContext<S>> {
+    @PostConstruct
+    public void init(){
+        SpringUtil.getBeansOfType(FsmFlowFactory.class).forEach((key, flowFactory) -> {
+            this.flows.putAll(flowFactory.getFlows());
+        });
+    }
 
     public FsmContext<S> workerProcess(String flowName, FsmPayload<S> payload, String event, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
         Assert.notNull(flowName, "flowName is null");
