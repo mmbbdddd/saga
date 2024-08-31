@@ -2,15 +2,20 @@ package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.FlowProcessorService;
+import cn.hz.ddbm.pc.PluginService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
 import cn.hz.ddbm.pc.newcore.infra.SessionManager;
 import cn.hz.ddbm.pc.newcore.log.Logs;
+import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
@@ -81,4 +86,10 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
     }
 
 
+    @Override
+    protected List<Plugin> getDefaultPlugins() {
+        return new ArrayList<Plugin>(){{
+            add(new SagaDigestPlugin());
+        }};
+    }
 }

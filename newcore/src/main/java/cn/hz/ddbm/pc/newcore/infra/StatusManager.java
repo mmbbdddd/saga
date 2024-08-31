@@ -31,7 +31,7 @@ public interface StatusManager {
 
 
     default void flush(FlowContext ctx) throws StatusException {
-        setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(), ctx.getState()), ctx.getProfile().getStatusTimeout());
+        setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(), ctx.getState()), ctx.getProfile().getStatusTimeoutMicros());
     }
 
 }

@@ -3,13 +3,18 @@ package cn.hz.ddbm.pc.newcore.fsm;
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
+import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
+import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FsmProcessor<S extends Serializable> extends FlowProcessorService<FsmContext<S>> {
 
@@ -69,5 +74,13 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
             }
         }
 
+    }
+
+
+    @Override
+    protected List<Plugin> getDefaultPlugins() {
+        return new ArrayList<Plugin>(){{
+            add(new FsmDigestPlugin());
+        }};
     }
 }

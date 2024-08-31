@@ -41,7 +41,7 @@ public class Coast {
     }
 
     public enum StatisticsType {
-        windows,
-        range
+        memory,
+        redis
     }
 }

@@ -12,6 +12,7 @@ import cn.hz.ddbm.pc.newcore.log.Logs;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public abstract class FlowProcessorService<C extends FlowContext> implements FlowProcessor<C> {
@@ -26,8 +27,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
 
     @PostConstruct
     public void afterPropertiesSet() {
-
-        this.pluginService = new PluginService();
+        this.pluginService = new PluginService(getDefaultPlugins());
         SpringUtil.getBeansOfType(SessionManager.class).forEach((key, bean) -> {
             this.sessionManagerMap.put(bean.code(), new SessionManagerProxy(bean));
         });
@@ -48,6 +48,8 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         });
     }
 
+    protected abstract List<Plugin> getDefaultPlugins();
+
     public FlowModel getFlow(String flowName) {
         return flows.get(flowName);
     }
@@ -65,7 +67,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         String  key     = String.format("lock:%s:%s:%s", profile.getNamespace(), ctx.getFlow().getName(), ctx.getId());
 
         try {
-            lockerMap.get(profile.getLock()).tryLock(key, profile.getStatusTimeout());
+            lockerMap.get(profile.getLock()).tryLock(key, profile.getLockTimeoutMicros());
             return true;
         } catch (LockException e) {
             return false;

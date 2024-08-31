@@ -10,21 +10,26 @@ import java.util.List;
 @Getter
 public class Profile {
     String               namespace;
-    Integer              maxLoopErrorTimes = 3;
-    Integer              statusTimeout;
-    Integer              lockTimeout;
+    Integer              maxLoopErrorTimes   = 3;
+    Integer              statusTimeoutMicros = 3000;
+    Integer              lockTimeoutMicros   = 3000;
     Coast.StatusType     status;
     Coast.SessionType    session;
     Coast.LockType       lock;
     Coast.StatisticsType statistics;
     Coast.ScheduleType   schedule;
-
-    List<Plugin> plugins;
+    List<Plugin>         plugins;
 
     public Profile() {
-        this.plugins = new ArrayList<>();
-//        this.plugins.add(new FsmDigestPlugin());
-        this.plugins.add(new SagaDigestPlugin());
+        this.namespace           = "default";
+        this.maxLoopErrorTimes   = 3;
+        this.statusTimeoutMicros = 6000;
+        this.lockTimeoutMicros   = 6000;
+        this.status              = Coast.StatusType.redis;
+        this.session             = Coast.SessionType.redis;
+        this.lock                = Coast.LockType.redis;
+        this.statistics          = Coast.StatisticsType.redis;
+        this.schedule            = Coast.ScheduleType.timer;
     }
 
 }
