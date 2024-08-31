@@ -31,7 +31,7 @@ public interface FlowProcessor<C extends FlowContext> {
      */
     default void flowProcess(C ctx) throws FlowEndException, InterruptedException, PauseException {
         //判断流程是否结束
-        AtomicInteger loopTimes = new AtomicInteger(0);
+
         while (true) {
             try {
                 workerProcess(ctx);
@@ -42,11 +42,7 @@ public interface FlowProcessor<C extends FlowContext> {
             } catch (FlowEndException e) {
                 throw e;
             } catch (Exception e) {
-                if (loopTimes.incrementAndGet() > ctx.getProfile().getMaxLoopErrorTimes()) {
-                    //todo
-                    return;
-                }
-                ;
+
             }
         }
         //

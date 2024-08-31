@@ -5,14 +5,18 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.fsm.FsmActionProxy;
+import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.infra.*;
 import cn.hz.ddbm.pc.newcore.infra.impl.*;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
+import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaActionProxy;
+import cn.hz.ddbm.pc.newcore.test.NoneFsmAction;
+import cn.hz.ddbm.pc.newcore.test.NoneSagaAction;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -26,6 +30,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     Map<Coast.LockType, Locker>                  lockerMap;
     Map<Coast.ScheduleType, ScheduleManger>      scheduleMangerMap;
     Map<Coast.StatisticsType, StatisticsSupport> statisticsSupportMap;
+    Map<String, Action>                          actionMap;
 
     PluginService pluginService;
 
@@ -36,6 +41,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         this.lockerMap            = new HashMap<>();
         this.scheduleMangerMap    = new HashMap<>();
         this.statisticsSupportMap = new HashMap<>();
+        this.actionMap            = new HashMap<>();
 
         this.pluginService = new PluginService(getDefaultPlugins());
         this.statisticsSupportMap.put(Coast.StatisticsType.jvm, new JvmStatisticsSupport());
@@ -43,6 +49,8 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         this.statusManagerMap.put(Coast.StatusType.jvm, new JvmStatusManager());
         this.scheduleMangerMap.put(Coast.ScheduleType.timer, new TimerScheduleManager());
         this.lockerMap.put(Coast.LockType.jvm, new JvmLocker());
+        this.actionMap.put(Coast.NONE_FSM_ACTION, new FsmActionProxy<>(new NoneFsmAction<>()));
+        this.actionMap.put(Coast.NONE_SAGA_ACTION, new SagaActionProxy(new NoneSagaAction()));
     }
 
     @PostConstruct
@@ -166,20 +174,32 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
 
 
     public void metricsNode(FlowContext ctx) {
-        String flowName = ctx.getFlow().getName();
-        Serializable id = ctx.getId();
-        State  state    = ctx.getState();
-        StatisticsSupport ss = statisticsSupportMap.get(ctx.getProfile().getStatistics());
-        ss.increment(flowName,id,state,Coast.STATISTICS.EXECUTE_TIMES);
+        String            flowName = ctx.getFlow().getName();
+        Serializable      id       = ctx.getId();
+        State             state    = ctx.getState();
+        StatisticsSupport ss       = statisticsSupportMap.get(ctx.getProfile().getStatistics());
+        ss.increment(flowName, id, state, Coast.STATISTICS.EXECUTE_TIMES);
     }
 
-    public Long getExecuteTimes(FlowContext ctx,   State state) {
-        String flowName = ctx.getFlow().getName();
-        Serializable id = ctx.getId();
-        StatisticsSupport ss = statisticsSupportMap.get(ctx.getProfile().getStatistics());
-        return ss.get(flowName,id,state,Coast.STATISTICS.EXECUTE_TIMES);
+    public Long getExecuteTimes(FlowContext ctx, State state) {
+        String            flowName = ctx.getFlow().getName();
+        Serializable      id       = ctx.getId();
+        StatisticsSupport ss       = statisticsSupportMap.get(ctx.getProfile().getStatistics());
+        return ss.get(flowName, id, state, Coast.STATISTICS.EXECUTE_TIMES);
     }
 
+    public <T> T getAction(String action, Class<T> type) {
+        T actionBean = (T) actionMap.get(action);
+        if (null == actionBean) {
+            if (type.equals(SagaAction.class)) {
+                return (T) actionMap.get(Coast.NONE_SAGA_ACTION);
+            } else {
+                return (T) actionMap.get(Coast.NONE_FSM_ACTION);
+            }
+        } else {
+            return actionBean;
+        }
+    }
 }
 
 

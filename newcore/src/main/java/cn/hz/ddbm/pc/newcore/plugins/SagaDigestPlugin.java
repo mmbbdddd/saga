@@ -30,7 +30,7 @@ public class SagaDigestPlugin extends Plugin {
         Serializable id           = ctx.getId();
         String       from         = lastNode.code();
         String       action       = ctx.getAction().code();
-        String       actionResult = ctx.getActionResult().toString();
+        Object       actionResult = ctx.getActionResult();
         String       targetStatus = ctx.getState().code();
 
         Logs.digest.info("{},{},{}, {},{},{},{}==>{}", directStr, flow,id, from,  action, actionResult, from, targetStatus);

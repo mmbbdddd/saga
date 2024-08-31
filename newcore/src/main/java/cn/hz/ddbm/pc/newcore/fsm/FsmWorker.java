@@ -20,24 +20,23 @@ public abstract class FsmWorker<S extends Serializable> extends Worker<FsmContex
 }
 
 class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
-    FsmState<S>       from;
-    FsmState<S>       failover;
-    String            action;
-    FsmActionProxy<S> sagaAction;
+    FsmState<S> from;
+    FsmState<S> failover;
+    String      action;
 
 
     public SagaFsmWorker(S from, String sagaAction, S failover) {
         this.from       = new FsmState<>(from);
         this.failover   = new FsmState<>(failover);
-        this.action     = sagaAction;
-        this.sagaAction = new FsmActionProxy(this, this.action);
+        this.action = sagaAction;
     }
 
     @Override
     public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException {
         FlowProcessorService processor = ctx.getProcessor();
         FsmState<S>          lastState = ctx.getState();
-        ctx.setAction(this.sagaAction.getOrInitAction());
+        ctx.setAction((FsmSagaAction) processor.getAction(action, FsmSagaAction.class));
+        FsmSagaAction<S> sagaAction = (FsmSagaAction) ctx.getAction();
         //如果任务可执行
         if (Objects.equals(lastState, from)) {
             //加锁
@@ -98,13 +97,11 @@ class ToFsmWorker<S extends Serializable> extends FsmWorker<S> {
     FsmState<S>       from;
     FsmState<S>       to;
     String            action;
-    FsmActionProxy<S> commandAction;
 
     public ToFsmWorker(S from, String commandAction, S to) {
         this.from          = new FsmState<>(from);
         this.action        = commandAction;
         this.to            = new FsmState<>(to);
-        this.commandAction = new FsmActionProxy(this, this.action);
     }
 
     @Override
@@ -114,7 +111,8 @@ class ToFsmWorker<S extends Serializable> extends FsmWorker<S> {
         Serializable         id        = ctx.getId();
         String               event     = ctx.getEvent();
         FsmState<S>          lastNode  = ctx.getState();
-        ctx.setAction(this.commandAction.getOrInitAction());
+        ctx.setAction((FsmCommandAction) processor.getAction(action, FsmCommandAction.class));
+        FsmCommandAction<S> commandAction = (FsmCommandAction) ctx.getAction();
         try {
             processor.plugin().pre(ctx);
             commandAction.command(ctx);

@@ -1,5 +1,7 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
+import cn.hz.ddbm.pc.FlowProcessorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
@@ -7,23 +9,11 @@ import cn.hz.ddbm.pc.newcore.test.NoneSagaAction;
 
 
 public class SagaActionProxy implements SagaAction {
-    String     action;
     SagaAction sagaAction;
 
-    public SagaActionProxy(String action) {
-        this.action = action;
+    public SagaActionProxy(SagaAction sagaAction) {
+        this.sagaAction= sagaAction;
     }
-
-    public SagaActionProxy getOrInitAction() {
-        if (null == sagaAction) {
-            synchronized (this) {
-//                this.sagaAction = getBean(action, SagaAction.class);
-                this.sagaAction = new NoneSagaAction();
-            }
-        }
-        return this;
-    }
-
 
     public void execute(SagaContext<?> ctx) throws ActionException {
         try {
@@ -75,6 +65,6 @@ public class SagaActionProxy implements SagaAction {
 
     @Override
     public String code() {
-        return action;
+        return sagaAction.code();
     }
 }

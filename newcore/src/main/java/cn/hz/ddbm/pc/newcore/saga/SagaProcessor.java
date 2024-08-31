@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
@@ -56,7 +57,7 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
         }
 
-        SagaWorker<S> worker = flow.getWorker(ctx.getState().getState());
+        SagaWorker<S>     worker    = flow.getWorker(ctx.getState().getState());
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);
@@ -77,6 +78,10 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
                 } else {
                     //可重试异常
                     Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                    Integer loopErrorTimes = ctx.getLoopErrorTimes().incrementAndGet();
+                    if (loopErrorTimes > ctx.getProfile().getMaxLoopErrorTimes()) {
+                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), loopErrorTimes, ctx.getProfile().getMaxLoopErrorTimes()));
+                    }
                     flush(ctx);
 //                    ctx.getFlow().execute(ctx);
                 }

@@ -7,8 +7,12 @@ import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
+import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Data
@@ -17,7 +21,7 @@ public class SagaWorker<S> extends Worker<SagaContext<S>> {
     S                 currentState;
     ForwardQuantum<S> forward;
     BackoffQuantum<S> backoff;
-    SagaActionProxy   sagaAction;
+    String            action;
 
     public SagaWorker(Integer index, S pre, S task, S next, String sagaAction) {
         Assert.notNull(task, "task is null");
@@ -25,12 +29,15 @@ public class SagaWorker<S> extends Worker<SagaContext<S>> {
         this.currentState = task;
         this.forward      = new ForwardQuantum<>(task, next);
         this.backoff      = new BackoffQuantum<>(task, pre);
-        this.sagaAction   = new SagaActionProxy(sagaAction);
+        this.action       = sagaAction;
     }
 
     @Override
     public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException {
-        ctx.setAction(this.sagaAction.getOrInitAction());
+        FlowProcessorService processor = ctx.getProcessor();
+        ctx.setAction((SagaAction) processor.getAction(action, SagaAction.class));
+        SagaAction sagaAction = (SagaAction) ctx.getAction();
+        ctx.setAction(sagaAction);
         if (ctx.getState().getIsForward()) {
             forward.onEvent(ctx);
         } else {
@@ -63,7 +70,7 @@ class ForwardQuantum<S> {
     public void onEvent(SagaContext<S> ctx) throws IdempotentException, ActionException {
         FlowProcessorService processor    = ctx.getProcessor();
         SagaState<S>         lastState    = ctx.getState().cloneSelf();
-        SagaActionProxy      sagaAction   = (SagaActionProxy) ctx.getAction();
+        SagaAction           sagaAction   = (SagaAction) ctx.getAction();
         SagaState.Offset     currentState = lastState.getOffset();
         //如果任务可执行
         if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
@@ -154,7 +161,7 @@ class BackoffQuantum<S> {
     public void onEvent(SagaContext<S> ctx) throws IdempotentException {
         FlowProcessorService processor    = ctx.getProcessor();
         SagaState<S>         lastState    = ctx.getState().cloneSelf();
-        SagaActionProxy      sagaAction   = (SagaActionProxy) ctx.getAction();
+        SagaAction           sagaAction   = (SagaAction) ctx.getAction();
         SagaState.Offset     currentState = lastState.getOffset();
         //如果任务可执行
         if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
