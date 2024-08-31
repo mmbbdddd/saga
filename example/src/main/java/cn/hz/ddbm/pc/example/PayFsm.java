@@ -1,9 +1,6 @@
 package cn.hz.ddbm.pc.example;
 
 import cn.hutool.core.lang.Pair;
-import cn.hutool.core.map.multi.RowKeyTable;
-import cn.hutool.core.map.multi.Table;
-import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.factory.fsm.FSM;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
@@ -12,10 +9,11 @@ import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+
+import static cn.hz.ddbm.pc.example.PayState.*;
 
 
 public class PayFsm implements FSM<PayState> {
@@ -47,12 +45,18 @@ public class PayFsm implements FSM<PayState> {
 
     @Override
     public List<Pair<PayState, FlowStatus.Type>> nodes(List<Pair<PayState, FlowStatus.Type>> list) {
-        return null;
+        list.add(Pair.of(init,FlowStatus.Type.init));
+        list.add(Pair.of(su,FlowStatus.Type.end));
+        list.add(Pair.of(fail,FlowStatus.Type.end));
+        return list;
     }
 
     @Override
-    public Transitions<PayState> transitions(Transitions<PayState> transitions) {
-        return null;
+    public Transitions<PayState> transitions(Transitions<PayState> t) {
+        return t
+                .to(init,Coast.FSM.EVENT_DEFAULT,"", PayState.freezed)
+                .router(PayState.freezed,Coast.FSM.EVENT_DEFAULT,"sendAction", PayState.sendfailover)
+                ;
     }
 
 

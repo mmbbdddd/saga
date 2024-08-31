@@ -1,9 +1,6 @@
 package cn.hz.ddbm.pc.factory.fsm;
 
 import cn.hutool.core.lang.Pair;
-import cn.hutool.core.map.multi.RowKeyTable;
-import cn.hutool.core.map.multi.Table;
-import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
@@ -11,7 +8,6 @@ import cn.hz.ddbm.pc.newcore.Profile.ProfileBuilder;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -110,7 +106,7 @@ public interface FSM<S extends Enum<S>> {
         Set<S>  tasks = getTaskNodes(nodes);
         FsmFlow flow  = new FsmFlow(fsmId(), init, ends, tasks);
 
-        transitions(new Transitions<S>()).getTransitions().forEach(t -> {
+        transitions(new Transitions<S>()).transitions.forEach(t -> {
             if (t.getSaga()) {
                 flow.saga(t.getFrom(), t.getEvent(), t.getAction(), t.getFailover());
             } else {
@@ -142,7 +138,6 @@ public interface FSM<S extends Enum<S>> {
         return all;
     }
 
-    @Getter
     class Transitions<S> {
         List<Transition<S>> transitions;
 
@@ -150,7 +145,7 @@ public interface FSM<S extends Enum<S>> {
             this.transitions = new ArrayList<>();
         }
 
-        public Transitions<S> saga(S from, String event, String action, S failover) {
+        public Transitions<S> router(S from, String event, String action, S failover) {
             this.transitions.add(new Transition<>(
                     true, from, null, failover, action, event
             ));
