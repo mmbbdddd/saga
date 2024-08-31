@@ -20,7 +20,7 @@ public class NoneSagaAction implements SagaAction {
 
     @Override
     public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return null;
+        return true;
     }
 
     @Override
@@ -30,6 +30,6 @@ public class NoneSagaAction implements SagaAction {
 
     @Override
     public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return null;
+        return true;
     }
 }
