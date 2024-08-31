@@ -16,7 +16,7 @@
     </properties>
 
     <modules>
-        <module>jdk</module>
+<!--        <module>jdk</module>-->
         <module>redis</module>
         <module>zk</module>
         <module>db</module>

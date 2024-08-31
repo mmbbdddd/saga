@@ -17,7 +17,7 @@
 
 
     <modules>
-        <module>simple</module>
+<!--        <module>simple</module>-->
         <module>redis</module>
         <module>micrometer</module>
     </modules>

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
-public abstract class FlowContext<F extends FlowModel<S>, S extends State, W extends Worker<?>> {
+public  class FlowContext<F extends FlowModel<S>, S extends State, W extends Worker<?>> {
     final     Serializable         id;
     final     F                    flow;
     final     Map<String, Object>  session;
@@ -40,7 +40,9 @@ public abstract class FlowContext<F extends FlowModel<S>, S extends State, W ext
     }
 
 
-    public abstract Integer getRetry(S state);
+    public   Integer getRetry(S state){
+        return null;
+    }
 
 
     public void setState(S state) {

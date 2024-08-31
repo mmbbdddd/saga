@@ -30,4 +30,10 @@ public abstract class FlowModel<S extends State> {
     public boolean isEnd(State state) {
         return false;
     }
+
+    Profile profile;
+
+    public void profile(Profile profile) {
+        this.profile = profile;
+    }
 }

@@ -1,39 +1,40 @@
 package cn.hz.ddbm.pc.example.actions;
 
-import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.action.NoSuchRecordException;
-import cn.hz.ddbm.pc.core.action.SagaAction;
 import cn.hz.ddbm.pc.example.PayState;
+import cn.hz.ddbm.pc.newcore.exception.ActionException;
+import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PayAction implements SagaAction  {
+public class PayAction implements SagaAction {
 
     public PayAction() {
     }
 
     @Override
-    public String beanName() {
-        return "payAction";
-    }
-
-    @Override
-    public void exec(FsmContext ctx) throws Exception {
-
-    }
-
-    @Override
-    public Boolean executeQuery(FsmContext ctx) throws NoSuchRecordException {
+    public String code() {
         return null;
     }
 
     @Override
-    public void rollback(FsmContext ctx) {
+    public void execute(SagaContext<?> ctx) throws ActionException {
 
     }
 
     @Override
-    public Boolean rollbackQuery(FsmContext ctx) throws NoSuchRecordException {
+    public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
+        return null;
+    }
+
+    @Override
+    public void rollback(SagaContext<?> ctx) throws ActionException {
+
+    }
+
+    @Override
+    public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
         return null;
     }
 

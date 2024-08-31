@@ -1,9 +1,9 @@
 package cn.hz.ddbm.pc.plugin;
 
-import cn.hz.ddbm.pc.core.FsmContext;
-import cn.hz.ddbm.pc.core.Plugin;
-import cn.hz.ddbm.pc.core.State;
-import cn.hz.ddbm.pc.core.log.Logs;
+import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.Plugin;
+import cn.hz.ddbm.pc.newcore.State;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 import org.springframework.context.ApplicationListener;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 
-public class PerformancePlugin implements Plugin, ApplicationListener<PerformancePlugin.Event> {
+public class PerformancePlugin extends Plugin implements ApplicationListener<PerformancePlugin.Event> {
     StopWatch sw;
 
     public PerformancePlugin(){
@@ -25,25 +25,45 @@ public class PerformancePlugin implements Plugin, ApplicationListener<Performanc
     }
 
     @Override
-    public void preAction(FsmContext ctx) {
-        sw.start(ctx.getAction().beanName());
-    }
-
-    @Override
-    public void postAction(State lastNode, FsmContext ctx) {
+    public void preAction(FlowContext ctx) {
 
     }
 
     @Override
-    public void onActionException(State preNode, Exception e, FsmContext ctx) {
+    public void postAction(State lastNode, FlowContext ctx) {
 
     }
 
     @Override
-    public void onActionFinally(FsmContext ctx) {
-        sw.stop(ctx.getAction().beanName());
+    public void errorAction(State preNode, Exception e, FlowContext ctx) {
+
     }
 
+    @Override
+    public void finallyAction(FlowContext ctx) {
+
+    }
+//
+//    @Override
+//    public void preAction(FsmContext ctx) {
+//        sw.start(ctx.getAction().beanName());
+//    }
+//
+//    @Override
+//    public void postAction(State lastNode, FsmContext ctx) {
+//
+//    }
+//
+//    @Override
+//    public void onActionException(State preNode, Exception e, FsmContext ctx) {
+//
+//    }
+//
+//    @Override
+//    public void onActionFinally(FsmContext ctx) {
+//        sw.stop(ctx.getAction().beanName());
+//    }
+//
 
     public void printReport() {
 //        try {

@@ -18,10 +18,7 @@ public class FsmContext<S extends Serializable> extends FlowContext<FsmFlow<S>, 
         this.event = event;
     }
 
-    @Override
-    public Integer getRetry(FsmState<S> state) {
-        return 2;
-    }
+
 
 
     public String getEvent() {

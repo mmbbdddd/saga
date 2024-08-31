@@ -17,9 +17,9 @@
 
     <modules>
         <module>dsl</module>
-        <!--        xml和json的没有意义，忽略-->
-        <module>xml</module>
-        <module>json</module>
+<!--        &lt;!&ndash;        xml和json的没有意义，忽略&ndash;&gt;-->
+<!--        <module>xml</module>-->
+<!--        <module>json</module>-->
     </modules>
 
 

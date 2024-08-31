@@ -11,7 +11,7 @@
         <module>parent</module>
         <module>common</module>
         <module>newcore</module>
-        <module>core</module>
+<!--        <module>core</module>-->
         <module>framework</module>
         <module>factory</module>
         <module>plugin</module>

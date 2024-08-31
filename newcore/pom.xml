@@ -6,12 +6,11 @@
     <parent>
         <groupId>cn.hz.ddbm.pc</groupId>
         <artifactId>parent</artifactId>
-        <version>0.9.8-SNAPSHOT</version>
+        <version>0.9.8-snapshot</version>
         <relativePath/>
     </parent>
-
-    <artifactId>newcore</artifactId>
-    <version>0.9.8-SNAPSHOT</version>
+    <artifactId>core</artifactId>
+    <version>${pc.version}</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

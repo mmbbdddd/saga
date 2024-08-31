@@ -5,14 +5,14 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmActionProxy;
 import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.infra.*;
 import cn.hz.ddbm.pc.newcore.infra.impl.*;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.saga.SagaAction;
-import cn.hz.ddbm.pc.newcore.saga.SagaActionProxy;
+import cn.hz.ddbm.pc.newcore.saga.*;
 import cn.hz.ddbm.pc.newcore.test.NoneFsmAction;
 import cn.hz.ddbm.pc.newcore.test.NoneSagaAction;
 
@@ -73,6 +73,13 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         SpringUtil.getBeansOfType(FlowFactory.class).forEach((key, flowFactory) -> {
             this.flows.putAll(flowFactory.getFlows());
         });
+    }
+
+    public FlowContext getOrCreateContext(String flowName, Payload payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
+        FlowModel flow = getFlow(flowName);
+        Map<String, Object> session = getSession(flowName, payload.getId());
+        FlowContext ctx = new FlowContext(flow,payload,profile,session);
+        return ctx;
     }
 
     protected abstract List<Plugin> getDefaultPlugins();
