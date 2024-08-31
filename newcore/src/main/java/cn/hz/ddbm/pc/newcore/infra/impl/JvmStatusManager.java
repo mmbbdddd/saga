@@ -6,6 +6,7 @@ import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
 import cn.hz.ddbm.pc.newcore.infra.StatusManager;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
@@ -36,6 +37,7 @@ public class JvmStatusManager implements StatusManager {
     @Override
     public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> status, Integer timeout) throws StatusException {
         try {
+            Logs.status.debug("状态变迁到{}",status.getValue());
             statusMap.put(String.format(keyTemplate, flow, flowId), status);
         } catch (Exception e) {
             throw new StatusException(e);

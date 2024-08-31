@@ -5,6 +5,7 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.infra.*;
 import cn.hz.ddbm.pc.newcore.infra.impl.*;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
@@ -28,20 +29,20 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
 
     PluginService pluginService;
 
-    public FlowProcessorService(){
-        this.flows =new HashMap<>();
-        this.sessionManagerMap = new HashMap<>();
-        this.statusManagerMap = new HashMap<>();
-        this.lockerMap = new HashMap<>();
-        this.scheduleMangerMap = new HashMap<>();
+    public FlowProcessorService() {
+        this.flows                = new HashMap<>();
+        this.sessionManagerMap    = new HashMap<>();
+        this.statusManagerMap     = new HashMap<>();
+        this.lockerMap            = new HashMap<>();
+        this.scheduleMangerMap    = new HashMap<>();
         this.statisticsSupportMap = new HashMap<>();
 
         this.pluginService = new PluginService(getDefaultPlugins());
-        this.statisticsSupportMap.put(Coast.StatisticsType.jvm,new JvmStatisticsSupport());
-        this.sessionManagerMap.put(Coast.SessionType.jvm,new JvmSessionManager());
-        this.statusManagerMap.put(Coast.StatusType.jvm,new JvmStatusManager());
-        this.scheduleMangerMap.put(Coast.ScheduleType.timer,new TimerScheduleManager());
-        this.lockerMap.put(Coast.LockType.jvm,new JvmLocker());
+        this.statisticsSupportMap.put(Coast.StatisticsType.jvm, new JvmStatisticsSupport());
+        this.sessionManagerMap.put(Coast.SessionType.jvm, new JvmSessionManager());
+        this.statusManagerMap.put(Coast.StatusType.jvm, new JvmStatusManager());
+        this.scheduleMangerMap.put(Coast.ScheduleType.timer, new TimerScheduleManager());
+        this.lockerMap.put(Coast.LockType.jvm, new JvmLocker());
     }
 
     @PostConstruct
@@ -75,12 +76,9 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     public PluginService plugin() {
         return pluginService;
     }
-    public Map<String, Object> getSession(String flowName, Serializable id) throws SessionException {
-        return sessionManagerMap.get(flowName).get(flowName,id);
-    }
 
-    public Integer getStateExecuteTimes(FlowContext ctx, String flow, State state) {
-        return ctx.getExecuteTimes().get();
+    public Map<String, Object> getSession(String flowName, Serializable id) throws SessionException {
+        return sessionManagerMap.get(flowName).get(flowName, id);
     }
 
     public boolean tryLock(FlowContext ctx) {
@@ -166,6 +164,21 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         return e instanceof FlowEndException || FlowStatus.isEnd(ctx.getStatus());
     }
 
+
+    public void metricsNode(FlowContext ctx) {
+        String flowName = ctx.getFlow().getName();
+        Serializable id = ctx.getId();
+        State  state    = ctx.getState();
+        StatisticsSupport ss = statisticsSupportMap.get(ctx.getProfile().getStatistics());
+        ss.increment(flowName,id,state,Coast.STATISTICS.EXECUTE_TIMES);
+    }
+
+    public Long getExecuteTimes(FlowContext ctx,   State state) {
+        String flowName = ctx.getFlow().getName();
+        Serializable id = ctx.getId();
+        StatisticsSupport ss = statisticsSupportMap.get(ctx.getProfile().getStatistics());
+        return ss.get(flowName,id,state,Coast.STATISTICS.EXECUTE_TIMES);
+    }
 
 }
 

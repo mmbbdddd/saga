@@ -20,7 +20,7 @@ public class SagaContext<S> extends FlowContext<SagaFlow<S>, SagaState<S>, SagaW
 
     @Override
     public Integer getRetry(SagaState<S> state) {
-        return null;
+        return 2;
     }
 
 

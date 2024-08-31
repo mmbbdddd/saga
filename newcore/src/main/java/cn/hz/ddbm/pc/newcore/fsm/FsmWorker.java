@@ -60,7 +60,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
             } finally {
                 processor.unLock(ctx);
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode();
+                processor.metricsNode(ctx);
             }
         } else if (Objects.equals(lastState, failover)) {
             try {
@@ -85,7 +85,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
                 throw e;
             } finally {
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode();
+                processor.metricsNode(ctx);
             }
         }
 
@@ -125,7 +125,7 @@ class ToFsmWorker<S extends Serializable> extends FsmWorker<S> {
             throw e;
         } finally {
             processor.plugin()._finally(ctx);
-            ctx.metricsNode();
+            processor.metricsNode(ctx);
         }
     }
 

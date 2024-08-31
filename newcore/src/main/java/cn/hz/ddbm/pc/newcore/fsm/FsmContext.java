@@ -20,7 +20,7 @@ public class FsmContext<S extends Serializable> extends FlowContext<FsmFlow<S>, 
 
     @Override
     public Integer getRetry(FsmState<S> state) {
-        return null;
+        return 2;
     }
 
 

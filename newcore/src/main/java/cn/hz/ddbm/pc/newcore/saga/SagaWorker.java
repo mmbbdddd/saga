@@ -87,7 +87,7 @@ class ForwardQuantum<S> {
             } finally {
                 processor.unLock(ctx);
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode();
+                processor.metricsNode(ctx);
             }
         } else if (Objects.equals(currentState, SagaState.Offset.failover)) {
             try {
@@ -100,7 +100,7 @@ class ForwardQuantum<S> {
                     processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                     //失败补偿策略:反复执行。直接失败
                     Integer retryTimes       = ctx.getRetry(lastState);
-                    Integer executeTimeState = processor.getStateExecuteTimes(ctx, ctx.getFlow().getName(), lastState);
+                    Long    executeTimeState = processor.getExecuteTimes(ctx, lastState);
                     //超过重试次数，设置为失败，低于重试次数，设置为retry
                     if (executeTimeState > retryTimes) {
                         //失败处理机制：前向转后向，后向转人工
@@ -127,7 +127,7 @@ class ForwardQuantum<S> {
                 throw e;
             } finally {
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode();
+                processor.metricsNode(ctx);
             }
         }
     }
@@ -178,7 +178,7 @@ class BackoffQuantum<S> {
             } finally {
                 processor.unLock(ctx);
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode();
+                processor.metricsNode(ctx);
             }
         } else if (Objects.equals(currentState, SagaState.Offset.failover)) {
             try {
@@ -191,7 +191,7 @@ class BackoffQuantum<S> {
                     processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                     //失败补偿策略:反复执行。直接失败
                     Integer retryTimes       = ctx.getRetry(lastState);
-                    Integer executeTimeState = processor.getStateExecuteTimes(ctx, ctx.getFlow().getName(), lastState);
+                    Long    executeTimeState = processor.getExecuteTimes(ctx, lastState);
                     //超过重试次数，设置为失败，低于重试次数，设置为retry
                     if (executeTimeState > retryTimes) {
                         //失败处理机制：前向转后向，后向转人工
@@ -217,7 +217,7 @@ class BackoffQuantum<S> {
                 processor.plugin().error(lastState, e, ctx);
             } finally {
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode();
+                processor.metricsNode(ctx);
             }
         }
 

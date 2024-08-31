@@ -4,6 +4,10 @@ public class Coast {
     public static final String PLUGIN_EXECUTOR_SERVICE = "pluginExecutorService";
     public static final String ACTION_EXECUTOR_SERVICE = "actionExecutorService";
 
+    public static class STATISTICS {
+        public final static String EXECUTE_TIMES = "execute_times";
+
+    }
     public static class SAGA {
         public final static String EVENT_FORWARD = "forward";
         public final static String EVENT_BACKOFF = "backoff";

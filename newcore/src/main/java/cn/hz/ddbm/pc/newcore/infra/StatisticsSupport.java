@@ -20,9 +20,9 @@ import java.util.concurrent.TimeUnit;
 public interface StatisticsSupport {
     Coast.StatisticsType code();
 
-    void increment(String flowName, Serializable flowId, State node, String variable);
+    void increment(String flowName, Serializable flowId, State state, String variableName);
 
-    Long get(String flowName, Serializable flowId, State node, String variable);
+    Long get(String flowName, Serializable flowId, State state, String variableName);
 
     @Data
     class VariableCalcConfig<A extends VariableConfig> {

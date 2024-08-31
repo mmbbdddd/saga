@@ -27,7 +27,7 @@ public class Profile {
     public static Profile of() {
         return new ProfileBuilder()
                 .namespace("default")
-                .maxLoopErrorTimes(10)
+                .maxLoopErrorTimes(2)
                 .statusTimeoutMicros(3000)
                 .lockTimeoutMicros(3000)
                 .status(Coast.StatusType.redis)

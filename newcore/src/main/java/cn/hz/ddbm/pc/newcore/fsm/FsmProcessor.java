@@ -39,7 +39,7 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
             throw new FlowEndException();
         }
         //工作流结束
-        Integer stateExecuteTimes = getStateExecuteTimes(ctx, flow.getName(), state);
+        Long stateExecuteTimes = getExecuteTimes(ctx,   state);
         if (stateExecuteTimes > stateRetry) {
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
         }

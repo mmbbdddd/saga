@@ -23,8 +23,6 @@ public abstract class FlowContext<F extends FlowModel<S>, S extends State, W ext
     transient FlowProcessorService processor;
     transient Action               action;
     transient ActionResult         actionResult;
-    //todo
-    AtomicInteger executeTimes;
 
     public FlowContext(F flow, Payload<S> payload, Profile profile, Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
@@ -37,12 +35,8 @@ public abstract class FlowContext<F extends FlowModel<S>, S extends State, W ext
         this.session      = session == null ? new HashMap<>() : session;
         this.state        = payload.getState();
         this.status       = payload.getStatus();
-        this.executeTimes = new AtomicInteger(0);
     }
 
-    public void metricsNode() {
-        executeTimes.incrementAndGet();
-    }
 
     public abstract Integer getRetry(S state);
 
