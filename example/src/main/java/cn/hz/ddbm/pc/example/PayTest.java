@@ -6,7 +6,7 @@
 //import cn.hz.ddbm.pc.core.processor.saga.SagaState;
 //import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 //import cn.hz.ddbm.pc.profile.ChaosSagaService;
-//import cn.hz.ddbm.pc.profile.chaos.ChaosRule;
+//import cn.hz.ddbm.pc.chaos.ChaosRule;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;
