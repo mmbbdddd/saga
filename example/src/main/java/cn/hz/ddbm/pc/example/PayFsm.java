@@ -53,10 +53,8 @@ public class PayFsm implements FSM<PayState> {
 
     @Override
     public Transitions<PayState> transitions(Transitions<PayState> t) {
-        return t
-                .to(init,Coast.FSM.EVENT_DEFAULT,"", PayState.freezed)
-                .router(PayState.freezed,Coast.FSM.EVENT_DEFAULT,"sendAction", PayState.sendfailover)
-                ;
+        return t.to(init,Coast.FSM.EVENT_DEFAULT,"", PayState.freezed)
+                .router(PayState.freezed,Coast.FSM.EVENT_DEFAULT,"sendAction", PayState.sendfailover);
     }
 
 

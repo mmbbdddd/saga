@@ -5,17 +5,16 @@ import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FreezedAction implements SagaAction {
-
-    public FreezedAction() {
-    }
-
+    @Setter
+    String code;
     @Override
     public String code() {
-        return "freezedAction";
+        return code;
     }
 
     @Override
