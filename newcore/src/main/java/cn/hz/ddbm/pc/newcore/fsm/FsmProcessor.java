@@ -66,6 +66,10 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
                 } else {
                     //可重试异常
                     Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                    Integer loopErrorTimes = ctx.getLoopErrorTimes().incrementAndGet();
+                    if (loopErrorTimes > ctx.getProfile().getMaxLoopErrorTimes()) {
+                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), loopErrorTimes, ctx.getProfile().getMaxLoopErrorTimes()));
+                    }
                     flush(ctx);
 //                    ctx.getFlow().execute(ctx);
                 }

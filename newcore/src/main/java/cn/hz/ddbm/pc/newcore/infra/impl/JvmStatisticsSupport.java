@@ -38,7 +38,7 @@ public class JvmStatisticsSupport implements StatisticsSupport {
 
     @Override
     public Long get(String flowName, Serializable flowId, State node, String variable) {
-        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node, variable);
+        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.code(), variable);
         return cache.get(realKey, s -> new AtomicLong(0)).get();
     }
 }
