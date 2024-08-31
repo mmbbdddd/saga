@@ -7,15 +7,15 @@ import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SagaModel<S> extends FlowModel<SagaState<S>> {
+public class SagaFlow<S> extends FlowModel<SagaState<S>> {
     Map<S, SagaWorker<S>> pipeline;
 
 
-    public SagaModel(String name, List<Pair<S, String>> pairs) {
+    public SagaFlow(String name, List<Pair<S, String>> pairs) {
         this(name, pairs.stream().map(Pair::getKey).collect(Collectors.toList()), pairs.stream().map(Pair::getValue).collect(Collectors.toList()));
     }
 
-    private SagaModel(String name, List<S> tasks, List<String> actions) {
+    private SagaFlow(String name, List<S> tasks, List<String> actions) {
         super(name, buildInit(tasks), buildEnds(tasks), buildTasks(tasks));
 
         pipeline = new HashMap<>();

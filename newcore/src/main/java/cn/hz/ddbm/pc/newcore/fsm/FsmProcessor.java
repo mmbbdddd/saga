@@ -18,8 +18,8 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
     public void workerProcess(FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException, TransitionNotFoundException {
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
-        FsmModel<S> flow       = ctx.getFlow();
-        FlowStatus  status     = ctx.getStatus();
+        FsmFlow<S> flow   = ctx.getFlow();
+        FlowStatus status = ctx.getStatus();
         FsmState<S> state      = ctx.getState();
         Integer     stateRetry = flow.getRetry(state);
         //状态不可执行
@@ -66,6 +66,8 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
             } catch (StatusException | SessionException e2) {
                 Logs.status.error("", e2);
             }
+        }finally {
+            ctx.metricsNode();
         }
 
     }

@@ -87,7 +87,7 @@ class ForwardQuantum<S> {
             } finally {
                 processor.unLock(ctx);
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode(ctx);
+                ctx.metricsNode();
             }
         } else if (Objects.equals(currentState, SagaState.Offset.failover)) {
             try {
@@ -130,7 +130,7 @@ class ForwardQuantum<S> {
                 throw e;
             } finally {
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode(ctx);
+                ctx.metricsNode();
             }
         }
     }
@@ -181,7 +181,7 @@ class BackoffQuantum<S> {
             } finally {
                 processor.unLock(ctx);
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode(ctx);
+                ctx.metricsNode();
             }
         } else if (Objects.equals(currentState, SagaState.Offset.failover)) {
             try {
@@ -223,7 +223,7 @@ class BackoffQuantum<S> {
                 processor.plugin().error(lastState, e, ctx);
             } finally {
                 processor.plugin()._finally(ctx);
-                ctx.metricsNode(ctx);
+                ctx.metricsNode();
             }
         }
 

@@ -21,6 +21,15 @@ class FsmProcessorTest {
         )
         fsmProcessor.workerProcess(ctx)
     }
+    @Test
+    void testFlowProcess() {
+
+        PayFsmPayload payload = new PayFsmPayload();
+        FsmContext ctx = new FsmContext(
+                new PayFsmFlow(), payload, new Profile(), new HashMap<String, Object>()
+        )
+        fsmProcessor.flowProcess (ctx)
+    }
 
     class PayFsmPayload extends FsmPayload<PayFsm> {
         PayFsmPayload() {
@@ -28,7 +37,7 @@ class FsmProcessorTest {
         }
     }
 
-    class PayFsmFlow extends FsmModel<PayFsm> {
+    class PayFsmFlow extends FsmFlow<PayFsm> {
         PayFsmFlow() {
             super("pay", PayFsm.init, Sets.newHashSet(su, fail, error), Sets.newHashSet(pay, send))
             this.to(PayFsm.init, Coast.FSM.EVENT_DEFAULT, "nono", pay);

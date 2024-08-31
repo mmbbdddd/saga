@@ -9,12 +9,12 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.Map;
 
-public class FsmContext<S extends Serializable> extends FlowContext<FsmModel<S>, FsmState<S>, FsmWorker<S>> {
+public class FsmContext<S extends Serializable> extends FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> {
     @Getter
     @Setter
     String event;
 
-    public FsmContext(FsmModel<S> flow, Payload<FsmState<S>> payload, Profile profile, Map<String, Object> session) {
+    public FsmContext(FsmFlow<S> flow, Payload<FsmState<S>> payload, Profile profile, Map<String, Object> session) {
         super(flow, payload, profile, session);
     }
 

@@ -6,5 +6,5 @@ import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import java.io.Serializable;
 
 public interface FsmCommandAction<S extends Serializable> extends Action {
-    void execute(FsmContext<S> ctx) throws ActionException;
+    void command(FsmContext<S> ctx) throws ActionException;
 }

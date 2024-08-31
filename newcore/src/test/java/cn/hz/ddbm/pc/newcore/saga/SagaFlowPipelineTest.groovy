@@ -7,11 +7,11 @@ import org.junit.Before
 import org.junit.Test
 
 class SagaFlowPipelineTest {
-    SagaModel sagaPipeline
+    SagaFlow sagaPipeline
 
     @Before
     void setUp() {
-        sagaPipeline = new SagaModel("test", Lists.newArrayList(
+        sagaPipeline = new SagaFlow("test", Lists.newArrayList(
                 Pair.of(PayStateMachine.init, "payFreezedAction"),
                 Pair.of(PayStateMachine.pay, "sendAction"),
                 Pair.of(PayStateMachine.send, "payCommitAction")

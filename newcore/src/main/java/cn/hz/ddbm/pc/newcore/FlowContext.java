@@ -40,7 +40,7 @@ public abstract class FlowContext<F extends FlowModel<S>, S extends State, W ext
         this.executeTimes = new AtomicInteger(0);
     }
 
-    public void metricsNode(FlowContext ctx) {
+    public void metricsNode() {
         executeTimes.incrementAndGet();
     }
 
