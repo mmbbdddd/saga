@@ -10,7 +10,7 @@ import cn.hz.ddbm.pc.newcore.saga.SagaState;
 
 import java.io.Serializable;
 
-public class SagaDigestPlugin implements Plugin {
+public class SagaDigestPlugin extends Plugin {
     @Override
     public String code() {
         return "digest";
@@ -24,7 +24,7 @@ public class SagaDigestPlugin implements Plugin {
     @Override
     public void postAction(State lastNode, FlowContext ctx) {
         Boolean forward   = ((SagaState) ctx.getState()).getIsForward();
-        String  directStr = forward ? ">>>>" : "<<<<";
+        String  directStr = forward ? ">>>>"+Math.random() : "<<<<"+Math.random();
 
         String       flow         = ctx.getFlow().getName();
         Serializable id           = ctx.getId();
@@ -33,14 +33,13 @@ public class SagaDigestPlugin implements Plugin {
         String       actionResult = ctx.getActionResult().toString();
         String       targetStatus = ctx.getState().code();
 
-        Logs.digest.info("{},{},{}, {},{},{}==>{}", directStr, id, from,  action, actionResult, from, targetStatus);
+        Logs.digest.info("{},{},{}, {},{},{},{}==>{}", directStr, flow,id, from,  action, actionResult, from, targetStatus);
 
     }
 
     @Override
     public void errorAction(State preNode, Exception e, FlowContext ctx) {
-        Logs.digest.info("{},{}:", ctx.getFlow()
-                .getName(), ctx.getId(), e);
+
     }
 
     @Override

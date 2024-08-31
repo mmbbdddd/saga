@@ -6,7 +6,9 @@ import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PluginService {
     List<Plugin> processorPlugins;
@@ -16,7 +18,7 @@ public class PluginService {
     }
 
     public void pre(FlowContext ctx) {
-        List<Plugin> plugins = ctx.getProfile().getPlugins();
+        Set<Plugin> plugins = new HashSet<>(ctx.getProfile().getPlugins());
         plugins.addAll(processorPlugins);
         plugins.forEach((plugin) -> {
             try {
@@ -28,7 +30,7 @@ public class PluginService {
     }
 
     public void post(State lastNode, FlowContext ctx) {
-        List<Plugin> plugins = ctx.getProfile().getPlugins();
+        Set<Plugin> plugins = new HashSet<>(ctx.getProfile().getPlugins());
         plugins.addAll(processorPlugins);
         plugins.forEach((plugin) -> {
             try {
@@ -40,7 +42,7 @@ public class PluginService {
     }
 
     public void error(State preNode, Exception e, FlowContext ctx) {
-        List<Plugin> plugins = ctx.getProfile().getPlugins();
+        Set<Plugin> plugins = new HashSet<>(ctx.getProfile().getPlugins());
         plugins.addAll(processorPlugins);
         plugins.forEach((plugin) -> {
             try {
@@ -52,7 +54,7 @@ public class PluginService {
     }
 
     public void _finally(FlowContext ctx) {
-        List<Plugin> plugins = ctx.getProfile().getPlugins();
+        Set<Plugin> plugins = new HashSet<>(ctx.getProfile().getPlugins());
         plugins.addAll(processorPlugins);
         plugins.forEach((plugin) -> {
             try {

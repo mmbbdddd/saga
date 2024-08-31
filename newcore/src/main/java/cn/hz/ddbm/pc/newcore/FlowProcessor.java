@@ -38,13 +38,10 @@ public interface FlowProcessor<C extends FlowContext> {
             } catch (InterruptedException e) {
                 throw e;
             } catch (PauseException e) {
-                e.printStackTrace();
                 throw e;
             } catch (FlowEndException e) {
-                e.printStackTrace();
                 throw e;
             } catch (Exception e) {
-                e.printStackTrace();
                 if (loopTimes.incrementAndGet() > ctx.getProfile().getMaxLoopErrorTimes()) {
                     //todo
                     return;

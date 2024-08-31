@@ -8,7 +8,7 @@ import cn.hz.ddbm.pc.newcore.log.Logs;
 
 import java.io.Serializable;
 
-public class FsmDigestPlugin implements Plugin {
+public class FsmDigestPlugin extends Plugin {
     @Override
     public String code() {
         return "digest";
