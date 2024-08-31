@@ -43,6 +43,8 @@ public class StatusManagerProxy implements StatusManager {
     public void idempotent(String key) throws IdempotentException {
         try {
             statusManager.idempotent(key);
+        } catch (IdempotentException e) {
+            throw e;
         } catch (Exception e) {
             throw new IdempotentException(e);
         }
@@ -52,7 +54,9 @@ public class StatusManagerProxy implements StatusManager {
     public void unidempotent(String key) throws IdempotentException {
         try {
             statusManager.unidempotent(key);
-        } catch (Exception e) {
+        } catch (IdempotentException e) {
+            throw e;
+        }catch (Exception e) {
             throw new IdempotentException(e);
         }
     }

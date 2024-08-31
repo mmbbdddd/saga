@@ -20,6 +20,8 @@ public class LockProxy implements Locker {
     public void tryLock(String key, Integer timeout) throws LockException {
         try {
             locker.tryLock(key, timeout);
+        } catch (LockException e) {
+            throw e;
         } catch (Exception e) {
             throw new LockException(e);
         }
@@ -29,6 +31,8 @@ public class LockProxy implements Locker {
     public void releaseLock(String key) throws LockException {
         try {
             locker.releaseLock(key);
+        } catch (LockException e) {
+            throw e;
         } catch (Exception e) {
             throw new LockException(e);
         }

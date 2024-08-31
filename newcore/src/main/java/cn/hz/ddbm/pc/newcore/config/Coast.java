@@ -15,6 +15,7 @@ public class Coast {
     }
 
     public enum LockType {
+        jvm,
         zk,
         redis,
         db,
@@ -30,18 +31,18 @@ public class Coast {
     }
 
     public enum SessionType {
-        memory,
+        jvm,
         redis
     }
 
     public enum StatusType {
-        memory,
+        jvm,
         redis,
         dao
     }
 
     public enum StatisticsType {
-        memory,
+        jvm,
         redis
     }
 }

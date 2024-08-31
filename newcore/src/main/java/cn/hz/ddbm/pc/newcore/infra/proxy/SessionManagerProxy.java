@@ -23,7 +23,9 @@ public class SessionManagerProxy implements SessionManager {
     public void set(String flowName, Serializable flowId, Map<String, Object> session) throws SessionException {
         try {
             sessionManager.set(flowName, flowId, session);
-        } catch (Exception e) {
+        } catch (SessionException e) {
+            throw e;
+        }catch (Exception e) {
             throw new SessionException(e);
         }
     }
@@ -32,7 +34,9 @@ public class SessionManagerProxy implements SessionManager {
     public Map<String, Object> get(String flowName, Serializable flowId) throws SessionException {
         try {
             return sessionManager.get(flowName, flowId);
-        } catch (Exception e) {
+        } catch (SessionException e) {
+            throw e;
+        }catch (Exception e) {
             throw new SessionException(e);
         }
     }

@@ -6,6 +6,7 @@ import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.infra.*;
+import cn.hz.ddbm.pc.newcore.infra.impl.*;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 
@@ -28,6 +29,12 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     @PostConstruct
     public void afterPropertiesSet() {
         this.pluginService = new PluginService(getDefaultPlugins());
+        this.statisticsSupportMap.put(Coast.StatisticsType.jvm,new JvmStatisticsSupport());
+        this.sessionManagerMap.put(Coast.SessionType.jvm,new JvmSessionManager());
+        this.statusManagerMap.put(Coast.StatusType.jvm,new JvmStatusManager());
+        this.scheduleMangerMap.put(Coast.ScheduleType.timer,new TimerScheduleManager());
+        this.lockerMap.put(Coast.LockType.jvm,new JvmLocker());
+
         SpringUtil.getBeansOfType(SessionManager.class).forEach((key, bean) -> {
             this.sessionManagerMap.put(bean.code(), new SessionManagerProxy(bean));
         });
