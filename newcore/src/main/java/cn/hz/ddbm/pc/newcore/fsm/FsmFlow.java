@@ -24,7 +24,7 @@ public class FsmFlow<S extends Serializable> extends FlowModel<FsmState<S>> {
     public FsmWorker<S> getWorker(FsmState<S> state, String event) throws TransitionNotFoundException {
         FsmWorker<S> worker = transitionTable.get(state.getState(), event);
         if (null == worker) {
-            throw new TransitionNotFoundException(String.format("找不到这样的FsmTransition事件定义",state.getState(),event));
+            throw new TransitionNotFoundException(String.format("找不到这样的FsmTransition事件定义:%s,%s",state.getState(),event));
         }
         return worker;
     }

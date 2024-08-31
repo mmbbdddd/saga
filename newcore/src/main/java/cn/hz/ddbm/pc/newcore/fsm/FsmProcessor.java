@@ -18,8 +18,8 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
     public void workerProcess(FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException, TransitionNotFoundException {
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
-        FsmFlow<S> flow   = ctx.getFlow();
-        FlowStatus status = ctx.getStatus();
+        FsmFlow<S>  flow       = ctx.getFlow();
+        FlowStatus  status     = ctx.getStatus();
         FsmState<S> state      = ctx.getState();
         Integer     stateRetry = flow.getRetry(state);
         //状态不可执行
@@ -38,8 +38,12 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
         if (stateExecuteTimes > stateRetry) {
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
         }
-
-        FsmWorker worker = flow.getWorker(ctx.getState(), Coast.FSM.EVENT_DEFAULT);
+        FsmWorker worker = null;
+        try {
+            worker = flow.getWorker(ctx.getState(), Coast.FSM.EVENT_DEFAULT);
+        } finally {
+            ctx.metricsNode();
+        }
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);
@@ -66,8 +70,6 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
             } catch (StatusException | SessionException e2) {
                 Logs.status.error("", e2);
             }
-        }finally {
-            ctx.metricsNode();
         }
 
     }

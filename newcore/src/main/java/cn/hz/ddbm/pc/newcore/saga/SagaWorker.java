@@ -96,9 +96,7 @@ class ForwardQuantum<S> {
                 if (Objects.equals(queryResult, null)) {
                     processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
                     ctx.setState(task);
-                }
-                //业务不成功
-                if (!queryResult) {
+                } else if (!queryResult) {   //业务不成功
                     processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
                     //失败补偿策略:反复执行。直接失败
                     Integer retryTimes       = ctx.getRetry(lastState);
@@ -111,8 +109,7 @@ class ForwardQuantum<S> {
                         //如果可以重试，则设置为初始状态，重新执行任务。
                         ctx.setState(retry);
                     }
-                }
-                if (queryResult) {
+                } else   {
                     if (null == su) {
                         ctx.setStatus(FlowStatus.FINISH);
                     } else {
@@ -187,12 +184,10 @@ class BackoffQuantum<S> {
             try {
                 Boolean queryResult = sagaAction.rollbackQuery(ctx);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
-                if (Objects.equals(queryResult, null)) {
+                if (queryResult == null) {
                     processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
                     ctx.setState(rollback);
-                }
-                //业务不成功
-                if (!queryResult) {
+                }else  if (!queryResult) {   //业务不成功
                     processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
                     //失败补偿策略:反复执行。直接失败
                     Integer retryTimes       = ctx.getRetry(lastState);
@@ -205,8 +200,7 @@ class BackoffQuantum<S> {
                         //如果可以重试，则设置为初始状态，重新执行任务。
                         ctx.setState(retry);
                     }
-                }
-                if (queryResult) {
+                }else  {
                     if (null == pre) {
                         ctx.setStatus(FlowStatus.FINISH);
                     } else {

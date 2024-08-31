@@ -20,9 +20,9 @@ public abstract class FsmWorker<S extends Serializable> extends Worker<FsmContex
 }
 
 class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
-    FsmState<S>           from;
-    FsmState<S>           failover;
-    String                action;
+    FsmState<S>       from;
+    FsmState<S>       failover;
+    String            action;
     FsmActionProxy<S> sagaAction;
 
 
@@ -30,7 +30,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
         this.from       = new FsmState<>(from);
         this.failover   = new FsmState<>(failover);
         this.action     = sagaAction;
-        this.sagaAction = new FsmActionProxy(this,this.action);
+        this.sagaAction = new FsmActionProxy(this, this.action);
     }
 
     @Override
@@ -69,9 +69,10 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
                 if (queryResult == null) {
                     processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
                     ctx.setState(from);
+                }else {
+                    //业务有返回
+                    ctx.setState(new FsmState<>(queryResult));
                 }
-                //业务有返回
-                ctx.setState(new FsmState<>(queryResult));
 
                 processor.plugin().post(lastState, ctx);
             } catch (NoSuchRecordException e) {
@@ -103,7 +104,7 @@ class ToFsmWorker<S extends Serializable> extends FsmWorker<S> {
         this.from          = new FsmState<>(from);
         this.action        = commandAction;
         this.to            = new FsmState<>(to);
-        this.commandAction = new FsmActionProxy(this,this.action);
+        this.commandAction = new FsmActionProxy(this, this.action);
     }
 
     @Override
