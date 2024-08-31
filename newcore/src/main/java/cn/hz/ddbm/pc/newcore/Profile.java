@@ -2,12 +2,15 @@ package cn.hz.ddbm.pc.newcore;
 
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Builder
 public class Profile {
     String               namespace;
     Integer              maxLoopErrorTimes   = 3;
@@ -20,16 +23,34 @@ public class Profile {
     Coast.ScheduleType   schedule;
     List<Plugin>         plugins;
 
-    public Profile() {
-        this.namespace           = "default";
-        this.maxLoopErrorTimes   = 3;
-        this.statusTimeoutMicros = 6000;
-        this.lockTimeoutMicros   = 6000;
-        this.status              = Coast.StatusType.redis;
-        this.session             = Coast.SessionType.redis;
-        this.lock                = Coast.LockType.redis;
-        this.statistics          = Coast.StatisticsType.redis;
-        this.schedule            = Coast.ScheduleType.timer;
+
+    public static Profile of() {
+        return new ProfileBuilder()
+                .namespace("default")
+                .maxLoopErrorTimes(10)
+                .statusTimeoutMicros(3000)
+                .lockTimeoutMicros(3000)
+                .status(Coast.StatusType.redis)
+                .session(Coast.SessionType.redis)
+                .lock(Coast.LockType.redis)
+                .statistics(Coast.StatisticsType.redis)
+                .schedule(Coast.ScheduleType.timer)
+                .plugins(new ArrayList<>())
+                .build();
     }
 
+    public static Profile devOf() {
+        return new ProfileBuilder()
+                .namespace("default")
+                .maxLoopErrorTimes(10)
+                .statusTimeoutMicros(3000)
+                .lockTimeoutMicros(3000)
+                .status(Coast.StatusType.jvm)
+                .session(Coast.SessionType.jvm)
+                .lock(Coast.LockType.jvm)
+                .statistics(Coast.StatisticsType.jvm)
+                .schedule(Coast.ScheduleType.timer)
+                .plugins(new ArrayList<>())
+                .build();
+    }
 }

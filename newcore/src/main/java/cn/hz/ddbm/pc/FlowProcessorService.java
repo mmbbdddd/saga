@@ -13,6 +13,7 @@ import cn.hz.ddbm.pc.newcore.log.Logs;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,15 +27,24 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
 
     PluginService pluginService;
 
-    @PostConstruct
-    public void afterPropertiesSet() {
+    public FlowProcessorService(){
+        this.flows =new HashMap<>();
+        this.sessionManagerMap = new HashMap<>();
+        this.statusManagerMap = new HashMap<>();
+        this.lockerMap = new HashMap<>();
+        this.scheduleMangerMap = new HashMap<>();
+        this.statisticsSupportMap = new HashMap<>();
+
         this.pluginService = new PluginService(getDefaultPlugins());
         this.statisticsSupportMap.put(Coast.StatisticsType.jvm,new JvmStatisticsSupport());
         this.sessionManagerMap.put(Coast.SessionType.jvm,new JvmSessionManager());
         this.statusManagerMap.put(Coast.StatusType.jvm,new JvmStatusManager());
         this.scheduleMangerMap.put(Coast.ScheduleType.timer,new TimerScheduleManager());
         this.lockerMap.put(Coast.LockType.jvm,new JvmLocker());
+    }
 
+    @PostConstruct
+    public void afterPropertiesSet() {
         SpringUtil.getBeansOfType(SessionManager.class).forEach((key, bean) -> {
             this.sessionManagerMap.put(bean.code(), new SessionManagerProxy(bean));
         });
