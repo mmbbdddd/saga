@@ -1,6 +1,6 @@
 //package cn.hz.ddbm.pc.configuration;
 //
-//import cn.hz.ddbm.pc.profile.BaseService;
+//import cn.hz.ddbm.pc.support.BaseService;
 //import cn.hz.ddbm.pc.profile.Sagaervice;
 //import cn.hz.ddbm.pc.session.memory.MemorySessionManager;
 //import cn.hz.ddbm.pc.session.redis.RedisSessionManager;
