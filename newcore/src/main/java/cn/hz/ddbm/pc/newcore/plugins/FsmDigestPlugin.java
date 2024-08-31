@@ -24,12 +24,11 @@ public class FsmDigestPlugin extends Plugin {
         String       flow         = ctx.getFlow().getName();
         Serializable id           = ctx.getId();
         String       from         = lastNode.code();
-        String       event        = ((FsmContext) ctx).getEvent();
         String       action       = ctx.getAction().code();
         Object       actionResult = ctx.getActionResult();
         String       targetStatus = ctx.getState().code();
 
-        Logs.digest.info("{},{},{},{},{},{},{}==>{}", flow,id,from,event,action,actionResult,from,targetStatus);
+        Logs.digest.info("{},{},{},{},{},{}==>{}", flow,id,from,action,actionResult,from,targetStatus);
     }
 
     @Override

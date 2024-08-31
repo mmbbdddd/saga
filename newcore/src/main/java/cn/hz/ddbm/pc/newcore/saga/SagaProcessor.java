@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.newcore.saga;
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.PluginService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
@@ -23,14 +24,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
 
-    public void workerProcess(String flowName, SagaPayload<S> payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
-        SagaFlow<S>         flow           = (SagaFlow<S>) getFlow(flowName);
-        Map<String, Object> session        = getSession(flowName, payload.getId());
-        SagaContext<S> ctx = new SagaContext<>(flow, payload, profile, session);
+    public SagaContext<S> workerProcess(String flowName, SagaPayload<S> payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
+        Assert.notNull(flowName,"flowName is null");
+        Assert.notNull(payload,"payload is null");
+        SagaFlow<S>         flow    = (SagaFlow<S>) getFlow(flowName);
+        Map<String, Object> session = getSession(flowName, payload.getId());
+        SagaContext<S> ctx =  new SagaContext<>(flow, payload, profile, session);
         workerProcess(ctx);
+        return ctx;
     }
-
-
 
 
     public void workerProcess(SagaContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
@@ -52,12 +54,12 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
             throw new FlowEndException();
         }
         //工作流结束
-        Long stateExecuteTimes = getExecuteTimes(ctx,  state);
+        Long stateExecuteTimes = getExecuteTimes(ctx, state);
         if (stateExecuteTimes > stateRetry) {
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
         }
 
-        SagaWorker<S>     worker    = flow.getWorker(ctx.getState().getState());
+        SagaWorker<S> worker = flow.getWorker(ctx.getState().getState());
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);
@@ -80,7 +82,8 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
                     Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     Integer loopErrorTimes = ctx.getLoopErrorTimes().incrementAndGet();
                     if (loopErrorTimes > ctx.getProfile().getMaxLoopErrorTimes()) {
-                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), loopErrorTimes, ctx.getProfile().getMaxLoopErrorTimes()));
+                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), loopErrorTimes, ctx.getProfile()
+                                .getMaxLoopErrorTimes()));
                     }
                     flush(ctx);
 //                    ctx.getFlow().execute(ctx);
@@ -94,7 +97,7 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
     @Override
     protected List<Plugin> getDefaultPlugins() {
-        return new ArrayList<Plugin>(){{
+        return new ArrayList<Plugin>() {{
             add(new SagaDigestPlugin());
         }};
     }

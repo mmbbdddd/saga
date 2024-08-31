@@ -48,7 +48,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
             ctx.setState(failover);
             processor.updateStatus(ctx);
             //冥等
-            processor.idempotent(lastState.code(), ctx.getEvent(), ctx);
+            processor.idempotent(ctx.getAction().code(), ctx);
             //执行业务
             try {
                 sagaAction.execute(ctx);
@@ -66,7 +66,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
                 S queryResult = sagaAction.executeQuery(ctx);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
                 if (queryResult == null) {
-                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
+                    processor.unidempotent(ctx.getAction().code(), ctx);
                     ctx.setState(from);
                 } else {
                     //业务有返回
@@ -75,7 +75,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
 
                 processor.plugin().post(lastState, ctx);
             } catch (NoSuchRecordException e) {
-                processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
+                processor.unidempotent(ctx.getAction().code(), ctx);
                 ctx.setState(from);
                 processor.plugin().error(lastState, e, ctx);
             } catch (ActionException e) {
@@ -109,7 +109,6 @@ class ToFsmWorker<S extends Serializable> extends FsmWorker<S> {
         FlowProcessorService processor = ctx.getProcessor();
         FsmFlow<S>           flow      = ctx.getFlow();
         Serializable         id        = ctx.getId();
-        String               event     = ctx.getEvent();
         FsmState<S>          lastNode  = ctx.getState();
         ctx.setAction((FsmCommandAction) processor.getAction(action, FsmCommandAction.class));
         FsmCommandAction<S> commandAction = (FsmCommandAction) ctx.getAction();

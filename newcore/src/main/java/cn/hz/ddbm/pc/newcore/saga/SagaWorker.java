@@ -83,7 +83,7 @@ class ForwardQuantum<S> {
             ctx.setState(failover);
             processor.updateStatus(ctx);
             //冥等
-            processor.idempotent(ctx.getState().code(), ctx.getEvent(), ctx);
+            processor.idempotent(ctx.getAction().code(), ctx);
             //执行业务
             try {
                 sagaAction.execute(ctx);
@@ -101,10 +101,10 @@ class ForwardQuantum<S> {
                 Boolean queryResult = sagaAction.executeQuery(ctx);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
                 if (Objects.equals(queryResult, null)) {
-                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
+                    processor.unidempotent(ctx.getAction().code(), ctx);
                     ctx.setState(task);
                 } else if (!queryResult) {   //业务不成功
-                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
+                    processor.unidempotent(ctx.getAction().code(), ctx);
                     //失败补偿策略:反复执行。直接失败
                     Integer retryTimes       = ctx.getRetry(lastState);
                     Long    executeTimeState = processor.getExecuteTimes(ctx, lastState);
@@ -125,7 +125,7 @@ class ForwardQuantum<S> {
                 }
                 processor.plugin().post(lastState, ctx);
             } catch (NoSuchRecordException e) {
-                processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
+                processor.unidempotent(ctx.getAction().code(), ctx);
                 ctx.setState(task);
                 processor.plugin().error(lastState, e, ctx);
             } catch (ActionException e) {
@@ -174,7 +174,7 @@ class BackoffQuantum<S> {
             ctx.setState(rollbackFailover);
             processor.updateStatus(ctx);
             //冥等
-            processor.idempotent(ctx.getState().code(), ctx.getEvent(), ctx);
+            processor.idempotent(ctx.getAction().code(), ctx);
             //执行业务
             try {
                 sagaAction.rollback(ctx);
@@ -192,10 +192,10 @@ class BackoffQuantum<S> {
                 Boolean queryResult = sagaAction.rollbackQuery(ctx);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
                 if (queryResult == null) {
-                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
+                    processor.unidempotent(ctx.getAction().code(), ctx);
                     ctx.setState(rollback);
                 } else if (!queryResult) {   //业务不成功
-                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
+                    processor.unidempotent(ctx.getAction().code(), ctx);
                     //失败补偿策略:反复执行。直接失败
                     Integer retryTimes       = ctx.getRetry(lastState);
                     Long    executeTimeState = processor.getExecuteTimes(ctx, lastState);
@@ -216,7 +216,7 @@ class BackoffQuantum<S> {
                 }
                 processor.plugin().post(lastState, ctx);
             } catch (NoSuchRecordException e) {
-                processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
+                processor.unidempotent(ctx.getAction().code(), ctx);
                 ctx.setState(rollback);
                 processor.plugin().error(lastState, e, ctx);
             } catch (Exception e) {

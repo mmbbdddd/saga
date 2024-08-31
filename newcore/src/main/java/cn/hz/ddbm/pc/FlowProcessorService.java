@@ -75,12 +75,6 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         });
     }
 
-    public FlowContext getOrCreateContext(String flowName, Payload payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
-        FlowModel flow = getFlow(flowName);
-        Map<String, Object> session = getSession(flowName, payload.getId());
-        FlowContext ctx = new FlowContext(flow,payload,profile,session);
-        return ctx;
-    }
 
     protected abstract List<Plugin> getDefaultPlugins();
 
@@ -132,18 +126,16 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         statusManagerMap.get(ctx.getProfile().getStatus()).flush(ctx);
     }
 
-    public void idempotent(String state, String event, FlowContext ctx) throws IdempotentException {
-        String namespace  = String.format("transition:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        String transition = String.format("do(%s,%s)", state, event);
-        String key        = String.format("%s:%s", namespace, transition);
+    public void idempotent(String action, FlowContext ctx) throws IdempotentException {
+        String namespace  = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
+        String key        = String.format("%s:%s", namespace, action);
         statusManagerMap.get(ctx.getProfile().getStatus()).idempotent(key);
     }
 
 
-    public void unidempotent(String state, String event, FlowContext ctx) throws IdempotentException {
-        String namespace  = String.format("transition:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        String transition = String.format("do(%s,%s)", state, event);
-        String key        = String.format("%s:%s", namespace, transition);
+    public void unidempotent(String action, FlowContext ctx) throws IdempotentException {
+        String namespace  = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
+        String key        = String.format("%s:%s", namespace, action);
         statusManagerMap.get(ctx.getProfile().getStatus()).unidempotent(key);
     }
 
