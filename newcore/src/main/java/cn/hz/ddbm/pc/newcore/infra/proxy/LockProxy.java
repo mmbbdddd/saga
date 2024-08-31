@@ -18,7 +18,11 @@ public class LockProxy implements Locker {
 
     @Override
     public void tryLock(String key, Integer timeout) throws LockException {
-        locker.tryLock(key, timeout);
+        try {
+            locker.tryLock(key, timeout);
+        } catch (Exception e) {
+            throw new LockException(e);
+        }
     }
 
     @Override

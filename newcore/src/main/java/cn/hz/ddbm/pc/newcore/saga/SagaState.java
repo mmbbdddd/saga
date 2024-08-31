@@ -4,7 +4,6 @@ import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import lombok.Getter;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
@@ -22,7 +21,7 @@ public class SagaState<S> extends State {
     }
 
     @Override
-    public Serializable code() {
+    public String code() {
         return String.format("%s_%s_%s", state, offset, isForward ? Coast.SAGA.EVENT_FORWARD : Coast.SAGA.EVENT_BACKOFF);
     }
 

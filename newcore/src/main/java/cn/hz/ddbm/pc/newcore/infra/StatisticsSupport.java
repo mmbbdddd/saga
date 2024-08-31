@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 
 public interface StatisticsSupport {
+    Coast.StatisticsType code();
+
     void increment(String flowName, Serializable flowId, State node, String variable);
 
     Long get(String flowName, Serializable flowId, State node, String variable);

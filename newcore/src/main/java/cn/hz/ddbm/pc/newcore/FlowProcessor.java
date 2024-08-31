@@ -5,6 +5,8 @@ import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.PauseException;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public interface FlowProcessor<C extends FlowContext> {
 
 
@@ -29,6 +31,7 @@ public interface FlowProcessor<C extends FlowContext> {
      */
     default void flowProcess(C ctx) throws FlowEndException, InterruptedException, PauseException {
         //判断流程是否结束
+        AtomicInteger loopTimes = new AtomicInteger(0);
         while (true) {
             try {
                 workerProcess(ctx);
@@ -39,7 +42,11 @@ public interface FlowProcessor<C extends FlowContext> {
             } catch (FlowEndException e) {
                 throw e;
             } catch (Exception e) {
-                //
+                if (loopTimes.incrementAndGet() > ctx.getProfile().getMaxLoopErrorTimes()) {
+                    //todo
+                    return;
+                }
+                ;
             }
         }
         //

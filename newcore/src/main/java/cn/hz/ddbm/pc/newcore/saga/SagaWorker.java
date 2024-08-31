@@ -76,7 +76,7 @@ class ForwardQuantum<S> {
             ctx.setState(failover);
             processor.updateStatus(ctx);
             //冥等
-            processor.idempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
+            processor.idempotent(ctx.getState().getCode().toString(), ctx.getEvent(), ctx);
             //执行业务
             try {
                 sagaAction.execute(ctx);
@@ -94,10 +94,10 @@ class ForwardQuantum<S> {
                 Boolean queryResult = sagaAction.executeQuery(ctx);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
                 if (Objects.equals(queryResult, null)) {
-                    processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
+                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                     ctx.setState(task);
                 } else if (!queryResult) {   //业务不成功
-                    processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
+                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                     //失败补偿策略:反复执行。直接失败
                     Integer retryTimes       = ctx.getRetry(lastState);
                     Integer executeTimeState = processor.getStateExecuteTimes(ctx, ctx.getFlow().getName(), lastState);
@@ -109,7 +109,7 @@ class ForwardQuantum<S> {
                         //如果可以重试，则设置为初始状态，重新执行任务。
                         ctx.setState(retry);
                     }
-                } else   {
+                } else {
                     if (null == su) {
                         ctx.setStatus(FlowStatus.FINISH);
                     } else {
@@ -118,7 +118,7 @@ class ForwardQuantum<S> {
                 }
                 processor.plugin().post(lastState, ctx);
             } catch (NoSuchRecordException e) {
-                processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
+                processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                 ctx.setState(task);
                 processor.plugin().error(lastState, e, ctx);
             } catch (ActionException e) {
@@ -167,7 +167,7 @@ class BackoffQuantum<S> {
             ctx.setState(rollbackFailover);
             processor.updateStatus(ctx);
             //冥等
-            processor.idempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
+            processor.idempotent(ctx.getState().getCode().toString(), ctx.getEvent(), ctx);
             //执行业务
             try {
                 sagaAction.rollback(ctx);
@@ -185,10 +185,10 @@ class BackoffQuantum<S> {
                 Boolean queryResult = sagaAction.rollbackQuery(ctx);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
                 if (queryResult == null) {
-                    processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
+                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                     ctx.setState(rollback);
-                }else  if (!queryResult) {   //业务不成功
-                    processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
+                } else if (!queryResult) {   //业务不成功
+                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                     //失败补偿策略:反复执行。直接失败
                     Integer retryTimes       = ctx.getRetry(lastState);
                     Integer executeTimeState = processor.getStateExecuteTimes(ctx, ctx.getFlow().getName(), lastState);
@@ -200,7 +200,7 @@ class BackoffQuantum<S> {
                         //如果可以重试，则设置为初始状态，重新执行任务。
                         ctx.setState(retry);
                     }
-                }else  {
+                } else {
                     if (null == pre) {
                         ctx.setStatus(FlowStatus.FINISH);
                     } else {
@@ -209,7 +209,7 @@ class BackoffQuantum<S> {
                 }
                 processor.plugin().post(lastState, ctx);
             } catch (NoSuchRecordException e) {
-                processor.unidempotent(ctx.getFlow().getName(), ctx.getId(), lastState, ctx.getEvent());
+                processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                 ctx.setState(rollback);
                 processor.plugin().error(lastState, e, ctx);
             } catch (Exception e) {

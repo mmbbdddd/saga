@@ -13,8 +13,8 @@ public class State {
         this.code = code;
     }
 
-    public Serializable code() {
-        return code;
+    public String code() {
+        return code.toString();
     }
 
     @Override

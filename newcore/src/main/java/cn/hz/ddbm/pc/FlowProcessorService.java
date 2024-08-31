@@ -1,21 +1,59 @@
 package cn.hz.ddbm.pc;
 
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
+import cn.hz.ddbm.pc.newcore.infra.*;
+import cn.hz.ddbm.pc.newcore.infra.proxy.*;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.Map;
 
 public abstract class FlowProcessorService<C extends FlowContext> implements FlowProcessor<C> {
-    //todo
+    Map<String, FlowModel>                       flows;
+    Map<Coast.SessionType, SessionManager>       sessionManagerMap;
+    Map<Coast.StatusType, StatusManager>         statusManagerMap;
+    Map<Coast.LockType, Locker>                  lockerMap;
+    Map<Coast.ScheduleType, ScheduleManger>      scheduleMangerMap;
+    Map<Coast.StatisticsType, StatisticsSupport> statisticsSupportMap;
+
+    PluginService pluginService;
+
+    @PostConstruct
+    public void afterPropertiesSet() {
+
+        this.pluginService = new PluginService();
+        SpringUtil.getBeansOfType(SessionManager.class).forEach((key, bean) -> {
+            this.sessionManagerMap.put(bean.code(), new SessionManagerProxy(bean));
+        });
+        SpringUtil.getBeansOfType(StatusManager.class).forEach((key, bean) -> {
+            this.statusManagerMap.put(bean.code(), new StatusManagerProxy(bean));
+        });
+        SpringUtil.getBeansOfType(Locker.class).forEach((key, bean) -> {
+            this.lockerMap.put(bean.code(), new LockProxy(bean));
+        });
+        SpringUtil.getBeansOfType(ScheduleManger.class).forEach((key, bean) -> {
+            this.scheduleMangerMap.put(bean.code(), new ScheduleMangerProxy(bean));
+        });
+        SpringUtil.getBeansOfType(StatisticsSupport.class).forEach((key, bean) -> {
+            this.statisticsSupportMap.put(bean.code(), new StatisticsSupportProxy(bean));
+        });
+        SpringUtil.getBeansOfType(FlowFactory.class).forEach((key, flowFactory) -> {
+            this.flows.putAll(flowFactory.getFlows());
+        });
+    }
+
     public FlowModel getFlow(String flowName) {
-        return null;
+        return flows.get(flowName);
     }
 
     public PluginService plugin() {
-        return new PluginService();
+        return pluginService;
     }
 
     public Integer getStateExecuteTimes(FlowContext ctx, String flow, State state) {
@@ -23,24 +61,30 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     }
 
     public boolean tryLock(FlowContext ctx) {
-        return true;
-    }
+        Profile profile = ctx.getProfile();
+        String  key     = String.format("lock:%s:%s:%s", profile.getNamespace(), ctx.getFlow().getName(), ctx.getId());
 
-    public void updateStatus(FlowContext ctx) throws StatusException {
-
-    }
-
-    public void idempotent(String name, Serializable id, State state, String event) throws IdempotentException {
-
-    }
-
-
-    public void unidempotent(String name, Serializable id, State state, String event) throws IdempotentException {
-
+        try {
+            lockerMap.get(profile.getLock()).tryLock(key, profile.getStatusTimeout());
+            return true;
+        } catch (LockException e) {
+            return false;
+        }
     }
 
     public void unLock(FlowContext ctx) {
+        Profile profile = ctx.getProfile();
+        String  key     = String.format("lock:%s:%s:%s", profile.getNamespace(), ctx.getFlow().getName(), ctx.getId());
+        try {
+            lockerMap.get(profile.getLock()).releaseLock(key);
+        } catch (LockException e) {
+            Logs.error.error("", e);
+        }
+    }
 
+    public void updateStatus(FlowContext ctx) throws StatusException {
+        ctx.syncpayload();
+        statusManagerMap.get(ctx.getProfile().getStatus()).flush(ctx);
     }
 
     /**
@@ -48,9 +92,25 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
      */
     public void flush(FlowContext ctx) throws SessionException, StatusException {
         ctx.syncpayload();
-        InfraUtils.getSessionManager(ctx.getProfile().getSession()).flush(ctx);
-        InfraUtils.getStatusManager(ctx.getProfile().getStatus()).flush(ctx);
+        sessionManagerMap.get(ctx.getProfile().getSession()).flush(ctx);
+        statusManagerMap.get(ctx.getProfile().getStatus()).flush(ctx);
     }
+
+    public void idempotent(String state, String event, FlowContext ctx) throws IdempotentException {
+        String namespace  = String.format("transition:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
+        String transition = String.format("do(%s,%s)", state, event);
+        String key        = String.format("%s:%s", namespace, transition);
+        statusManagerMap.get(ctx.getProfile().getStatus()).idempotent(key);
+    }
+
+
+    public void unidempotent(String state, String event, FlowContext ctx) throws IdempotentException {
+        String namespace  = String.format("transition:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
+        String transition = String.format("do(%s,%s)", state, event);
+        String key        = String.format("%s:%s", namespace, transition);
+        statusManagerMap.get(ctx.getProfile().getStatus()).unidempotent(key);
+    }
+
 
     public boolean isRetryable(Throwable e, FlowContext ctx) {
         if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {

@@ -17,8 +17,8 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
 
     public void workerProcess(String flowName, SagaPayload<S> payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
-        SagaFlow<S>    flow           = (SagaFlow<S>) getFlow(flowName);
-        SessionManager sessionManager = InfraUtils.getSessionManager(profile.getSession());
+        SagaFlow<S>         flow           = (SagaFlow<S>) getFlow(flowName);
+        SessionManager      sessionManager = InfraUtils.getSessionManager(profile.getSession());
         Map<String, Object> session        = sessionManager.get(flowName, payload.getId());
 
         SagaContext<S> ctx = new SagaContext<>(flow, payload, profile, session);
@@ -29,8 +29,8 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
     public void workerProcess(SagaContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
-        SagaFlow<S> flow   = ctx.getFlow();
-        FlowStatus  status = ctx.getStatus();
+        SagaFlow<S>  flow       = ctx.getFlow();
+        FlowStatus   status     = ctx.getStatus();
         SagaState<S> state      = ctx.getState();
         Integer      stateRetry = flow.getRetry(state);
         //状态不可执行

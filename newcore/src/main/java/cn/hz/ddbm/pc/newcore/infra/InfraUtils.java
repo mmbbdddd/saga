@@ -66,11 +66,6 @@ public class InfraUtils {
     }
 
 
-    public static String getDomain() {
-        return "";
-    }
-
-
     public static Object getBean(String beanName) {
         return SpringUtil.getBean(beanName);
     }

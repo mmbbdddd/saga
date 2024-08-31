@@ -39,11 +39,8 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
         }
         FsmWorker worker = null;
-        try {
-            worker = flow.getWorker(ctx.getState(), Coast.FSM.EVENT_DEFAULT);
-        } finally {
-            ctx.metricsNode();
-        }
+        worker = flow.getWorker(ctx.getState(), Coast.FSM.EVENT_DEFAULT);
+
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);

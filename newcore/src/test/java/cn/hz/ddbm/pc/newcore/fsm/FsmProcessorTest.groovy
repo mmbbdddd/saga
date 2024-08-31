@@ -21,6 +21,7 @@ class FsmProcessorTest {
         )
         fsmProcessor.workerProcess(ctx)
     }
+
     @Test
     void testFlowProcess() {
 
@@ -28,7 +29,7 @@ class FsmProcessorTest {
         FsmContext ctx = new FsmContext(
                 new PayFsmFlow(), payload, new Profile(), new HashMap<String, Object>()
         )
-        fsmProcessor.flowProcess (ctx)
+        fsmProcessor.flowProcess(ctx)
     }
 
     class PayFsmPayload extends FsmPayload<PayFsm> {

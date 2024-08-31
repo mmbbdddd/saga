@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.newcore.infra.proxy;
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
 import cn.hz.ddbm.pc.newcore.infra.StatusManager;
 
@@ -35,6 +36,24 @@ public class StatusManagerProxy implements StatusManager {
             return statusManager.getStatus(flow, flowId);
         } catch (Exception e) {
             throw new StatusException(e);
+        }
+    }
+
+    @Override
+    public void idempotent(String key) throws IdempotentException {
+        try {
+            statusManager.idempotent(key);
+        } catch (Exception e) {
+            throw new IdempotentException(e);
+        }
+    }
+
+    @Override
+    public void unidempotent(String key) throws IdempotentException {
+        try {
+            statusManager.unidempotent(key);
+        } catch (Exception e) {
+            throw new IdempotentException(e);
         }
     }
 }
