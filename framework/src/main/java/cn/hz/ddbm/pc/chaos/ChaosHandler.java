@@ -1,14 +1,25 @@
 package cn.hz.ddbm.pc.chaos;
 
+import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.ChaosService;
+import cn.hz.ddbm.pc.newcore.fsm.FsmSagaAction;
+import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class ChaosHandler {
     ChaosService chaosService;
+
     public void handle(ChaosTargetType chaosTargetType, Object proxy, Method method, Object[] args) throws Throwable {
-        List<ChaosRule> rules      = chaosService.chaosRules();
+        List<ChaosRule> rules = chaosService.chaosRules();
         if (null != rules) {
             for (ChaosRule rule : rules) {
                 if (rule.match(chaosTargetType, proxy, method, args) && rule.probabilityIsTrue()) {
@@ -18,24 +29,34 @@ public class ChaosHandler {
 
         }
 
-//        if (proxy instanceof Action) {
-//            FsmContext ctx     = (FsmContext) args[0];
-//            Profile    profile = ctx.getProfile();
-//            if (ctx.getIsChaos()) {
-//                Transition transition = ctx.getTransition();
-//                State      nextNode   = null;
-//
-//                State  from  = transition.getFrom();
-//                String event = transition.getEvent();
-////                Set<Pair<S, Double>> statusRadio = profile.getMaybeResults().get(from, event);
-////                String               key         = String.format("%s_%s", from.name(), event);
-////                nextNode = RandomUitl.selectByWeight(key, statusRadio);
-//                ctx.setNextNode(nextNode);
-//            }
-//        }
     }
 
     public Object generateResult(ChaosTargetType type, Object target, Method method, Object[] args) {
+        switch (type) {
+            case sagaAction: {
+                String                    key         = target.getClass().getSimpleName() + "." + method.getName();
+                Set<Pair<Object, Double>> sagaResults = new HashSet<>();
+                sagaResults.add(Pair.of(true, 0.7));
+                sagaResults.add(Pair.of(false, 0.2));
+                sagaResults.add(Pair.of(null, 0.1));
+                return RandomUitl.selectByWeight(key, sagaResults);
+            }
+            case fsmAction: {
+                String                    key         = target.getClass().getSimpleName() + "." + method.getName();
+                Set<Pair<Object, Double>> sagaResults = getFsmSagaResults(target.getClass());
+                return RandomUitl.selectByWeight(key, sagaResults);
+            }
+        }
         return null;
+    }
+
+    private Set<Pair<Object, Double>> getFsmSagaResults(Class<?> aClass) {
+        List<Pair<String, Object>>              fsmSagaResults = chaosService.getFsmSagaRules();
+        Map<String, List<Pair<String, Object>>> temp           = fsmSagaResults.stream().collect(Collectors.groupingBy(Pair::getKey));
+        Map<String, Set<Pair<Object, Double>>>  sagaResultMap  = new HashMap<>();
+        temp.forEach((clz,listPair)->{
+            sagaResultMap.put(clz,listPair.stream().map(pair -> Pair.of(pair.getValue(),Math.random())).collect(Collectors.toSet()));
+        });
+        return sagaResultMap.get(aClass.getSimpleName());
     }
 }
