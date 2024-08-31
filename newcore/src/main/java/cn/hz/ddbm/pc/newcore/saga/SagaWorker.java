@@ -76,7 +76,7 @@ class ForwardQuantum<S> {
             ctx.setState(failover);
             processor.updateStatus(ctx);
             //冥等
-            processor.idempotent(ctx.getState().getCode().toString(), ctx.getEvent(), ctx);
+            processor.idempotent(ctx.getState().code(), ctx.getEvent(), ctx);
             //执行业务
             try {
                 sagaAction.execute(ctx);
@@ -167,7 +167,7 @@ class BackoffQuantum<S> {
             ctx.setState(rollbackFailover);
             processor.updateStatus(ctx);
             //冥等
-            processor.idempotent(ctx.getState().getCode().toString(), ctx.getEvent(), ctx);
+            processor.idempotent(ctx.getState().code(), ctx.getEvent(), ctx);
             //执行业务
             try {
                 sagaAction.rollback(ctx);

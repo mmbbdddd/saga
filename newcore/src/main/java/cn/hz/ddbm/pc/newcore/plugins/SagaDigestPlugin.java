@@ -3,8 +3,12 @@ package cn.hz.ddbm.pc.newcore.plugins;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.State;
+import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.log.Logs;
+import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
+
+import java.io.Serializable;
 
 public class SagaDigestPlugin implements Plugin {
     @Override
@@ -21,7 +25,17 @@ public class SagaDigestPlugin implements Plugin {
     public void postAction(State lastNode, FlowContext ctx) {
         Boolean forward   = ((SagaState) ctx.getState()).getIsForward();
         String  directStr = forward ? ">>>>" : "<<<<";
-        Logs.digest.info("{},{},{},{},{}=>{}", directStr, ctx.getFlow().getName(), ctx.getId(), ctx.getStatus(), lastNode, ctx.getState());
+
+        String       flow         = ctx.getFlow().getName();
+        Serializable id           = ctx.getId();
+        String       from         = lastNode.code();
+        String       event        = ((SagaContext<Object>) ctx).getEvent();
+        String       action       = ctx.getAction().code();
+        String       actionResult = ctx.getActionResult().toString();
+        String       targetStatus = ctx.getState().code();
+
+        Logs.digest.info("{},{},{},{},{},{},{},{}==>{}", directStr, flow, id, from, event, action, actionResult, from, targetStatus);
+
     }
 
     @Override

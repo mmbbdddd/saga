@@ -49,7 +49,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
             ctx.setState(failover);
             processor.updateStatus(ctx);
             //冥等
-            processor.idempotent(lastState.getCode().toString(), ctx.getEvent(), ctx);
+            processor.idempotent(lastState.code(), ctx.getEvent(), ctx);
             //执行业务
             try {
                 sagaAction.execute(ctx);
@@ -67,7 +67,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
                 S queryResult = sagaAction.executeQuery(ctx);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
                 if (queryResult == null) {
-                    processor.unidempotent(lastState.getCode().toString(), ctx.getEvent(), ctx);
+                    processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                     ctx.setState(from);
                 } else {
                     //业务有返回
@@ -76,7 +76,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
 
                 processor.plugin().post(lastState, ctx);
             } catch (NoSuchRecordException e) {
-                processor.unidempotent(lastState.getCode().toString(), ctx.getEvent(), ctx);
+                processor.unidempotent(lastState.code(), ctx.getEvent(), ctx);
                 ctx.setState(from);
                 processor.plugin().error(lastState, e, ctx);
             } catch (ActionException e) {
