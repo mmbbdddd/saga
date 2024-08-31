@@ -1,6 +1,5 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
-import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;

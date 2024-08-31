@@ -4,7 +4,6 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
-import cn.hz.ddbm.pc.newcore.saga.SagaState;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -31,7 +30,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
 
     }
 
-    public void idempotent(String name, Serializable id, SagaState state, String event) throws IdempotentException {
+    public void idempotent(String name, Serializable id, State state, String event) throws IdempotentException {
 
     }
 

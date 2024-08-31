@@ -4,9 +4,8 @@ import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.saga.SagaState;
 
-public class DigestLogPlugin implements Plugin {
+public class FsmDigestPlugin implements Plugin {
     @Override
     public String code() {
         return "digest";
@@ -19,9 +18,8 @@ public class DigestLogPlugin implements Plugin {
 
     @Override
     public void postAction(State lastNode, FlowContext ctx) {
-        Boolean forward   = ((SagaState) ctx.getState()).getIsForward();
-        String  directStr = forward ? ">>>>" : "<<<<";
-        Logs.digest.info("{},{},{},{},{}=>{}", directStr, ctx.getFlow().getName(), ctx.getId(), ctx.getStatus(), lastNode, ctx.getState());
+
+        Logs.digest.info(" {},{},{},{}=>{}", ctx.getFlow().getName(), ctx.getId(), ctx.getStatus(), lastNode, ctx.getState());
     }
 
     @Override

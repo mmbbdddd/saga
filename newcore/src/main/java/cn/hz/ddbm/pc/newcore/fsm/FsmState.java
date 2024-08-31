@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class FsmState<S extends Serializable> extends State {
     @Getter
     S state;
+
     public FsmState(S state) {
         super(state);
         this.state = state;

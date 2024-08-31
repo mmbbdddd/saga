@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.plugins.DigestLogPlugin;
+import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class Profile {
 
     public Profile() {
         this.plugins = new ArrayList<>();
-        this.plugins.add(new DigestLogPlugin());
+        this.plugins.add(new FsmDigestPlugin());
     }
 
 }

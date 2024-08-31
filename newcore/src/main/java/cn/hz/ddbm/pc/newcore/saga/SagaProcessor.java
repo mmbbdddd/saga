@@ -53,7 +53,6 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
         SagaWorker<S> worker = flow.getWorker(ctx.getState().getState());
         try {
             ctx.setWorker(worker);
-            ctx.setAction(worker.getSagaAction().getOrInitAction());
             worker.execute(ctx);
         } catch (Throwable e) {
             try {

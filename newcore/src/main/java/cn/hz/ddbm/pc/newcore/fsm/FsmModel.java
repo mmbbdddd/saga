@@ -35,8 +35,8 @@ public class FsmModel<S extends Serializable> extends FlowModel<FsmState<S>> {
         return this;
     }
 
-    public FsmModel<S> saga(S from, String event, String action,S failover) {
-        SagaFsmWorker<S> sagaFsmWorker = new SagaFsmWorker<>(from,action,failover);
+    public FsmModel<S> saga(S from, String event, String action, S failover) {
+        SagaFsmWorker<S> sagaFsmWorker = new SagaFsmWorker<>(from, action, failover);
         this.transitionTable.put(from, event, sagaFsmWorker);
         this.transitionTable.put(failover, Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);
         return this;

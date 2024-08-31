@@ -30,6 +30,7 @@ public class SagaWorker<S> extends Worker<SagaContext<S>> {
 
     @Override
     public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException {
+        ctx.setAction(this.sagaAction.getOrInitAction());
         if (ctx.getState().getIsForward()) {
             forward.onEvent(ctx);
         } else {

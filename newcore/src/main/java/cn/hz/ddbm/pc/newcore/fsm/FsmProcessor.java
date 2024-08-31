@@ -19,9 +19,9 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
         FsmModel<S> flow       = ctx.getFlow();
-        FlowStatus   status     = ctx.getStatus();
-        FsmState<S> state      = ctx.getState() ;
-        Integer      stateRetry = flow.getRetry(state);
+        FlowStatus  status     = ctx.getStatus();
+        FsmState<S> state      = ctx.getState();
+        Integer     stateRetry = flow.getRetry(state);
         //状态不可执行
         if (FlowStatus.isEnd(status)) {
             throw new FlowEndException();
@@ -39,10 +39,9 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
         }
 
-        FsmWorker  worker = flow.getWorker(ctx.getState(),Coast.FSM.EVENT_DEFAULT);
+        FsmWorker worker = flow.getWorker(ctx.getState(), Coast.FSM.EVENT_DEFAULT);
         try {
             ctx.setWorker(worker);
-//            ctx.setAction(worker.getAction().getOrInitAction());
             worker.execute(ctx);
         } catch (Throwable e) {
             try {
