@@ -13,6 +13,7 @@ import cn.hz.ddbm.pc.newcore.log.Logs;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,9 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
 
     public PluginService plugin() {
         return pluginService;
+    }
+    public Map<String, Object> getSession(String flowName, Serializable id) throws SessionException {
+        return sessionManagerMap.get(flowName).get(flowName,id);
     }
 
     public Integer getStateExecuteTimes(FlowContext ctx, String flow, State state) {

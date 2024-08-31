@@ -22,7 +22,11 @@ public class FsmActionProxy<S extends Serializable> implements FsmCommandAction<
 
     @Override
     public String code() {
-        return getOrInitAction().code();
+        if (this.fsmWorker instanceof ToFsmWorker) {
+            return commandAction.code();
+        }else{
+            return sagaAction.code();
+        }
     }
 
     @Override

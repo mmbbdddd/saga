@@ -29,12 +29,11 @@ public class SagaDigestPlugin implements Plugin {
         String       flow         = ctx.getFlow().getName();
         Serializable id           = ctx.getId();
         String       from         = lastNode.code();
-        String       event        = ((SagaContext<Object>) ctx).getEvent();
         String       action       = ctx.getAction().code();
         String       actionResult = ctx.getActionResult().toString();
         String       targetStatus = ctx.getState().code();
 
-        Logs.digest.info("{},{},{},{},{},{},{},{}==>{}", directStr, flow, id, from, event, action, actionResult, from, targetStatus);
+        Logs.digest.info("{},{},{}, {},{},{}==>{}", directStr, id, from,  action, actionResult, from, targetStatus);
 
     }
 

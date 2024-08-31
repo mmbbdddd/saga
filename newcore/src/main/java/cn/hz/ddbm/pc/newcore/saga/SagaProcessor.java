@@ -14,6 +14,7 @@ import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +24,12 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
     public void workerProcess(String flowName, SagaPayload<S> payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
         SagaFlow<S>         flow           = (SagaFlow<S>) getFlow(flowName);
-        SessionManager      sessionManager = InfraUtils.getSessionManager(profile.getSession());
-        Map<String, Object> session        = sessionManager.get(flowName, payload.getId());
-
+        Map<String, Object> session        = getSession(flowName, payload.getId());
         SagaContext<S> ctx = new SagaContext<>(flow, payload, profile, session);
         workerProcess(ctx);
     }
+
+
 
 
     public void workerProcess(SagaContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {

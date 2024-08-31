@@ -26,7 +26,7 @@ public class FsmDigestPlugin implements Plugin {
         String       from         = lastNode.code();
         String       event        = ((FsmContext) ctx).getEvent();
         String       action       = ctx.getAction().code();
-        String       actionResult = ctx.getActionResult().toString();
+        Object       actionResult = ctx.getActionResult();
         String       targetStatus = ctx.getState().code();
 
         Logs.digest.info("{},{},{},{},{},{},{}==>{}", flow,id,from,event,action,actionResult,from,targetStatus);
