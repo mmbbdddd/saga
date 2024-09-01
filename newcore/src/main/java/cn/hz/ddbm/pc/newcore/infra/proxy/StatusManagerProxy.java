@@ -1,7 +1,9 @@
 package cn.hz.ddbm.pc.newcore.infra.proxy;
 
 import cn.hutool.core.lang.Pair;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
@@ -24,6 +26,7 @@ public class StatusManagerProxy implements StatusManager {
     @Override
     public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> status, Integer timeout) throws StatusException {
         try {
+            SpringUtil.getBean(ChaosHandler.class).status();
             statusManager.setStatus(flow, flowId, status, timeout);
         } catch (Exception e) {
             throw new StatusException(e);
@@ -33,6 +36,7 @@ public class StatusManagerProxy implements StatusManager {
     @Override
     public Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws StatusException {
         try {
+            SpringUtil.getBean(ChaosHandler.class).status();
             return statusManager.getStatus(flow, flowId);
         } catch (Exception e) {
             throw new StatusException(e);
@@ -42,6 +46,7 @@ public class StatusManagerProxy implements StatusManager {
     @Override
     public void idempotent(String key) throws IdempotentException {
         try {
+            SpringUtil.getBean(ChaosHandler.class).status();
             statusManager.idempotent(key);
         } catch (IdempotentException e) {
             throw e;
@@ -53,6 +58,7 @@ public class StatusManagerProxy implements StatusManager {
     @Override
     public void unidempotent(String key) throws IdempotentException {
         try {
+            SpringUtil.getBean(ChaosHandler.class).status();
             statusManager.unidempotent(key);
         } catch (IdempotentException e) {
             throw e;

@@ -1,5 +1,7 @@
 package cn.hz.ddbm.pc.newcore.infra.proxy;
 
+import cn.hutool.extra.spring.SpringUtil;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
 import cn.hz.ddbm.pc.newcore.infra.Locker;
@@ -19,6 +21,7 @@ public class LockProxy implements Locker {
     @Override
     public void tryLock(String key, Integer timeout) throws LockException {
         try {
+            SpringUtil.getBean(ChaosHandler.class).locker();
             locker.tryLock(key, timeout);
         } catch (LockException e) {
             throw e;
@@ -30,6 +33,7 @@ public class LockProxy implements Locker {
     @Override
     public void releaseLock(String key) throws LockException {
         try {
+            SpringUtil.getBean(ChaosHandler.class).locker();
             locker.releaseLock(key);
         } catch (LockException e) {
             throw e;

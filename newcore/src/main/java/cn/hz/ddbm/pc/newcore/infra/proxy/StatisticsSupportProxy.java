@@ -1,6 +1,8 @@
 package cn.hz.ddbm.pc.newcore.infra.proxy;
 
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.State;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.infra.StatisticsSupport;
 
@@ -21,6 +23,7 @@ public class StatisticsSupportProxy implements StatisticsSupport {
     @Override
     public void increment(String flowName, Serializable flowId, State node, String variable) {
         try {
+            SpringUtil.getBean(ChaosHandler.class).statistics();
             statisticsSupport.increment(flowName, flowId, node, variable);
         } catch (Exception e) {
         }
@@ -29,6 +32,7 @@ public class StatisticsSupportProxy implements StatisticsSupport {
     @Override
     public Long get(String flowName, Serializable flowId, State node, String variable) {
         try {
+            SpringUtil.getBean(ChaosHandler.class).statistics();
             return statisticsSupport.get(flowName, flowId, node, variable);
         } catch (Exception e) {
             //
