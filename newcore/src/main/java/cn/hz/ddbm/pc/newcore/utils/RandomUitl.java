@@ -38,20 +38,6 @@ public class RandomUitl {
         return (T) weightRandomCache.get(key, (Func0<WeightRandom<?>>) () -> new WeightRandom<>(sets)).random();
     }
 
-
-//    public static void main(String[] args) {
-//        Set<Pair<String, Double>> sets = Sets.set(
-//                Pair.of("1", 0.1),
-//                Pair.of("2", 0.2),
-//                Pair.of("3", 0.3),
-//                Pair.of("4", 0.4)
-//        );
-//        WeightRandom<String> weightRandom = new WeightRandom<>(sets);
-//        for (int i = 0; i < 100; i++) {
-//            System.out.println(weightRandom.random());
-//        }
-//    }
-
     public static class WeightRandom<K> {
         private TreeMap<Double, K> weightMap = new TreeMap<Double, K>();
 

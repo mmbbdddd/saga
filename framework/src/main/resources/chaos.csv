@@ -1,0 +1,8 @@
+action,type,method,value,weight,value_type
+exception,FsmRouterAction,execute,RuntimeException,0.1,java.lang.RuntimeException
+exception,FsmRouterAction,execute,IllegalArgumentException,0.1,java.lang.RuntimeException
+exception,FsmRouterAction,executeQuery,RuntimeException,0.1,java.lang.RuntimeException
+exception,FsmRouterAction,executeQuery,IllegalArgumentException,0.1,java.lang.RuntimeException
+result,FsmRouterAction,executeQuery,A,0.8,cn.hz.ddbm.pc.chaos.TF
+result,FsmRouterAction,executeQuery,B,0.1,cn.hz.ddbm.pc.chaos.TF
+result,FsmRouterAction,executeQuery,Null,0.1,cn.hz.ddbm.pc.chaos.TF

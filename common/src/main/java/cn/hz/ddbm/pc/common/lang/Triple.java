@@ -19,10 +19,11 @@ public class Triple<L, M, R> {
         return new Triple<>(left, middle, right);
     }
 
+
+
     public L getLeft() {
         return left;
     }
-
     public M getMiddle() {
         return middle;
     }

@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class TestFsmAction implements FsmCommandAction, FsmRouterAction {
     @Override
     public void command(FsmContext ctx) throws ActionException {
-System.out.println("xxxx");
+        System.out.println("xxxx");
     }
 
     @Override
@@ -24,6 +24,11 @@ System.out.println("xxxx");
     @Override
     public Serializable executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
         return null;
+    }
+
+    @Override
+    public Class getType() {
+        return String.class;
     }
 
     @Override

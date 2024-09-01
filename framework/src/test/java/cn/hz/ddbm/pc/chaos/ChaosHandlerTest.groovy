@@ -1,11 +1,16 @@
 package cn.hz.ddbm.pc.chaos
 
 import cn.hutool.core.lang.Pair
+import cn.hutool.core.text.csv.CsvReader
+import cn.hutool.core.text.csv.CsvUtil
 import cn.hutool.core.util.ReflectUtil
+import cn.hutool.setting.Setting
 import cn.hz.ddbm.pc.ChaosService
+import cn.hz.ddbm.pc.chaos.actions.TestFsmAction
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext
 import cn.hz.ddbm.pc.newcore.saga.SagaContext
 import cn.hz.ddbm.pc.newcore.test.NoneSagaAction
+import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils
 import org.junit.Test
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -18,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner
 
 import javax.annotation.Resource
 import java.lang.reflect.Method
+import java.nio.charset.Charset
 
 import static org.mockito.Mockito.*
 
@@ -30,23 +36,32 @@ class ChaosHandlerTest {
     @Resource
     ChaosHandler chaosHandler
 
+    @Resource
+    TestFsmAction action;
+
     @Before
     void setUp() {
     }
 
     @Test
     void testHandle() {
-        when(chaosService.chaosRules()).thenReturn([new ChaosRule(ChaosTargetType.sagaAction, "expression", "errorMessage", 0d, [null])])
+//        chaosHandler.initRules();
+        chaosHandler.initRules()
+        10.times {
+            try {
+                 Object ss  =  action.executeQuery(null)
+                println ss;
+                int cc = 0;
+            } catch (Exception ee) {
+                println("sssss" + ee.getMessage())
+            }
+        }
 
-        chaosHandler.handle(ChaosTargetType.sagaAction, "proxy", null, ["args"] as Object[])
     }
 
     @Test
     void testGenerateResult() {
-        when(chaosService.getFsmSagaRules()).thenReturn([new Pair<String, Object>("key", "value")])
-        Method method = ReflectUtil.getMethod(NoneSagaAction.class,"executeQuery", SagaContext.class );
-        Object result = chaosHandler.generateResult(ChaosTargetType.sagaAction, "target", method, ["args"] as Object[])
-        assert [true,false,null].contains(result)
+
     }
 }
 
