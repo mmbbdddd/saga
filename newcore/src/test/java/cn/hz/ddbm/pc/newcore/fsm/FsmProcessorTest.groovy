@@ -17,7 +17,7 @@ class FsmProcessorTest {
 
         PayFsmPayload payload = new PayFsmPayload();
         FsmContext ctx = new FsmContext(
-                new PayFsmFlow(), payload, Profile.devOf(), new HashMap<String, Object>()
+                new PayFsmFlow(), payload,  new HashMap<String, Object>()
         )
         fsmProcessor.workerProcess(ctx)
     }
@@ -27,7 +27,7 @@ class FsmProcessorTest {
 
         PayFsmPayload payload = new PayFsmPayload();
         FsmContext ctx = new FsmContext(
-                new PayFsmFlow(), payload, Profile.devOf(), new HashMap<String, Object>()
+                new PayFsmFlow(), payload,  new HashMap<String, Object>()
         )
         fsmProcessor.flowProcess(ctx)
     }
@@ -44,6 +44,7 @@ class FsmProcessorTest {
             this.to(PayFsm.init, Coast.FSM.EVENT_DEFAULT, "nono", pay);
             this.saga(pay, Coast.FSM.EVENT_DEFAULT, "nono", send);
             this.saga(send, Coast.FSM.EVENT_DEFAULT, "nono", send_failover);
+            this.profile(Profile.devOf())
         }
     }
 

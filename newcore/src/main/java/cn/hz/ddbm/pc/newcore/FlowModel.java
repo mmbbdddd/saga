@@ -31,7 +31,7 @@ public abstract class FlowModel<S extends State> {
     }
 
     public Integer getRetry(S state) {
-        return 2;
+        return 7;
     }
 
     public boolean isEnd(State state) {
