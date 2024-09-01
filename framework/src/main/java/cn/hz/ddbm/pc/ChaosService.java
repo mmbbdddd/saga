@@ -4,6 +4,7 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.chaos.AopAspect;
 import cn.hz.ddbm.pc.chaos.ChaosAction;
 import cn.hz.ddbm.pc.chaos.ChaosHandler;
+import cn.hz.ddbm.pc.chaos.ChaosRule;
 import cn.hz.ddbm.pc.factory.fsm.BeanFsmFlowFactory;
 import cn.hz.ddbm.pc.factory.saga.BeanSagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
@@ -21,6 +22,7 @@ import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
 import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
 import cn.hz.ddbm.pc.support.BaseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -33,45 +35,53 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 
 public class ChaosService extends BaseService {
-    @Override
-    public void batchFsms(String flowName, List<FsmPayload> payloads) {
+    @Autowired
+    ChaosHandler chaosHandler;
+
+    public void batchFsms(String flowName, List<FsmPayload> payloads, List<ChaosRule> rules) {
         this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
         this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        chaosHandler.setChaosRules(rules);
         super.batchFsms(flowName, payloads);
     }
 
-    @Override
-    public void batchSagas(String flowName, List<SagaPayload> payloads) {
+
+    public void batchSagas(String flowName, List<SagaPayload> payloads, List<ChaosRule> rules) {
         this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
         this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        chaosHandler.setChaosRules(rules);
         super.batchSagas(flowName, payloads);
     }
 
-    @Override
-    public void sagas(String flowName, SagaPayload payload) throws PauseException, SessionException, FlowEndException, InterruptedException {
+
+    public void sagas(String flowName, SagaPayload payload, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
         this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        chaosHandler.setChaosRules(rules);
         super.sagas(flowName, payload);
     }
 
-    @Override
-    public void saga(String flowName, SagaPayload payload) throws PauseException, SessionException, FlowEndException, InterruptedException {
+
+    public void saga(String flowName, SagaPayload payload, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
         this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        chaosHandler.setChaosRules(rules);
         super.saga(flowName, payload);
     }
 
-    @Override
-    public void fsms(String flowName, FsmPayload payload, String event) throws PauseException, SessionException, FlowEndException, InterruptedException {
+
+    public void fsms(String flowName, FsmPayload payload, String event, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
         this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        chaosHandler.setChaosRules(rules);
         super.fsms(flowName, payload, event);
     }
 
-    @Override
-    public void fsm(String flowName, FsmPayload payload, String event) throws PauseException, SessionException, FlowEndException, InterruptedException {
+
+    public void fsm(String flowName, FsmPayload payload, String event, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
         this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        chaosHandler.setChaosRules(rules);
         super.fsm(flowName, payload, event);
     }
 

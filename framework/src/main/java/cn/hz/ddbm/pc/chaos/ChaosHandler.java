@@ -20,15 +20,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChaosHandler {
-    static String ChaosRuleFile = "chaos.csv";
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> chaosRuleMap;
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> resultMap;
+    public ChaosHandler(){
+        this.chaosRuleMap = new HashMap<>();
+        this.resultMap = new HashMap<>();
+    }
 
-    @PostConstruct
-    public void initRules() {
-        BufferedReader reader    = ResourceUtil.getUtf8Reader("chaos.csv");
-        CsvReader       csvReader = CsvUtil.getReader();
-        List<ChaosRule> rules     = csvReader.read(reader, ChaosRule.class);
+    public void setChaosRules(List<ChaosRule> rules) {
+        if (null == rules || rules.isEmpty()) return;
         Map<Pair<String, String>, List<Triple<String, String, ChaosRule>>> t1 = rules.stream()
                 .filter(r -> r.getAction().equals("exception"))
                 .map(r -> Triple.of(r.getType(), r.getMethod(), r))
@@ -52,19 +52,15 @@ public class ChaosHandler {
                     .collect(Collectors.toSet()));
         });
 
-        int i = 0;
-
     }
 
-
-
     public void handle(ChaosTargetType chaosTargetType, Object proxy, Method method, Object[] args) throws Throwable {
-        Class                       clz   = getTargetClass(chaosTargetType);
-        Set<Pair<ChaosRule,Double>> rules = chaosRuleMap.get(Pair.of(clz.getSimpleName(),method.getName()));
+        Class                        clz   = getTargetClass(chaosTargetType);
+        Set<Pair<ChaosRule, Double>> rules = chaosRuleMap.get(Pair.of(clz.getSimpleName(), method.getName()));
         if (null != rules) {
-            String classSimpleName = clz.getSimpleName();
-            String    key  = classSimpleName + "." + method.getName();
-            ChaosRule rule = RandomUitl.selectByWeight(key, rules);
+            String    classSimpleName = clz.getSimpleName();
+            String    key             = classSimpleName + "." + method.getName();
+            ChaosRule rule            = RandomUitl.selectByWeight(key, rules);
             if (rule.isException()) {
                 rule.raiseException();
             }
@@ -72,8 +68,8 @@ public class ChaosHandler {
     }
 
     private Class getTargetClass(ChaosTargetType type) {
-        Class clz =null;
-        switch (type){
+        Class clz = null;
+        switch (type) {
             case status:
                 return StatusManager.class;
             case session:
@@ -92,18 +88,16 @@ public class ChaosHandler {
     }
 
     public Object generateResult(ChaosTargetType type, Object proxy, Method method, Object[] args) {
-        Class clz = getTargetClass(type);
+        Class                        clz             = getTargetClass(type);
         String                       key             = clz.getSimpleName() + "." + method.getName();
         Set<Pair<ChaosRule, Double>> sagaResultRules = resultMap.get(Pair.of(clz.getSimpleName(), method.getName()));
-        if(null != sagaResultRules) {
+        if (null != sagaResultRules) {
             ChaosRule rule = RandomUitl.selectByWeight(key, sagaResultRules);
             return rule.getValue();
-        }else{
+        } else {
             return null;
         }
     }
-
-
 
 
 }
