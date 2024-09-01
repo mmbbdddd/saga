@@ -71,7 +71,9 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
                     ctx.setState(from);
                 } else {
                     //业务有返回
-                    Assert.isTrue(ctx.getFlow().isState(queryResult),"queryResult["+queryResult+"] not a right state code");
+                    if(!ctx.getFlow().isState(queryResult)){
+                        throw new IllegalArgumentException("queryResult["+queryResult+"] not a right state code");
+                    }
                     ctx.setState(new FsmState<>(queryResult));
                 }
 

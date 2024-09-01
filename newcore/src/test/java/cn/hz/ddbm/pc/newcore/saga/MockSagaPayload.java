@@ -27,17 +27,4 @@ public class MockSagaPayload implements SagaPayload<PayStateMachine> {
     }
 
 
-//
-//    @Override
-//    public Tetrad<FlowStatus, PayStateMachine, SagaState.Offset, Boolean> getSagaStatus() {
-//        return Tetrad.of(status, state, offset, forward);
-//    }
-//
-//    @Override
-//    public void setSagaStatus(Tetrad<FlowStatus, PayStateMachine, SagaState.Offset, Boolean> t) {
-//        this.status  = t.getOne();
-//        this.state   = t.getTwo();
-//        this.offset  = t.getThree();
-//        this.forward = t.getFour();
-//    }
 }

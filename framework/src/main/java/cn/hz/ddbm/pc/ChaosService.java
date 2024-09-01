@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc;
 
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.chaos.AopAspect;
 import cn.hz.ddbm.pc.chaos.ChaosAction;
 import cn.hz.ddbm.pc.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.chaos.ChaosRule;
@@ -70,9 +69,11 @@ public class ChaosService extends BaseService {
     }
 
 
-    public void fsms(String flowName, FsmPayload payload, String event, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
-        this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+    public void fsms(String flowName, FsmPayload payload, String event,Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+        if(mockBean) {
+            this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
+            this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        }
         chaosHandler.setChaosRules(rules);
         super.fsms(flowName, payload, event);
     }
@@ -134,10 +135,6 @@ public class ChaosService extends BaseService {
             return new ChaosHandler();
         }
 
-        @Bean
-        AopAspect aspect() {
-            return new AopAspect();
-        }
 
 
         @Bean

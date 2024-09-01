@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@ComponentScan("cn.hz.ddbm.pc.example.actions")
+@ComponentScan("cn.hz.ddbm.pc.actions")
 @SpringBootTest
 @Import({ PayTest.CC.class, ChaosService.ChaosConfiguration.class})
 @RunWith(SpringRunner.class)
@@ -49,7 +49,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.fsms("test", new FsmPayload(1, FlowStatus.INIT,PayState.init),null,null);
+            chaosService.fsms("test", new FsmPayload(1, FlowStatus.INIT,PayState.init),null,false,null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,7 +70,7 @@ public class PayTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.fsms("test", new FsmPayload(1,FlowStatus.INIT,PayState.init), null,null);
+            chaosService.fsms("test", new FsmPayload(1,FlowStatus.INIT,PayState.init), null,false,null);
         } catch (Exception e) {
             e.printStackTrace();
         }

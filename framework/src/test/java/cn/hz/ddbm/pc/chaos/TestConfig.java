@@ -57,10 +57,7 @@ public class TestConfig {
         return new ChaosHandler();
     }
 
-    @Bean
-    AopAspect aspect() {
-        return new AopAspect();
-    }
+
 
 
     @Bean

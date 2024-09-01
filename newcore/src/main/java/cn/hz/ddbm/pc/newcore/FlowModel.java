@@ -20,12 +20,12 @@ public abstract class FlowModel<S extends State> {
         Assert.notNull(init, "init is null");
         Assert.notNull(ends, "ends is null");
         Assert.notNull(tasks, "tasks is null");
-        this.name  = name;
-        this.init  = init;
-        this.ends  = ends;
-        this.tasks = tasks;
+        this.name      = name;
+        this.init      = init;
+        this.ends      = ends;
+        this.tasks     = tasks;
         this.allStates = new HashSet<>();
-        this.allStates.add(init.code);
+        this.allStates.add(init.code());
         this.allStates.addAll(ends.stream().map(State::code).collect(Collectors.toList()));
         this.allStates.addAll(tasks.stream().map(State::code).collect(Collectors.toList()));
     }
@@ -50,6 +50,6 @@ public abstract class FlowModel<S extends State> {
     }
 
     public Boolean isState(Object stateCode) {
-        return allStates.contains(stateCode);
+        return allStates.contains(stateCode.toString());
     }
 }
