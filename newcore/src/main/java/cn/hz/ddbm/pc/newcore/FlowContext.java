@@ -25,14 +25,13 @@ public  class FlowContext<F extends FlowModel<S>, S extends State, W extends Wor
     transient Action               action;
     transient ActionResult         actionResult;
 
-    public FlowContext(F flow, Payload<S> payload, Profile profile, Map<String, Object> session) {
+    public FlowContext(F flow, Payload<S> payload,  Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
         Assert.notNull(payload, "payload is null");
-        Assert.notNull(profile, "profile is null");
         this.id             = payload.getId();
         this.flow           = flow;
         this.payload        = payload;
-        this.profile        = profile;
+        this.profile        = flow.getProfile();
         this.session        = session == null ? new HashMap<>() : session;
         this.state          = payload.getState();
         this.status         = payload.getStatus();

@@ -1,22 +1,10 @@
 package cn.hz.ddbm.pc.chaos
 
 import cn.hutool.core.util.ClassUtil
-import cn.hutool.core.util.EnumUtil
-import cn.hutool.core.util.ReflectUtil
 import cn.hutool.json.JSONUtil
-import cn.hz.ddbm.pc.newcore.utils.ExpressionEngineUtils
 import lombok.Data
 import org.junit.Test
 import org.junit.Before
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.springframework.expression.ExpressionParser
-import org.springframework.expression.spel.standard.SpelExpressionParser
-import org.springframework.scripting.groovy.GroovyScriptEvaluator
-import org.springframework.scripting.groovy.GroovyScriptFactory
-
-import static org.mockito.Mockito.*
 
 class RuleTest {
 
@@ -26,7 +14,7 @@ class RuleTest {
 
     @Test
     void testToValue() {
-        Rule rule = new Rule(
+        ChaosRule rule = new ChaosRule(
                 weight: 0.1,
                 value: 'F',
                 value_type: 'cn.hz.ddbm.pc.chaos.TF'
@@ -35,7 +23,7 @@ class RuleTest {
         rule.toWeight()
 
 
-          rule = new Rule(
+          rule = new ChaosRule(
                 weight: 0.1,
                 value: '',
                 value_type: 'cn.hz.ddbm.pc.chaos.TF'

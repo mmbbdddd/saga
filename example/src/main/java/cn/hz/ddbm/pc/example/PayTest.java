@@ -1,99 +1,97 @@
-//package cn.hz.ddbm.pc.example;
-//
-//import cn.hutool.extra.spring.SpringUtil;
-//import cn.hz.ddbm.pc.configuration.PcChaosConfiguration;
-//import cn.hz.ddbm.pc.core.coast.Coasts;
-//import cn.hz.ddbm.pc.core.processor.saga.SagaState;
-//import cn.hz.ddbm.pc.plugin.PerformancePlugin;
-//import cn.hz.ddbm.pc.profile.ChaosSagaService;
-//import cn.hz.ddbm.pc.chaos.ChaosRule;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.ComponentScan;
-//import org.springframework.context.annotation.Import;
-//import org.springframework.test.context.junit4.SpringRunner;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.concurrent.atomic.AtomicInteger;
-//
-//@ComponentScan("cn.hz.ddbm.pc.example.actions")
-//@SpringBootTest
-//@Import({PcChaosConfiguration.class, PayTest.CC.class})
-//@RunWith(SpringRunner.class)
-//public class PayTest {
-//
-//
-//    @Autowired
-//    ChaosSagaService chaosService;
-//
-//    /**
-//     * doc/img_4.png
-//     */
-//
-//    @Test
-//    public void chaos() throws Exception {
-//        String event = Coasts.EVENT_FORWARD;
-//        List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
-//            //注入业务逻辑异常，概率20%
-////            add(new ChaosRule(ChaosTarget.ACTION, "true", "action异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
-////                add(RuntimeException.class);
-////                add(Exception.class);
-////            }}));
-////            注入锁错误
-////            add(new ChaosRule(ChaosTarget.LOCK, "true", "锁异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
-////                add(RuntimeException.class);
-////                add(Exception.class);
-////            }}));
-//        }};
-//        try {
-//            //执行100此，查看流程中断概率
-//            chaosService.execute("test", new ChaosSagaService.MockPayLoad(SagaState.of(PayState.init)), event, 2, 10, rules, false);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    //模拟支付账号
-//    public static AtomicInteger account;
-//    //    模拟冻结字段
-//    public static AtomicInteger freezed;
-//    //    模拟收款账号
-//    public static AtomicInteger bank;
-//
-//    @Test
-//    public void acid() throws Exception {
-//        account = new AtomicInteger(10000);
-//        freezed = new AtomicInteger(0);
-//        bank    = new AtomicInteger(0);
-//
-//        String event = Coasts.EVENT_FORWARD;
-//        try {
-//            //执行10000次，查看流程中断概率
-//            chaosService.execute("test", new ChaosSagaService.MockPayLoad(SagaState.of(PayState.init)), event, 1, 10, new ArrayList(), false);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("account:" + account.get());
-//        System.out.println("freezed:" + freezed.get());
-//        System.out.println("bank:" + bank.get());
-//        SpringUtil.publishEvent(new PerformancePlugin.Event());
-//    }
-//
-//    static class CC {
-//        @Bean
-//        PayFsm test() {
-//            return new PayFsm();
-//        }
-//
-//        @Bean
-//        PerformancePlugin performancePlugin() {
-//            return new PerformancePlugin();
-//        }
-//    }
-//
-//
-//}
+package cn.hz.ddbm.pc.example;
+
+import cn.hutool.extra.spring.SpringUtil;
+import cn.hz.ddbm.pc.ChaosService;
+import cn.hz.ddbm.pc.configuration.ChaosConfiguration;
+import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
+import cn.hz.ddbm.pc.plugin.PerformancePlugin;
+import cn.hz.ddbm.pc.chaos.ChaosRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@ComponentScan("cn.hz.ddbm.pc.example.actions")
+@SpringBootTest
+@Import({ChaosConfiguration.class, PayTest.CC.class})
+@RunWith(SpringRunner.class)
+public class PayTest {
+
+
+    @Autowired
+    ChaosService chaosService;
+
+    /**
+     * doc/img_4.png
+     */
+
+    @Test
+    public void chaos() throws Exception {
+        List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
+            //注入业务逻辑异常，概率20%
+//            add(new ChaosRule(ChaosTarget.ACTION, "true", "action异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
+//                add(RuntimeException.class);
+//                add(Exception.class);
+//            }}));
+//            注入锁错误
+//            add(new ChaosRule(ChaosTarget.LOCK, "true", "锁异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
+//                add(RuntimeException.class);
+//                add(Exception.class);
+//            }}));
+        }};
+        try {
+            //执行100此，查看流程中断概率
+            chaosService.fsmFlow("test", new FsmPayload(1, FlowStatus.INIT,PayState.init),null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //模拟支付账号
+    public static AtomicInteger account;
+    //    模拟冻结字段
+    public static AtomicInteger freezed;
+    //    模拟收款账号
+    public static AtomicInteger bank;
+
+    @Test
+    public void acid() throws Exception {
+        account = new AtomicInteger(10000);
+        freezed = new AtomicInteger(0);
+        bank    = new AtomicInteger(0);
+
+        try {
+            //执行10000次，查看流程中断概率
+            chaosService.fsmFlow("test", new FsmPayload(1,FlowStatus.INIT,PayState.init), null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("account:" + account.get());
+        System.out.println("freezed:" + freezed.get());
+        System.out.println("bank:" + bank.get());
+        SpringUtil.publishEvent(new PerformancePlugin.Event());
+    }
+
+    static class CC {
+        @Bean
+        PayFsm test() {
+            return new PayFsm();
+        }
+
+        @Bean
+        PerformancePlugin performancePlugin() {
+            return new PerformancePlugin();
+        }
+    }
+
+
+}

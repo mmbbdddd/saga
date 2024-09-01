@@ -26,41 +26,41 @@ public abstract class BaseService {
     @Resource
     FsmProcessor<?>  fsmProcessor;
 
-    public void batchFsm(String flowName, List<FsmPayload> payloads, Profile profile) {
+    public void batchFsm(String flowName, List<FsmPayload> payloads) {
         for (FsmPayload payload : payloads) {
             try {
-                fsmFlow(flowName, payload, Coast.FSM.EVENT_DEFAULT,profile);
+                fsmFlow(flowName, payload, Coast.FSM.EVENT_DEFAULT);
             } catch (Exception e) {
                 Logs.error.error("", e);
             }
         }
     }
 
-    public void batchSaga(String flowName, List<SagaPayload> payloads,Profile profile) {
+    public void batchSaga(String flowName, List<SagaPayload> payloads) {
         for (SagaPayload payload : payloads) {
             try {
-                sagaFlow(flowName, payload,profile);
+                sagaFlow(flowName, payload);
             } catch (Exception e) {
                 Logs.error.error("", e);
             }
         }
     }
 
-    public void sagaFlow(String flowName, SagaPayload payload, Profile profile) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        SagaContext ctx = sagaProcessor.workerProcess(flowName, payload, profile);
+    public void sagaFlow(String flowName, SagaPayload payload) throws PauseException, SessionException, FlowEndException, InterruptedException {
+        SagaContext ctx = sagaProcessor.workerProcess(flowName, payload);
         sagaProcessor.flowProcess(ctx);
     }
 
-    public void saga(String flowName, SagaPayload payload, Profile profile) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        sagaProcessor.workerProcess(flowName, payload, profile);
+    public void saga(String flowName, SagaPayload payload) throws PauseException, SessionException, FlowEndException, InterruptedException {
+        sagaProcessor.workerProcess(flowName, payload);
     }
 
-    public void fsmFlow(String flowName, FsmPayload payload, String event, Profile profile) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        FsmContext ctx = fsmProcessor.workerProcess(flowName, payload, event, profile);
+    public void fsmFlow(String flowName, FsmPayload payload, String event) throws PauseException, SessionException, FlowEndException, InterruptedException {
+        FsmContext ctx = fsmProcessor.workerProcess(flowName, payload, event);
         fsmProcessor.flowProcess(ctx);
     }
 
-    public void fsm(String flowName, FsmPayload payload, String event, Profile profile) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        fsmProcessor.workerProcess(flowName, payload, event, profile);
+    public void fsm(String flowName, FsmPayload payload, String event) throws PauseException, SessionException, FlowEndException, InterruptedException {
+        fsmProcessor.workerProcess(flowName, payload, event);
     }
 }

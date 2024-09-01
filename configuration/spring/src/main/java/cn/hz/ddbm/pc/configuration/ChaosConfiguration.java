@@ -4,7 +4,10 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ChaosService;
 import cn.hz.ddbm.pc.chaos.AopAspect;
 import cn.hz.ddbm.pc.chaos.ChaosHandler;
+import cn.hz.ddbm.pc.factory.fsm.BeanFsmFlowFactory;
+import cn.hz.ddbm.pc.factory.saga.BeanSagaFlowFactory;
 import cn.hz.ddbm.pc.lock.JdkLocker;
+import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
 import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
 import cn.hz.ddbm.pc.newcore.infra.StatisticsSupport;
@@ -27,6 +30,14 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 @EnableAspectJAutoProxy
 public class ChaosConfiguration {
 
+    @Bean
+    BeanFsmFlowFactory fsmFlowFactory(){
+        return new BeanFsmFlowFactory();
+    }
+    @Bean
+    BeanSagaFlowFactory sagaFlowFactory(){
+        return new BeanSagaFlowFactory();
+    }
     @Bean
     ExecutorService actionExecutorService(PcProperties properties) {
         return new ScheduledThreadPoolExecutor(10);

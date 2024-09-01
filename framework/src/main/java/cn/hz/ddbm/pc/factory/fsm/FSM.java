@@ -92,7 +92,7 @@ public interface FSM<S extends Enum<S>> {
      *
      * @return
      */
-    Profile profile(ProfileBuilder builder);
+    Profile profile();
 
 
     Class<S> type();
@@ -115,9 +115,10 @@ public interface FSM<S extends Enum<S>> {
         });
 //        flow.saga()
 
-        Profile profile = profile(Profile.builder());
-        profile.setPlugins(plugins(new ArrayList<>()));
+        Profile profile = profile();
         flow.profile(profile);
+
+        profile.setPlugins(plugins(new ArrayList<>()));
         return flow;
     }
 

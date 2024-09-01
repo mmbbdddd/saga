@@ -36,4 +36,9 @@ public abstract class FlowModel<S extends State> {
     public void profile(Profile profile) {
         this.profile = profile;
     }
+
+    public Profile getProfile() {
+        Assert.notNull(profile,"profile is null");
+        return profile;
+    }
 }

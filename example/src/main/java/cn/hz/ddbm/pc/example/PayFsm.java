@@ -95,11 +95,8 @@ public class PayFsm implements FSM<PayState> {
 //    }
 
     @Override
-    public Profile profile(Profile.ProfileBuilder builder) {
-        return builder
-
-
-                .build();
+    public Profile profile() {
+        return Profile.devOf();
     }
 
 

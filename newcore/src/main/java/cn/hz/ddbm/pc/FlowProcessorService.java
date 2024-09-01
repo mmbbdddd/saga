@@ -48,7 +48,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         this.statisticsSupportMap.put(Coast.StatisticsType.jvm, new JvmStatisticsSupport());
         this.sessionManagerMap.put(Coast.SessionType.jvm, new JvmSessionManager());
         this.statusManagerMap.put(Coast.StatusType.jvm, new JvmStatusManager());
-        this.scheduleMangerMap.put(Coast.ScheduleType.timer, new TimerScheduleManager());
+//        this.scheduleMangerMap.put(Coast.ScheduleType.timer, new TimerScheduleManager());
         this.lockerMap.put(Coast.LockType.jvm, new JvmLocker());
         this.actionMap.put(Coast.NONE_FSM_ACTION, new FsmActionProxy<>(new NoneFsmAction<>()));
         this.actionMap.put(Coast.NONE_SAGA_ACTION, new SagaActionProxy(new NoneSagaAction()));
@@ -85,7 +85,9 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     }
 
     public Map<String, Object> getSession(String flowName, Serializable id) throws SessionException {
-        return sessionManagerMap.get(flowName).get(flowName, id);
+        FlowModel flow = getFlow(flowName);
+        Profile profile = flow.getProfile();
+        return sessionManagerMap.get(profile.getSession()).get(flowName, id);
     }
 
     public boolean tryLock(FlowContext ctx) {

@@ -29,12 +29,12 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
         });
     }
 
-    public FsmContext<S> workerProcess(String flowName, FsmPayload<S> payload, String event, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
+    public FsmContext<S> workerProcess(String flowName, FsmPayload<S> payload, String event) throws FlowEndException, InterruptedException, PauseException, SessionException {
         Assert.notNull(flowName, "flowName is null");
         Assert.notNull(payload, "payload is null");
         FsmFlow<S>          flow    = (FsmFlow<S>) getFlow(flowName);
         Map<String, Object> session = getSession(flowName, payload.getId());
-        FsmContext<S>       ctx     = new FsmContext<>(flow, payload, profile, session);
+        FsmContext<S>       ctx     = new FsmContext<>(flow, payload, session);
         workerProcess(event, ctx);
         return ctx;
     }
@@ -66,7 +66,7 @@ public class FsmProcessor<S extends Serializable> extends FlowProcessorService<F
         //工作流结束
         Long stateExecuteTimes = getExecuteTimes(ctx, state);
         if (stateExecuteTimes > stateRetry) {
-            throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
+            throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), stateExecuteTimes, stateRetry));
         }
         FsmWorker worker = null;
         worker = flow.getWorker(ctx.getState(), event);

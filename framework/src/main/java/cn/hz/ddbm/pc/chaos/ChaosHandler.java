@@ -21,19 +21,19 @@ import java.util.stream.Collectors;
 
 public class ChaosHandler {
     static String ChaosRuleFile = "chaos.csv";
-    Map<Pair<String, String>, Set<Pair<Rule, Double>>> chaosRuleMap;
-    Map<Pair<String, String>, Set<Pair<Rule, Double>>> resultMap;
+    Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> chaosRuleMap;
+    Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> resultMap;
 
     @PostConstruct
     public void initRules() {
         BufferedReader reader    = ResourceUtil.getUtf8Reader("chaos.csv");
-        CsvReader      csvReader = CsvUtil.getReader();
-        List<Rule>     rules     = csvReader.read(reader, Rule.class);
-        Map<Pair<String, String>, List<Triple<String, String, Rule>>> t1 = rules.stream()
+        CsvReader       csvReader = CsvUtil.getReader();
+        List<ChaosRule> rules     = csvReader.read(reader, ChaosRule.class);
+        Map<Pair<String, String>, List<Triple<String, String, ChaosRule>>> t1 = rules.stream()
                 .filter(r -> r.getAction().equals("exception"))
                 .map(r -> Triple.of(r.getType(), r.getMethod(), r))
                 .collect(Collectors.groupingBy(t -> Pair.of(t.getLeft(), t.getMiddle())));
-        Map<Pair<String, String>, List<Triple<String, String, Rule>>> t2 = rules.stream()
+        Map<Pair<String, String>, List<Triple<String, String, ChaosRule>>> t2 = rules.stream()
                 .filter(r -> r.getAction().equals("result"))
                 .map(r -> Triple.of(r.getType(), r.getMethod(), r))
                 .collect(Collectors.groupingBy(t -> Pair.of(t.getLeft(), t.getMiddle())));
@@ -44,7 +44,7 @@ public class ChaosHandler {
                     .map(t -> Pair.of(t.getRight(), t.getRight().toWeight()))
                     .collect(Collectors.toSet()));
             //插入正常执行概率
-            this.chaosRuleMap.get(pair).add(Pair.of(Rule.DEFAULT, 1.0));
+            this.chaosRuleMap.get(pair).add(Pair.of(ChaosRule.DEFAULT, 1.0));
         });
         t2.forEach((pair, triple) -> {
             this.resultMap.put(pair, triple.stream()
@@ -59,12 +59,12 @@ public class ChaosHandler {
 
 
     public void handle(ChaosTargetType chaosTargetType, Object proxy, Method method, Object[] args) throws Throwable {
-        Class clz = getTargetClass(chaosTargetType);
-        Set<Pair<Rule,Double>> rules = chaosRuleMap.get(Pair.of(clz.getSimpleName(),method.getName()));
+        Class                       clz   = getTargetClass(chaosTargetType);
+        Set<Pair<ChaosRule,Double>> rules = chaosRuleMap.get(Pair.of(clz.getSimpleName(),method.getName()));
         if (null != rules) {
             String classSimpleName = clz.getSimpleName();
-            String key             = classSimpleName + "." + method.getName();
-            Rule   rule            = RandomUitl.selectByWeight(key, rules);
+            String    key  = classSimpleName + "." + method.getName();
+            ChaosRule rule = RandomUitl.selectByWeight(key, rules);
             if (rule.isException()) {
                 rule.raiseException();
             }
@@ -93,10 +93,10 @@ public class ChaosHandler {
 
     public Object generateResult(ChaosTargetType type, Object proxy, Method method, Object[] args) {
         Class clz = getTargetClass(type);
-        String                  key         = clz.getSimpleName() + "." + method.getName();
-        Set<Pair<Rule, Double>> sagaResultRules = resultMap.get(Pair.of(clz.getSimpleName(), method.getName()));
+        String                       key             = clz.getSimpleName() + "." + method.getName();
+        Set<Pair<ChaosRule, Double>> sagaResultRules = resultMap.get(Pair.of(clz.getSimpleName(), method.getName()));
         if(null != sagaResultRules) {
-            Rule rule = RandomUitl.selectByWeight(key, sagaResultRules);
+            ChaosRule rule = RandomUitl.selectByWeight(key, sagaResultRules);
             return rule.getValue();
         }else{
             return null;

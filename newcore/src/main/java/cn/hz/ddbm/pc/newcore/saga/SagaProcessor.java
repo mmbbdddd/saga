@@ -31,12 +31,12 @@ public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
         });
     }
 
-    public SagaContext<S> workerProcess(String flowName, SagaPayload<S> payload, Profile profile) throws FlowEndException, InterruptedException, PauseException, SessionException {
+    public SagaContext<S> workerProcess(String flowName, SagaPayload<S> payload ) throws FlowEndException, InterruptedException, PauseException, SessionException {
         Assert.notNull(flowName,"flowName is null");
         Assert.notNull(payload,"payload is null");
         SagaFlow<S>         flow    = (SagaFlow<S>) getFlow(flowName);
         Map<String, Object> session = getSession(flowName, payload.getId());
-        SagaContext<S> ctx =  new SagaContext<>(flow, payload, profile, session);
+        SagaContext<S> ctx =  new SagaContext<>(flow, payload,  session);
         workerProcess(ctx);
         return ctx;
     }
