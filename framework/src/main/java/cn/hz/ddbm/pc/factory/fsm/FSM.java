@@ -60,14 +60,6 @@ public interface FSM<S extends Enum<S>> {
     List<Pair<S, FlowStatus.Type>> nodes(List<Pair<S, FlowStatus.Type>> list);
 
     /**
-     * 定义混沌模式下，每个节点可能的状态值。
-     * Table<节点，事件,Set<Pair<目标节点,发生概率>>
-     *
-     * @return
-     */
-//    Table<S, SagaState.Offset, Double> errorProbability();
-
-    /**
      * 流程变迁设置，包含三种类型
      * 事务业务：saga
      * 非事务业务：to
@@ -76,18 +68,6 @@ public interface FSM<S extends Enum<S>> {
      * @param
      */
     Transitions<S> transitions(Transitions<S> transitions);
-
-    /**
-     * 参见profile
-     *
-     * @return
-     */
-//    Map<S, Profile.StateAttrs> stateAttrs();
-
-    /**
-     * 参见profile
-     */
-//    Map<String, Profile.ActionAttrs> actionAttrs();
 
     /**
      * 流程的配置，例如状态管理，会话管理，缺省重试次数，超时事件，节点属性，atcion属性等

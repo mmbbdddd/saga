@@ -59,41 +59,6 @@ public class PayFsm implements FSM<PayState> {
     }
 
 
-    /**
-     * 定义混沌模式下
-     *
-     * @return
-     */
-
-//    @Override
-//    public List<Triple<PayState, SagaState.Offset, FlowStatus.Type>> nodes() {
-//        List<Triple<PayState, SagaState.Offset, FlowStatus.Type>> nodeTypes = new ArrayList<>();
-//        nodeTypes.add(Triple.of(PayState.init, SagaState.Offset.task, FlowStatus.Type.init));
-//        nodeTypes.add(Triple.of(PayState.payed, SagaState.Offset.su, FlowStatus.Type.end));
-//        nodeTypes.add(Triple.of(PayState.init, SagaState.Offset.rollback, FlowStatus.Type.end));
-//        return nodeTypes;
-//    }
-
-//    @Override
-//    public Table<PayState, SagaState.Offset, Double> errorProbability() {
-//        Table<PayState, SagaState.Offset, Double> table = new RowKeyTable<>();
-//        EnumSet.allOf(stateType()).forEach(sagaState -> {
-//            table.put(sagaState, SagaState.Offset.failover, 0.1);
-//            table.put(sagaState, SagaState.Offset.su, 0.8);
-//            table.put(sagaState, SagaState.Offset.rollback, 0.1);
-//        });
-//        return table;
-//    }
-
-//    @Override
-//    public List<Triple<PayState, String, Integer>> pipeline() {
-//        List<Triple<PayState, String, Integer>> line = new ArrayList<>();
-//        line.add(Triple.of(PayState.init, "freezedAction", 10));
-//        line.add(Triple.of(PayState.freezed, "sendAction", 10));
-//        line.add(Triple.of(PayState.sended, "payAction", 10));
-//        line.add(Triple.of(PayState.payed, "", 10));
-//        return line;
-//    }
     @Override
     public Profile profile() {
         return Profile.devOf();
@@ -104,24 +69,6 @@ public class PayFsm implements FSM<PayState> {
     public Class<PayState> type() {
         return PayState.class;
     }
-
-
-//    @Override
-//    public Map<State, Profile.StateAttrs> stateAttrs() {
-//        return new HashMap<>();
-//    }
-//
-//    @Override
-//    public Map<String, Profile.ActionAttrs> actionAttrs() {
-//        return new HashMap<>();
-//    }
-
-//    @Override
-//    public Profile profile() {
-//        Profile profile = new Profile(session(), status());
-//        profile.setRetry(20);
-//        return profile;
-//    }
 
 
     public String fsmId() {
