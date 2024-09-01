@@ -1,5 +1,6 @@
 package cn.hz.ddbm.pc;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
@@ -25,13 +26,13 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class FlowProcessorService<C extends FlowContext> implements FlowProcessor<C>, InitializingBean {
-    protected Map<String, FlowModel>                       flows;
+    protected Map<String, FlowModel> flows;
     Map<Coast.SessionType, SessionManager>       sessionManagerMap;
     Map<Coast.StatusType, StatusManager>         statusManagerMap;
     Map<Coast.LockType, Locker>                  lockerMap;
     Map<Coast.ScheduleType, ScheduleManger>      scheduleMangerMap;
     Map<Coast.StatisticsType, StatisticsSupport> statisticsSupportMap;
-    Map<String, Action>                          actionMap;
+    protected Map<String, Action>                          actionMap;
 
     PluginService pluginService;
 
@@ -43,6 +44,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         this.scheduleMangerMap    = new HashMap<>();
         this.statisticsSupportMap = new HashMap<>();
         this.actionMap            = new HashMap<>();
+        this.runMode              = RunMode.stable;
 
         this.pluginService = new PluginService(getDefaultPlugins());
         this.statisticsSupportMap.put(Coast.StatisticsType.jvm, new JvmStatisticsSupport());
@@ -85,8 +87,8 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     }
 
     public Map<String, Object> getSession(String flowName, Serializable id) throws SessionException {
-        FlowModel flow = getFlow(flowName);
-        Profile profile = flow.getProfile();
+        FlowModel flow    = getFlow(flowName);
+        Profile   profile = flow.getProfile();
         return sessionManagerMap.get(profile.getSession()).get(flowName, id);
     }
 
@@ -127,15 +129,15 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     }
 
     public void idempotent(String action, FlowContext ctx) throws IdempotentException {
-        String namespace  = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        String key        = String.format("%s:%s", namespace, action);
+        String namespace = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
+        String key       = String.format("%s:%s", namespace, action);
         statusManagerMap.get(ctx.getProfile().getStatus()).idempotent(key);
     }
 
 
     public void unidempotent(String action, FlowContext ctx) throws IdempotentException {
-        String namespace  = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        String key        = String.format("%s:%s", namespace, action);
+        String namespace = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
+        String key       = String.format("%s:%s", namespace, action);
         statusManagerMap.get(ctx.getProfile().getStatus()).unidempotent(key);
     }
 
@@ -188,16 +190,27 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     }
 
     public <T> T getAction(String action, Class<T> type) {
-        T actionBean = (T) actionMap.get(action);
-        if (null == actionBean) {
-            if (type.equals(SagaAction.class)) {
-                return (T) actionMap.get(Coast.NONE_SAGA_ACTION);
-            } else {
-                return (T) actionMap.get(Coast.NONE_FSM_ACTION);
-            }
+        Assert.notNull(action,"action is null");
+        if (runMode.equals(RunMode.chaos)) {
+            return SpringUtil.getBean("chaosAction",type);
         } else {
-            return actionBean;
+            T actionBean = (T) actionMap.get(action);
+            if (null == actionBean) {
+                if (type.equals(SagaAction.class)) {
+                    return (T) actionMap.get(Coast.NONE_SAGA_ACTION);
+                } else {
+                    return (T) actionMap.get(Coast.NONE_FSM_ACTION);
+                }
+            } else {
+                return actionBean;
+            }
         }
+    }
+
+    protected RunMode runMode;
+
+    enum RunMode {
+        stable, chaos;
     }
 }
 

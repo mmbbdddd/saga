@@ -37,7 +37,7 @@
 
 ```
 
-详细  [编排代码](example/src/main/java/cn/hz/ddbm/pc/example/PayFsm.java)
+详细  [编排代码](example/src/main/java/cn/hz/ddbm/pc/fsm/PayFsm.java)
 
 ## 2 混沌验证
 
@@ -120,7 +120,7 @@ retry = 2 的情况下 ，有（850+111）/1000可以完成
 ## 3 逻辑实现
 
 整体流程验证合理以后，嵌入的action开始开发（设计先行，设计和解耦）
-参见 [业务逻辑实现](example/src/main/java/cn/hz/ddbm/pc/example/actions)
+参见 [业务逻辑实现](example/src/main/java/cn/hz/ddbm/pc/fsm/actions)
 
 # 事务实现机制选型
 

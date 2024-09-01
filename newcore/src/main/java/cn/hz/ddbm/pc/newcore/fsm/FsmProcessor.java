@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.newcore.fsm;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.FlowProcessorService;
+import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
@@ -13,6 +14,8 @@ import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
 import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
+import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaActionProxy;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import javax.annotation.PostConstruct;
@@ -22,8 +25,16 @@ import java.util.List;
 import java.util.Map;
 
 public class FsmProcessor<S extends Serializable> extends FlowProcessorService<FsmContext<S>> {
-    public void afterPropertiesSet(){
+    public void afterPropertiesSet() {
         initParent();
+
+        SpringUtil.getBeansOfType(Action.class).forEach((key, action) -> {
+            if (action instanceof SagaAction) {
+            } else {
+                this.actionMap.put(key, new FsmActionProxy<>(action));
+            }
+        });
+
         SpringUtil.getBeansOfType(FsmFlowFactory.class).forEach((key, flowFactory) -> {
             this.flows.putAll(flowFactory.getFlows());
         });

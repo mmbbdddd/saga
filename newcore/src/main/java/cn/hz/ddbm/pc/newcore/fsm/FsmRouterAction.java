@@ -11,6 +11,5 @@ public interface FsmRouterAction<S extends Serializable> extends Action {
     void execute(FsmContext<S> ctx) throws ActionException;
 
     S executeQuery(FsmContext<S> ctx) throws NoSuchRecordException, ActionException;
-
-    Class<S> getType();
+ 
 }

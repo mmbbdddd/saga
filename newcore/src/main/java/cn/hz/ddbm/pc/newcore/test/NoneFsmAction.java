@@ -24,10 +24,7 @@ public class NoneFsmAction<S extends Serializable> implements FsmRouterAction<S>
         return null;
     }
 
-    @Override
-    public Class<S> getType() {
-        return (Class<S>)String.class;
-    }
+
 
     @Override
     public String code() {

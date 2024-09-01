@@ -1,5 +1,6 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
+import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
@@ -70,6 +71,7 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
                     ctx.setState(from);
                 } else {
                     //业务有返回
+                    Assert.isTrue(ctx.getFlow().isState(queryResult),"queryResult["+queryResult+"] not a right state code");
                     ctx.setState(new FsmState<>(queryResult));
                 }
 

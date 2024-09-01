@@ -3,8 +3,10 @@ package cn.hz.ddbm.pc.newcore.config;
 public class Coast {
     public static final String NONE_FSM_ACTION         = "noneFsmAction";
     public static final String NONE_SAGA_ACTION        = "noneSagaAction";
+    public static final String CHAOS_ACTION            = "chaosAction";
     public static final String PLUGIN_EXECUTOR_SERVICE = "pluginExecutorService";
     public static final String ACTION_EXECUTOR_SERVICE = "actionExecutorService";
+
     public static class STATISTICS {
         public final static String EXECUTE_TIMES = "execute_times";
 

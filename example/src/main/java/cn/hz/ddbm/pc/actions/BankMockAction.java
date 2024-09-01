@@ -1,6 +1,6 @@
-package cn.hz.ddbm.pc.example.actions;
+package cn.hz.ddbm.pc.actions;
 
-import cn.hz.ddbm.pc.example.PayState;
+
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SendAction implements SagaAction {
+public class BankMockAction implements SagaAction {
     @Setter
     String code;
     @Override
@@ -38,6 +38,7 @@ public class SendAction implements SagaAction {
     }
 
 
+//
 //    @Override
 //    public Boolean executeWhen(FsmContext<PayState, ?> ctx) {
 //        return Objects.equals(ctx.getState(),PayState.payed);
@@ -47,21 +48,16 @@ public class SendAction implements SagaAction {
 //        PayTest.bank.incrementAndGet();
 //    }
 //
-//    @Override
-//    public PayState query(FsmContext<PayState, ?> ctx) {
-//        return null;
-//    }
-//
 //
 //    @Override
 //    public PayState queryState(FsmContext<PayState, ?> ctx) throws Exception {
-////        return RandomUitl.random(Lists.newArrayList(PayState.freezed, PayState.sended, PayState.sended_failover));
-//        return RandomUitl.selectByWeight("f5", Sets.set(
-//                Pair.of(PayState.freezed,0.1),
-//                Pair.of(PayState.sended,0.8),
-//                Pair.of(PayState.sended_failover,0.1)
+////        return RandomUitl.random(Lists.newArrayList(PayState.payed, PayState.su, PayState.manual, PayState.payed_failover));
+//        return RandomUitl.selectByWeight("f4", Sets.set(
+//                Pair.of(PayState.payed,0.1),
+//                Pair.of(PayState.su,0.7),
+//                Pair.of(PayState.manual,0.1),
+//                Pair.of(PayState.payed_failover,0.1)
 //        ));
-//    }
 
 
 

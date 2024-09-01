@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.chaos;
 
 import cn.hutool.core.util.ClassUtil;
-import io.netty.util.internal.StringUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 
 @Data
@@ -24,7 +24,7 @@ public class ChaosRule {
 
     public Object toValue() {
         Class<Enum> valueType = getValueEnumType();
-        if (null != valueType && !StringUtil.isNullOrEmpty(value)) {
+        if (null != valueType && !StrUtil.isBlank(value)) {
             try {
                 return Enum.valueOf(valueType, value);
             } catch (Exception e) {
@@ -37,7 +37,7 @@ public class ChaosRule {
 
     private Class<Enum> getValueEnumType() {
         if (value_type != null) {
-            if (!StringUtil.isNullOrEmpty(value_type)) {
+            if (!StrUtil.isBlank(value_type)) {
                 try {
                     return ClassUtil.loadClass(value_type);
                 } catch (Exception e) {
@@ -51,7 +51,7 @@ public class ChaosRule {
 
     private Class<Exception> getValueExceptionType() {
         if (value_type != null) {
-            if (!StringUtil.isNullOrEmpty(value_type)) {
+            if (!StrUtil.isBlank(value_type)) {
                 try {
                     return ClassUtil.loadClass(value_type);
                 } catch (Exception e) {
@@ -68,7 +68,7 @@ public class ChaosRule {
     }
 
     public boolean isException() {
-        return !StringUtil.isNullOrEmpty(value) && value.endsWith("Exception");
+        return !StrUtil.isBlank(value) && value.endsWith("Exception");
     }
 
     public void raiseException() throws Exception {

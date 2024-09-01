@@ -1,8 +1,7 @@
-package cn.hz.ddbm.pc.example;
+package cn.hz.ddbm.pc.fsm;
 
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ChaosService;
-import cn.hz.ddbm.pc.configuration.ChaosConfiguration;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
@@ -22,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ComponentScan("cn.hz.ddbm.pc.example.actions")
 @SpringBootTest
-@Import({ChaosConfiguration.class, PayTest.CC.class})
+@Import({ PayTest.CC.class, ChaosService.ChaosConfiguration.class})
 @RunWith(SpringRunner.class)
 public class PayTest {
 
@@ -50,7 +49,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.fsmFlow("test", new FsmPayload(1, FlowStatus.INIT,PayState.init),null);
+            chaosService.fsms("test", new FsmPayload(1, FlowStatus.INIT,PayState.init),null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,7 +70,7 @@ public class PayTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.fsmFlow("test", new FsmPayload(1,FlowStatus.INIT,PayState.init), null);
+            chaosService.fsms("test", new FsmPayload(1,FlowStatus.INIT,PayState.init), null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,7 +80,11 @@ public class PayTest {
         SpringUtil.publishEvent(new PerformancePlugin.Event());
     }
 
-    static class CC {
+    public static class CC {
+        @Bean
+        ChaosService chaosService(){
+            return new ChaosService();
+        }
         @Bean
         PayFsm test() {
             return new PayFsm();

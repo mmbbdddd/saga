@@ -8,6 +8,7 @@ import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
+import cn.hz.ddbm.pc.newcore.fsm.FsmActionProxy;
 import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
 import cn.hz.ddbm.pc.newcore.infra.SessionManager;
 import cn.hz.ddbm.pc.newcore.log.Logs;
@@ -24,19 +25,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
 
-    public void afterPropertiesSet(){
+    public void afterPropertiesSet() {
         initParent();
+        SpringUtil.getBeansOfType(SagaAction.class).forEach((key, action) -> {
+            this.actionMap.put(key, new SagaActionProxy(action));
+
+        });
         SpringUtil.getBeansOfType(SagaFlowFactory.class).forEach((key, flowFactory) -> {
             this.flows.putAll(flowFactory.getFlows());
         });
     }
 
-    public SagaContext<S> workerProcess(String flowName, SagaPayload<S> payload ) throws FlowEndException, InterruptedException, PauseException, SessionException {
-        Assert.notNull(flowName,"flowName is null");
-        Assert.notNull(payload,"payload is null");
+    public SagaContext<S> workerProcess(String flowName, SagaPayload<S> payload) throws FlowEndException, InterruptedException, PauseException, SessionException {
+        Assert.notNull(flowName, "flowName is null");
+        Assert.notNull(payload, "payload is null");
         SagaFlow<S>         flow    = (SagaFlow<S>) getFlow(flowName);
         Map<String, Object> session = getSession(flowName, payload.getId());
-        SagaContext<S> ctx =  new SagaContext<>(flow, payload,  session);
+        SagaContext<S>      ctx     = new SagaContext<>(flow, payload, session);
         workerProcess(ctx);
         return ctx;
     }

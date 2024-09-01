@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.example;
+package cn.hz.ddbm.pc.fsm;
 
 public enum PayState {
     init,

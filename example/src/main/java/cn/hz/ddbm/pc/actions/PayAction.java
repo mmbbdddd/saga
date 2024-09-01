@@ -1,6 +1,5 @@
-package cn.hz.ddbm.pc.example.actions;
+package cn.hz.ddbm.pc.actions;
 
-import cn.hz.ddbm.pc.example.PayState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;

@@ -47,10 +47,6 @@ public class FsmActionProxy<S extends Serializable> implements FsmCommandAction<
         }
     }
 
-    @Override
-    public Class<S> getType() {
-        return ((FsmRouterAction<S>)action).getType();
-    }
 
 
 }

@@ -27,11 +27,6 @@ public class TestFsmAction implements FsmCommandAction, FsmRouterAction {
     }
 
     @Override
-    public Class getType() {
-        return String.class;
-    }
-
-    @Override
     public String code() {
         return "fsmAction";
     }

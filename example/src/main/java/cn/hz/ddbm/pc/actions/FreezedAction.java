@@ -1,6 +1,5 @@
-package cn.hz.ddbm.pc.example.actions;
+package cn.hz.ddbm.pc.actions;
 
-import cn.hz.ddbm.pc.example.PayState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
@@ -9,7 +8,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FreezedRollbackAction  implements SagaAction {
+public class FreezedAction implements SagaAction {
     @Setter
     String code;
     @Override
@@ -39,26 +38,28 @@ public class FreezedRollbackAction  implements SagaAction {
 
 
 //    @Override
-//    public Boolean executeWhen(FsmContext<PayState, ?> ctx) {
-//        return Objects.equals(ctx.getState(),PayState.payed);
+//    public Boolean executeWhen(FsmContext<PayState, ?> ctx) throws Exception {
+//        return Objects.equals(ctx.getState(), PayState.init);
 //    }
+//
 //    @Override
 //    public void execute(FsmContext<PayState, ?> ctx) throws Exception {
-//        PayTest.account.incrementAndGet();
+//        PayTest.account.decrementAndGet();
+//        PayTest.freezed.incrementAndGet();
+////        Logs.flow.info("{},{}支付扣款", ctx.getFlow().getName(), ctx.getId());
+//        ctx.getSession("");
 //    }
 //
 //
 //    @Override
 //    public PayState queryState(FsmContext<PayState, ?> ctx) throws Exception {
-////        return RandomUitl.random(Lists.newArrayList(PayState.freezed_rollback, PayState.fail,PayState.manual, PayState.freezed_rollback_failover));
-//        return RandomUitl.selectByWeight("f2",Sets.set(
-//                Pair.of(PayState.freezed_rollback,0.1),
-//                Pair.of(PayState.fail,0.7),
-//                Pair.of(PayState.manual,0.1),
-//                Pair.of(PayState.freezed_rollback_failover,0.1)
+////        return RandomUitl.random(Lists.newArrayList(PayState.init, PayState.freezed, freezed_rollback, PayState.freezed_failover));
+//        return RandomUitl.selectByWeight("f1", Sets.set(
+//                Pair.of(PayState.init,0.1),
+//                Pair.of(PayState.freezed,0.7),
+//                Pair.of(freezed_rollback,0.1),
+//                Pair.of(PayState.freezed_failover,0.1)
 //        ));
 //    }
-
-
 
 }

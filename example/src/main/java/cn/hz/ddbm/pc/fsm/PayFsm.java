@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.example;
+package cn.hz.ddbm.pc.fsm;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.factory.fsm.FSM;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-import static cn.hz.ddbm.pc.example.PayState.*;
+import static cn.hz.ddbm.pc.fsm.PayState.*;
 
 
 public class PayFsm implements FSM<PayState> {
@@ -123,10 +123,6 @@ public class PayFsm implements FSM<PayState> {
 //        return profile;
 //    }
 
-//    @Override
-//    public Class<PayState> stateType() {
-//        return PayState.class;
-//    }
 
 
     public String fsmId() {

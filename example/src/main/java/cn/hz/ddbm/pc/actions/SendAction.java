@@ -1,6 +1,5 @@
-package cn.hz.ddbm.pc.example.actions;
+package cn.hz.ddbm.pc.actions;
 
-import cn.hz.ddbm.pc.example.PayState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
@@ -9,7 +8,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FreezedAction implements SagaAction {
+public class SendAction implements SagaAction {
     @Setter
     String code;
     @Override
@@ -24,7 +23,7 @@ public class FreezedAction implements SagaAction {
 
     @Override
     public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return null;
+        return true;
     }
 
     @Override
@@ -39,28 +38,30 @@ public class FreezedAction implements SagaAction {
 
 
 //    @Override
-//    public Boolean executeWhen(FsmContext<PayState, ?> ctx) throws Exception {
-//        return Objects.equals(ctx.getState(), PayState.init);
+//    public Boolean executeWhen(FsmContext<PayState, ?> ctx) {
+//        return Objects.equals(ctx.getState(),PayState.payed);
+//    }
+//    @Override
+//    public void execute(FsmContext<PayState, ?> ctx) throws Exception {
+//        PayTest.bank.incrementAndGet();
 //    }
 //
 //    @Override
-//    public void execute(FsmContext<PayState, ?> ctx) throws Exception {
-//        PayTest.account.decrementAndGet();
-//        PayTest.freezed.incrementAndGet();
-////        Logs.flow.info("{},{}支付扣款", ctx.getFlow().getName(), ctx.getId());
-//        ctx.getSession("");
+//    public PayState query(FsmContext<PayState, ?> ctx) {
+//        return null;
 //    }
 //
 //
 //    @Override
 //    public PayState queryState(FsmContext<PayState, ?> ctx) throws Exception {
-////        return RandomUitl.random(Lists.newArrayList(PayState.init, PayState.freezed, freezed_rollback, PayState.freezed_failover));
-//        return RandomUitl.selectByWeight("f1", Sets.set(
-//                Pair.of(PayState.init,0.1),
-//                Pair.of(PayState.freezed,0.7),
-//                Pair.of(freezed_rollback,0.1),
-//                Pair.of(PayState.freezed_failover,0.1)
+////        return RandomUitl.random(Lists.newArrayList(PayState.freezed, PayState.sended, PayState.sended_failover));
+//        return RandomUitl.selectByWeight("f5", Sets.set(
+//                Pair.of(PayState.freezed,0.1),
+//                Pair.of(PayState.sended,0.8),
+//                Pair.of(PayState.sended_failover,0.1)
 //        ));
 //    }
+
+
 
 }
