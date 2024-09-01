@@ -6,7 +6,7 @@ import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 
 import java.io.Serializable;
 
-public interface FsmSagaAction<S extends Serializable> extends Action {
+public interface FsmRouterAction<S extends Serializable> extends Action {
     void execute(FsmContext<S> ctx) throws ActionException;
 
     S executeQuery(FsmContext<S> ctx) throws NoSuchRecordException, ActionException;

@@ -4,11 +4,11 @@ import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.FsmSagaAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
 
 import java.io.Serializable;
 
-public class NoneFsmAction<S extends Serializable> implements FsmSagaAction<S>, FsmCommandAction<S> {
+public class NoneFsmAction<S extends Serializable> implements FsmRouterAction<S>, FsmCommandAction<S> {
     @Override
     public void command(FsmContext<S> ctx) throws ActionException {
 

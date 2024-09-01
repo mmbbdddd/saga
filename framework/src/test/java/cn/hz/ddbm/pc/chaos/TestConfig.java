@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @ConditionalOnClass({BaseService.class})
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy( proxyTargetClass = true)
 public class TestConfig {
 
     @Bean
@@ -53,8 +53,8 @@ public class TestConfig {
     }
 
     @Bean
-    ChaosHandler chaosHandler(ChaosService chaosService) {
-        return new ChaosHandler(chaosService);
+    ChaosHandler chaosHandler() {
+        return new ChaosHandler();
     }
 
     @Bean

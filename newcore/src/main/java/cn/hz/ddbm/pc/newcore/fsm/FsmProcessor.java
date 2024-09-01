@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 public class FsmProcessor<S extends Serializable> extends FlowProcessorService<FsmContext<S>> {
-    @PostConstruct
-    public void init(){
+    public void afterPropertiesSet(){
+        initParent();
         SpringUtil.getBeansOfType(FsmFlowFactory.class).forEach((key, flowFactory) -> {
             this.flows.putAll(flowFactory.getFlows());
         });

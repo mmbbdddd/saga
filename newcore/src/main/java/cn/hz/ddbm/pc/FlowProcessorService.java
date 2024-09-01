@@ -15,6 +15,7 @@ import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.*;
 import cn.hz.ddbm.pc.newcore.test.NoneFsmAction;
 import cn.hz.ddbm.pc.newcore.test.NoneSagaAction;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class FlowProcessorService<C extends FlowContext> implements FlowProcessor<C> {
+public abstract class FlowProcessorService<C extends FlowContext> implements FlowProcessor<C>, InitializingBean {
     protected Map<String, FlowModel>                       flows;
     Map<Coast.SessionType, SessionManager>       sessionManagerMap;
     Map<Coast.StatusType, StatusManager>         statusManagerMap;
@@ -53,8 +54,8 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         this.actionMap.put(Coast.NONE_SAGA_ACTION, new SagaActionProxy(new NoneSagaAction()));
     }
 
-    @PostConstruct
-    public void afterPropertiesSet() {
+
+    public void initParent() {
         SpringUtil.getBeansOfType(SessionManager.class).forEach((key, bean) -> {
             this.sessionManagerMap.put(bean.code(), new SessionManagerProxy(bean));
         });

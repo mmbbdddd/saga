@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.chaos;
 
 import cn.hutool.core.lang.Pair;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ChaosService;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
@@ -10,14 +11,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChaosHandler {
-    ChaosService chaosService;
 
-    public ChaosHandler(ChaosService chaosService) {
-        this.chaosService = chaosService;
+
+    private List<ChaosRule> getChaosRules() {
+        return null;
     }
 
+    private List<Pair<String, Object>> getFsmSagaRules() {
+        return null;
+    }
+
+
     public void handle(ChaosTargetType chaosTargetType, Object proxy, Method method, Object[] args) throws Throwable {
-        List<ChaosRule> rules = chaosService.chaosRules();
+        List<ChaosRule> rules = getChaosRules();
         if (null != rules) {
             for (ChaosRule rule : rules) {
                 if (rule.match(chaosTargetType, proxy, method, args) && rule.probabilityIsTrue()) {
@@ -47,7 +53,7 @@ public class ChaosHandler {
     }
 
     private Set<Pair<Object, Double>> getFsmSagaResults(Class<?> aClass) {
-        List<Pair<String, Object>>              fsmSagaResults = chaosService.getFsmSagaRules();
+        List<Pair<String, Object>>              fsmSagaResults = getFsmSagaRules();
         Map<String, List<Pair<String, Object>>> temp           = fsmSagaResults.stream().collect(Collectors.groupingBy(Pair::getKey));
         Map<String, Set<Pair<Object, Double>>>  sagaResultMap  = new HashMap<>();
         temp.forEach((clz, listPair) -> {
@@ -55,4 +61,6 @@ public class ChaosHandler {
         });
         return sagaResultMap.get(aClass.getSimpleName());
     }
+
+
 }

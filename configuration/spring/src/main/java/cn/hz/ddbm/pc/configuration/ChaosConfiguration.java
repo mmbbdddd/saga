@@ -55,8 +55,8 @@ public class ChaosConfiguration {
     }
 
     @Bean
-    ChaosHandler chaosHandler(ChaosService chaosService) {
-        return new ChaosHandler(chaosService);
+    ChaosHandler chaosHandler() {
+        return new ChaosHandler();
     }
 
     @Bean

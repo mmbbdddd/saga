@@ -23,8 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SagaProcessor<S> extends FlowProcessorService<SagaContext<S>> {
 
-    @PostConstruct
-    public void init(){
+
+    public void afterPropertiesSet(){
+        initParent();
         SpringUtil.getBeansOfType(SagaFlowFactory.class).forEach((key, flowFactory) -> {
             this.flows.putAll(flowFactory.getFlows());
         });

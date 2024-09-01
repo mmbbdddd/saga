@@ -35,8 +35,8 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
     public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException {
         FlowProcessorService processor = ctx.getProcessor();
         FsmState<S>          lastState = ctx.getState();
-        ctx.setAction((FsmSagaAction) processor.getAction(action, FsmSagaAction.class));
-        FsmSagaAction<S> sagaAction = (FsmSagaAction) ctx.getAction();
+        ctx.setAction((FsmRouterAction) processor.getAction(action, FsmRouterAction.class));
+        FsmRouterAction<S> sagaAction = (FsmRouterAction) ctx.getAction();
         //如果任务可执行
         if (Objects.equals(lastState, from)) {
             //加锁
