@@ -23,7 +23,6 @@ public class StatisticsSupportProxy implements StatisticsSupport {
     @Override
     public void increment(String flowName, Serializable flowId, State node, String variable) {
         try {
-            SpringUtil.getBean(ChaosHandler.class).statistics();
             statisticsSupport.increment(flowName, flowId, node, variable);
         } catch (Exception e) {
         }
@@ -32,7 +31,6 @@ public class StatisticsSupportProxy implements StatisticsSupport {
     @Override
     public Long get(String flowName, Serializable flowId, State node, String variable) {
         try {
-            SpringUtil.getBean(ChaosHandler.class).statistics();
             return statisticsSupport.get(flowName, flowId, node, variable);
         } catch (Exception e) {
             //

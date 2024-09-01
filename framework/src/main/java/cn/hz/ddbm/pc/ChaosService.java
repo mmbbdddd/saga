@@ -2,7 +2,7 @@ package cn.hz.ddbm.pc;
 
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.chaos.ChaosAction;
-import cn.hz.ddbm.pc.chaos.ChaosHandler;
+import cn.hz.ddbm.pc.chaos.ChaosHandlerImpl;
 import cn.hz.ddbm.pc.chaos.ChaosRule;
 import cn.hz.ddbm.pc.factory.fsm.BeanFsmFlowFactory;
 import cn.hz.ddbm.pc.factory.saga.BeanSagaFlowFactory;
@@ -33,7 +33,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class ChaosService extends BaseService {
     @Autowired
-    ChaosHandler chaosHandler;
+    ChaosHandlerImpl chaosHandler;
 
     public void batchFsms(String flowName, List<FsmPayload> payloads, List<ChaosRule> rules) {
         this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
@@ -130,8 +130,8 @@ public class ChaosService extends BaseService {
         }
 
         @Bean
-        ChaosHandler chaosHandler() {
-            return new ChaosHandler();
+        ChaosHandlerImpl chaosHandler() {
+            return new ChaosHandlerImpl();
         }
 
 

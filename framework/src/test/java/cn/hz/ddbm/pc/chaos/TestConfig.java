@@ -53,8 +53,8 @@ public class TestConfig {
     }
 
     @Bean
-    ChaosHandler chaosHandler() {
-        return new ChaosHandler();
+    ChaosHandlerImpl chaosHandler() {
+        return new ChaosHandlerImpl();
     }
 
 

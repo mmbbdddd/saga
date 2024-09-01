@@ -20,7 +20,7 @@ class ChaosHandlerTest {
     @Mock
     ChaosService chaosService
     @Resource
-    ChaosHandler chaosHandler
+    ChaosHandlerImpl chaosHandler
 
     @Resource
     TestFsmAction action;

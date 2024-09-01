@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.chaos;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.common.lang.Triple;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosTargetType;
 import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
@@ -18,11 +19,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ChaosHandler {
+public class ChaosHandlerImpl   {
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> chaosRuleMap;
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> resultMap;
 
-    public ChaosHandler() {
+    public ChaosHandlerImpl() {
         this.chaosRuleMap = new HashMap<>();
         this.resultMap    = new HashMap<>();
     }
@@ -54,7 +55,7 @@ public class ChaosHandler {
 
     }
 
-    public void handle(ChaosTargetType chaosTargetType, Object proxy, Method method, Object[] args) throws Throwable {
+    public void handle(ChaosTargetType chaosTargetType, Object proxy, Method method, Object[] args) throws Exception {
         Class                        clz   = getTargetClass(chaosTargetType);
         Set<Pair<ChaosRule, Double>> rules = chaosRuleMap.get(Pair.of(clz.getSimpleName(), method.getName()));
         if (null != rules) {
@@ -98,6 +99,12 @@ public class ChaosHandler {
             return null;
         }
     }
+
+
+
+
+
+
 
 
 }
