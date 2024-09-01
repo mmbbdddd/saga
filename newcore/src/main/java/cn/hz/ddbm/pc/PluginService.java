@@ -5,7 +5,6 @@ import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

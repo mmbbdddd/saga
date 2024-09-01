@@ -19,7 +19,7 @@
         <!--        实时性最高的：内存事件  > 第三方回调-->
         <!--        准实时的-->
         <!--        NettyWheelTimer >延迟队列 -->
-<!--        <module>timer</module>-->
+        <!--        <module>timer</module>-->
         <module>lazy-queue</module>
 
         <!--        兜底-->

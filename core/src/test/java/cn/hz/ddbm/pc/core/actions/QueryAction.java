@@ -18,5 +18,4 @@ public class QueryAction implements cn.hz.ddbm.pc.core.action.QueryAction {
     }
 
 
-
 }

@@ -4,10 +4,7 @@ import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
 import cn.hz.ddbm.pc.newcore.infra.Locker;
 import org.redisson.Redisson;
-import org.redisson.client.RedisException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.concurrent.TimeUnit;
 
 public class ReidsLocker implements Locker {
     @Autowired

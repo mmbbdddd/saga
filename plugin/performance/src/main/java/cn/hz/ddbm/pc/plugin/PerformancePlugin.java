@@ -6,8 +6,6 @@ import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import org.springframework.context.ApplicationListener;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -16,9 +14,10 @@ import java.util.concurrent.TimeUnit;
 public class PerformancePlugin extends Plugin implements ApplicationListener<PerformancePlugin.Event> {
     StopWatch sw;
 
-    public PerformancePlugin(){
+    public PerformancePlugin() {
         this.sw = new StopWatch();
     }
+
     @Override
     public String code() {
         return "performance";
@@ -109,11 +108,12 @@ public class PerformancePlugin extends Plugin implements ApplicationListener<Per
 }
 
 final class StopWatch {
-    private final ConcurrentMap<String, TaskInfo> tasks ;
+    private final ConcurrentMap<String, TaskInfo> tasks;
 
-    public StopWatch(){
+    public StopWatch() {
         this.tasks = new ConcurrentHashMap<>();
     }
+
     public void prettyPrint() {
         Logs.report.info("性能统计报表");
         Logs.report.info("action             micros             times");
@@ -157,7 +157,7 @@ final class TaskInfo {
 
     public void stop() {
         this.executeNanos += (System.nanoTime() - this.currentStartNanos);
-        this.executeCount      = this.executeCount + 1;
+        this.executeCount = this.executeCount + 1;
 //        this.currentStartNanos = 0l;
     }
 

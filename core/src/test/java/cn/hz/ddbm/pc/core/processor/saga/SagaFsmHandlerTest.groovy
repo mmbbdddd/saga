@@ -1,13 +1,10 @@
 package cn.hz.ddbm.pc.core.processor.saga
 
 import cn.hz.ddbm.pc.core.FsmContext
-import cn.hz.ddbm.pc.core.ProcessorType
-import cn.hz.ddbm.pc.core.Transition
-import org.junit.Test
 import org.junit.Before
-import org.mockito.InjectMocks
+import org.junit.Test
 import org.mockito.Mock
-import org.mockito.MockitoAnnotations
+
 import static org.mockito.Mockito.*
 
 class SagaFsmHandlerTest {

@@ -7,8 +7,6 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
-
 @Component
 public class TestFsmAction implements FsmCommandAction, FsmRouterAction {
     @Override
@@ -22,7 +20,7 @@ public class TestFsmAction implements FsmCommandAction, FsmRouterAction {
     }
 
     @Override
-    public Serializable executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
+    public Enum executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
         return null;
     }
 

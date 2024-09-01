@@ -7,11 +7,8 @@ import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
 import cn.hz.ddbm.pc.newcore.infra.StatusManager;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.io.Serializable;
-import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -21,7 +18,7 @@ public class JvmStatusManager implements StatusManager {
     String                                     keyTemplate = "%s:%s";
 
     public JvmStatusManager() {
-        this.statusMap = new ConcurrentHashMap<>();
+        this.statusMap    = new ConcurrentHashMap<>();
         this.actionTables = new ConcurrentHashMap<>();
     }
 

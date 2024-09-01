@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc.status.redis;
 
 import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
@@ -10,7 +9,6 @@ import cn.hz.ddbm.pc.newcore.infra.StatusManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 public class RedisStatusManager implements StatusManager {

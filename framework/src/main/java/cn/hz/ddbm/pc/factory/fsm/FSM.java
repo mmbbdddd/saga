@@ -4,12 +4,14 @@ import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
-import cn.hz.ddbm.pc.newcore.Profile.ProfileBuilder;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import lombok.Data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface FSM<S extends Enum<S>> {

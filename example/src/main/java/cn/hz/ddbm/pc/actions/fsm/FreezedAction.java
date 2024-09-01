@@ -11,12 +11,8 @@ import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 import org.assertj.core.util.Sets;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 @Component
-public class FreezedAction implements FsmRouterAction <PayState> {
+public class FreezedAction implements FsmRouterAction<PayState> {
     @Override
     public void execute(FsmContext<PayState> ctx) throws ActionException {
         PayTest.account.decrementAndGet();
@@ -27,8 +23,8 @@ public class FreezedAction implements FsmRouterAction <PayState> {
     public PayState executeQuery(FsmContext<PayState> ctx) throws NoSuchRecordException, ActionException {
 
         return RandomUitl.selectByWeight("f3", Sets.set(
-                Pair.of(PayState.freezed,0.1),
-                Pair.of(PayState.init,0.7)
+                Pair.of(PayState.freezed, 0.1),
+                Pair.of(PayState.init, 0.7)
         ));
     }
 

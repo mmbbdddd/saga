@@ -51,10 +51,10 @@ public class Profile {
     }
 
     public Integer getStateRetry(State state) {
-        StateAttrs attrs =  stateAttrs.get(state);
-        if(null == attrs || attrs.getRetry() == null){
+        StateAttrs attrs = stateAttrs.get(state);
+        if (null == attrs || attrs.getRetry() == null) {
             return retry;
-        }else{
+        } else {
             return attrs.getRetry();
         }
     }

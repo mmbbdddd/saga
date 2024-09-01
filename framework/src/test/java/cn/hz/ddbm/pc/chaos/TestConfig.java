@@ -12,7 +12,6 @@ import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
 import cn.hz.ddbm.pc.support.BaseService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
@@ -20,7 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @ConditionalOnClass({BaseService.class})
-@EnableAspectJAutoProxy( proxyTargetClass = true)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TestConfig {
 
     @Bean
@@ -29,11 +28,12 @@ public class TestConfig {
     }
 
     @Bean
-    FsmProcessor fsmProcessor(){
+    FsmProcessor fsmProcessor() {
         return new FsmProcessor();
     }
+
     @Bean
-    SagaProcessor sagaProcessor(){
+    SagaProcessor sagaProcessor() {
         return new SagaProcessor();
     }
 
@@ -56,8 +56,6 @@ public class TestConfig {
     ChaosHandler chaosHandler() {
         return new ChaosHandler();
     }
-
-
 
 
     @Bean

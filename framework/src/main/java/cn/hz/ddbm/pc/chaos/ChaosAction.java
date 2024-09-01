@@ -8,9 +8,6 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 
-import javax.annotation.Resource;
-import java.io.Serializable;
-
 public class ChaosAction implements SagaAction, FsmCommandAction, FsmRouterAction {
 
     @Override
@@ -29,7 +26,7 @@ public class ChaosAction implements SagaAction, FsmCommandAction, FsmRouterActio
     }
 
     @Override
-    public Serializable executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
+    public Enum executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
         return null;
     }
 

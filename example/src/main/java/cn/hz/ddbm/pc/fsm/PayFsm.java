@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.List;
 
 import static cn.hz.ddbm.pc.fsm.PayState.*;
 
@@ -45,16 +45,16 @@ public class PayFsm implements FSM<PayState> {
 
     @Override
     public List<Pair<PayState, FlowStatus.Type>> nodes(List<Pair<PayState, FlowStatus.Type>> list) {
-        list.add(Pair.of(init,FlowStatus.Type.init));
-        list.add(Pair.of(su,FlowStatus.Type.end));
-        list.add(Pair.of(fail,FlowStatus.Type.end));
+        list.add(Pair.of(init, FlowStatus.Type.init));
+        list.add(Pair.of(su, FlowStatus.Type.end));
+        list.add(Pair.of(fail, FlowStatus.Type.end));
         return list;
     }
 
     @Override
     public Transitions<PayState> transitions(Transitions<PayState> t) {
-        return t.router(init,Coast.FSM.EVENT_DEFAULT,"freezedAction", PayState.freezed)
-                .router(PayState.freezed,Coast.FSM.EVENT_DEFAULT,"sendAction", PayState.sendfailover)
+        return t.router(init, Coast.FSM.EVENT_DEFAULT, "freezedAction", PayState.freezed)
+                .router(PayState.freezed, Coast.FSM.EVENT_DEFAULT, "sendAction", PayState.sendfailover)
                 ;
     }
 
@@ -94,7 +94,6 @@ public class PayFsm implements FSM<PayState> {
 //        line.add(Triple.of(PayState.payed, "", 10));
 //        return line;
 //    }
-
     @Override
     public Profile profile() {
         return Profile.devOf();
@@ -123,7 +122,6 @@ public class PayFsm implements FSM<PayState> {
 //        profile.setRetry(20);
 //        return profile;
 //    }
-
 
 
     public String fsmId() {

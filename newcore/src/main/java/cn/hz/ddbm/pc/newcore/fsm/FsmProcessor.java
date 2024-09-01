@@ -6,25 +6,20 @@ import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
-import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
-import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
-import cn.hz.ddbm.pc.newcore.saga.SagaActionProxy;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
-import javax.annotation.PostConstruct;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FsmProcessor<S extends Serializable> extends FlowProcessorService<FsmContext<S>> {
+public class FsmProcessor<S extends Enum<S>> extends FlowProcessorService<FsmContext<S>> {
     public void afterPropertiesSet() {
         initParent();
 

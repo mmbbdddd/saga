@@ -1,6 +1,5 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
-import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
@@ -13,23 +12,23 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Data
-public abstract class FsmWorker<S extends Serializable> extends Worker<FsmContext<S>> {
+public abstract class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
 
     @Override
     public abstract void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException;
 
 }
 
-class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
+class SagaFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
     FsmState<S> from;
     FsmState<S> failover;
     String      action;
 
 
     public SagaFsmWorker(S from, String sagaAction, S failover) {
-        this.from       = new FsmState<>(from);
-        this.failover   = new FsmState<>(failover);
-        this.action = sagaAction;
+        this.from     = new FsmState<>(from);
+        this.failover = new FsmState<>(failover);
+        this.action   = sagaAction;
     }
 
     @Override
@@ -71,8 +70,8 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
                     ctx.setState(from);
                 } else {
                     //业务有返回
-                    if(!ctx.getFlow().isState(queryResult)){
-                        throw new IllegalArgumentException("queryResult["+queryResult+"] not a right state code");
+                    if (!ctx.getFlow().isState(queryResult)) {
+                        throw new IllegalArgumentException("queryResult[" + queryResult + "] not a right state code");
                     }
                     ctx.setState(new FsmState<>(queryResult));
                 }
@@ -96,16 +95,16 @@ class SagaFsmWorker<S extends Serializable> extends FsmWorker<S> {
 }
 
 
-class ToFsmWorker<S extends Serializable> extends FsmWorker<S> {
+class ToFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
 
-    FsmState<S>       from;
-    FsmState<S>       to;
-    String            action;
+    FsmState<S> from;
+    FsmState<S> to;
+    String      action;
 
     public ToFsmWorker(S from, String commandAction, S to) {
-        this.from          = new FsmState<>(from);
-        this.action        = commandAction;
-        this.to            = new FsmState<>(to);
+        this.from   = new FsmState<>(from);
+        this.action = commandAction;
+        this.to     = new FsmState<>(to);
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class BankMockAction implements SagaAction {
     @Setter
     String code;
+
     @Override
     public String code() {
         return code;
@@ -58,7 +59,6 @@ public class BankMockAction implements SagaAction {
 //                Pair.of(PayState.manual,0.1),
 //                Pair.of(PayState.payed_failover,0.1)
 //        ));
-
 
 
 }

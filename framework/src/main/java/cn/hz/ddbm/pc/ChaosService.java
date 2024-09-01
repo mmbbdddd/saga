@@ -23,10 +23,8 @@ import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
 import cn.hz.ddbm.pc.support.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -69,8 +67,8 @@ public class ChaosService extends BaseService {
     }
 
 
-    public void fsms(String flowName, FsmPayload payload, String event,Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        if(mockBean) {
+    public void fsms(String flowName, FsmPayload payload, String event, Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+        if (mockBean) {
             this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
             this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
         }
@@ -88,12 +86,13 @@ public class ChaosService extends BaseService {
 
     @ConditionalOnClass({BaseService.class})
     @EnableAspectJAutoProxy
-   public static   class ChaosConfiguration {
+    public static class ChaosConfiguration {
 
         @Bean
-        ChaosAction chaosAction(){
+        ChaosAction chaosAction() {
             return new ChaosAction();
         }
+
         @Bean
         BeanFsmFlowFactory fsmFlowFactory() {
             return new BeanFsmFlowFactory();
@@ -134,7 +133,6 @@ public class ChaosService extends BaseService {
         ChaosHandler chaosHandler() {
             return new ChaosHandler();
         }
-
 
 
         @Bean

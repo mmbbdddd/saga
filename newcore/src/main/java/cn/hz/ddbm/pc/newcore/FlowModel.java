@@ -49,7 +49,7 @@ public abstract class FlowModel<S extends State> {
         return profile;
     }
 
-    public Boolean isState(Object stateCode) {
-        return allStates.contains(stateCode.toString());
+    public Boolean isState(Enum stateCode) {
+        return allStates.contains(stateCode);
     }
 }

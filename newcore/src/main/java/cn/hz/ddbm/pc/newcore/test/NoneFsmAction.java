@@ -6,9 +6,7 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
 
-import java.io.Serializable;
-
-public class NoneFsmAction<S extends Serializable> implements FsmRouterAction<S>, FsmCommandAction<S> {
+public class NoneFsmAction<S extends Enum<S>> implements FsmRouterAction<S>, FsmCommandAction<S> {
     @Override
     public void command(FsmContext<S> ctx) throws ActionException {
 
@@ -23,7 +21,6 @@ public class NoneFsmAction<S extends Serializable> implements FsmRouterAction<S>
     public S executeQuery(FsmContext<S> ctx) throws NoSuchRecordException, ActionException {
         return null;
     }
-
 
 
     @Override

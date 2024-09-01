@@ -20,7 +20,7 @@
     </properties>
 
     <modules>
-<!--        <module>memory</module>-->
+        <!--        <module>memory</module>-->
         <module>redis</module>
     </modules>
 </project>

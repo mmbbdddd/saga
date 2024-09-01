@@ -11,7 +11,6 @@ public class PcProperties {
     Statistics     statistics     = new Statistics();
 
 
-
     @Data
     public static class StatusManager {
         Integer cacheSize = 256;

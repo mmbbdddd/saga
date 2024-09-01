@@ -11,8 +11,6 @@ import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 import org.assertj.core.util.Sets;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
-
 @Component
 public class SendAction implements FsmRouterAction<PayState> {
     @Override
@@ -29,19 +27,19 @@ public class SendAction implements FsmRouterAction<PayState> {
                 Pair.of(PayState.fail, 0.1)
         ));
 
-        switch (result){
-            case sended:{
+        switch (result) {
+            case sended: {
                 return PayState.sendfailover;
             }
-            case sendfailover:{
+            case sendfailover: {
                 return PayState.sendfailover;
             }
-            case su:{
+            case su: {
                 PayTest.freezed.decrementAndGet();
                 PayTest.bank.incrementAndGet();
                 return PayState.su;
             }
-            case fail:{
+            case fail: {
                 PayTest.account.incrementAndGet();
                 PayTest.freezed.decrementAndGet();
                 return PayState.fail;

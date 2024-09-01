@@ -17,7 +17,6 @@ public class SagaState<S> extends State {
     }
 
 
-
     public SagaState(S state) {
         super(state.toString());
         this.state  = state;

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.stream.Collectors;

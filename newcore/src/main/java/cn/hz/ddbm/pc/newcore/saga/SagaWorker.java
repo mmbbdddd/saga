@@ -7,16 +7,12 @@ import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
-import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
-import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 @Data
-public class SagaWorker<S> extends Worker<SagaContext<S>> {
+public class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S>> {
     Integer           index;
     S                 currentState;
     ForwardQuantum<S> forward;
@@ -52,7 +48,7 @@ public class SagaWorker<S> extends Worker<SagaContext<S>> {
 }
 
 @Data
-class ForwardQuantum<S> {
+class ForwardQuantum<S extends Enum<S>> {
     SagaState<S> task;
     SagaState<S> failover;
     SagaState<S> su;
@@ -143,7 +139,7 @@ class ForwardQuantum<S> {
 }
 
 @Data
-class BackoffQuantum<S> {
+class BackoffQuantum<S extends Enum<S>> {
     SagaState<S> rollback;
     SagaState<S> rollbackFailover;
     SagaState<S> pre;

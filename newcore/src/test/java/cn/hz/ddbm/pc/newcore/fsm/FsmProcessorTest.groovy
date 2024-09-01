@@ -17,7 +17,7 @@ class FsmProcessorTest {
 
         PayFsmPayload payload = new PayFsmPayload();
         FsmContext ctx = new FsmContext(
-                new PayFsmFlow(), payload,  new HashMap<String, Object>()
+                new PayFsmFlow(), payload, new HashMap<String, Object>()
         )
         fsmProcessor.workerProcess(ctx)
     }
@@ -27,7 +27,7 @@ class FsmProcessorTest {
 
         PayFsmPayload payload = new PayFsmPayload();
         FsmContext ctx = new FsmContext(
-                new PayFsmFlow(), payload,  new HashMap<String, Object>()
+                new PayFsmFlow(), payload, new HashMap<String, Object>()
         )
         fsmProcessor.flowProcess(ctx)
     }

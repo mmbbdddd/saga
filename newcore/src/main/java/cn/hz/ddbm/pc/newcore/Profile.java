@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

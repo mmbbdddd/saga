@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
-public  class FlowContext<F extends FlowModel<S>, S extends State, W extends Worker<?>> {
+public class FlowContext<F extends FlowModel<S>, S extends State, W extends Worker<?>> {
     final     Serializable         id;
     final     F                    flow;
     final     Map<String, Object>  session;
@@ -25,7 +25,7 @@ public  class FlowContext<F extends FlowModel<S>, S extends State, W extends Wor
     transient Action               action;
     transient ActionResult         actionResult;
 
-    public FlowContext(F flow, Payload<S> payload,  Map<String, Object> session) {
+    public FlowContext(F flow, Payload<S> payload, Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
         Assert.notNull(payload, "payload is null");
         this.id             = payload.getId();
@@ -39,7 +39,7 @@ public  class FlowContext<F extends FlowModel<S>, S extends State, W extends Wor
     }
 
 
-    public   Integer getRetry(S state){
+    public Integer getRetry(S state) {
         return null;
     }
 

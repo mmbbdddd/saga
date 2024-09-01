@@ -1,16 +1,15 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
 import cn.hz.ddbm.pc.newcore.State;
-import lombok.Getter;
 
-import java.io.Serializable;
-
-public class FsmState<S extends Serializable> extends State {
-    @Getter
-    S state;
+public class FsmState<S extends Enum<S>> extends State<S> {
 
     public FsmState(S state) {
         super(state);
-        this.state = state;
+    }
+
+    @Override
+    public S code() {
+        return this.code;
     }
 }

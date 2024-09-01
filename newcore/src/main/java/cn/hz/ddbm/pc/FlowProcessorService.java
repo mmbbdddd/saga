@@ -6,19 +6,20 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmActionProxy;
-import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.infra.*;
-import cn.hz.ddbm.pc.newcore.infra.impl.*;
+import cn.hz.ddbm.pc.newcore.infra.impl.JvmLocker;
+import cn.hz.ddbm.pc.newcore.infra.impl.JvmSessionManager;
+import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatisticsSupport;
+import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.saga.*;
+import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaActionProxy;
 import cn.hz.ddbm.pc.newcore.test.NoneFsmAction;
 import cn.hz.ddbm.pc.newcore.test.NoneSagaAction;
 import org.springframework.beans.factory.InitializingBean;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     Map<Coast.LockType, Locker>                  lockerMap;
     Map<Coast.ScheduleType, ScheduleManger>      scheduleMangerMap;
     Map<Coast.StatisticsType, StatisticsSupport> statisticsSupportMap;
-    protected Map<String, Action>                          actionMap;
+    protected Map<String, Action> actionMap;
 
     PluginService pluginService;
 
@@ -190,9 +191,9 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
     }
 
     public <T> T getAction(String action, Class<T> type) {
-        Assert.notNull(action,"action is null");
+        Assert.notNull(action, "action is null");
         if (runMode.equals(RunMode.chaos)) {
-            return SpringUtil.getBean("chaosAction",type);
+            return SpringUtil.getBean("chaosAction", type);
         } else {
             T actionBean = (T) actionMap.get(action);
             if (null == actionBean) {

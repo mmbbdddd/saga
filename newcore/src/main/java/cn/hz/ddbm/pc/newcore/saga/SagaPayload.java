@@ -2,12 +2,12 @@ package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hz.ddbm.pc.newcore.Payload;
 
-public interface SagaPayload<S> extends Payload<SagaState<S>> {
+public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>> {
 
 
-    S getSagaState();
+    S getMasterState();
 
-    void setSagaState(S sagaState);
+    void setMasterState(S sagaState);
 
     SagaState.Offset getOffset();
 
@@ -20,12 +20,12 @@ public interface SagaPayload<S> extends Payload<SagaState<S>> {
 
     @Override
     default SagaState<S> getState() {
-        return new SagaState<>(getSagaState(), getOffset(), getForward());
+        return new SagaState<>(getMasterState(), getOffset(), getForward());
     }
 
     @Override
     default void setState(SagaState<S> state) {
-        setSagaState(state.getState());
+        setMasterState(state.getMaster());
         setOffset(state.getOffset());
         setForward(state.getIsForward());
     }

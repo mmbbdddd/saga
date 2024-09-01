@@ -9,16 +9,16 @@ import java.io.Serializable;
 public class MockSagaPayload implements SagaPayload<PayStateMachine> {
     long             id;
     FlowStatus       status;
-    PayStateMachine  sagaState;
+    PayStateMachine  masterState;
     SagaState.Offset offset;
     Boolean          forward;
 
     public MockSagaPayload() {
-        this.id        = 1;
-        this.status    = FlowStatus.RUNNABLE;
-        this.sagaState = PayStateMachine.init;
-        this.offset    = SagaState.Offset.task;
-        this.forward   = true;
+        this.id          = 1;
+        this.status      = FlowStatus.RUNNABLE;
+        this.masterState = PayStateMachine.init;
+        this.offset      = SagaState.Offset.task;
+        this.forward     = true;
     }
 
     @Override

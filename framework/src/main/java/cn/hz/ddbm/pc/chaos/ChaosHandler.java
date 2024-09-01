@@ -1,9 +1,6 @@
 package cn.hz.ddbm.pc.chaos;
 
-import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.lang.Pair;
-import cn.hutool.core.text.csv.CsvReader;
-import cn.hutool.core.text.csv.CsvUtil;
 import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
@@ -13,18 +10,20 @@ import cn.hz.ddbm.pc.newcore.infra.StatusManager;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
-import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ChaosHandler {
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> chaosRuleMap;
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> resultMap;
-    public ChaosHandler(){
+
+    public ChaosHandler() {
         this.chaosRuleMap = new HashMap<>();
-        this.resultMap = new HashMap<>();
+        this.resultMap    = new HashMap<>();
     }
 
     public void setChaosRules(List<ChaosRule> rules) {

@@ -1,18 +1,15 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
-import cn.hz.ddbm.pc.FlowProcessorService;
-import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
-import cn.hz.ddbm.pc.newcore.test.NoneSagaAction;
 
 
 public class SagaActionProxy implements SagaAction {
     SagaAction sagaAction;
 
     public SagaActionProxy(SagaAction sagaAction) {
-        this.sagaAction= sagaAction;
+        this.sagaAction = sagaAction;
     }
 
     public void execute(SagaContext<?> ctx) throws ActionException {

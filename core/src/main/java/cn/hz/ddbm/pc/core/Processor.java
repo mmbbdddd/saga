@@ -19,7 +19,7 @@ import java.util.List;
  **/
 
 @Getter
-public abstract class Processor  {
+public abstract class Processor {
     final List<Plugin> plugins;
 
     public Processor(List<Plugin> plugins) {

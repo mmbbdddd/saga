@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.newcore.exception;
 
 public class IdempotentException extends Exception {
-    private   Exception raw;
+    private Exception raw;
 
     public IdempotentException(Exception e) {
         this.raw = e;
@@ -12,6 +12,6 @@ public class IdempotentException extends Exception {
     }
 
     public IdempotentException(String message, Exception e) {
-        super(message,e);
+        super(message, e);
     }
 }

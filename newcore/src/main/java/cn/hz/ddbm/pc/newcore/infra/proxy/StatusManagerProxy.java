@@ -56,7 +56,7 @@ public class StatusManagerProxy implements StatusManager {
             statusManager.unidempotent(key);
         } catch (IdempotentException e) {
             throw e;
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new IdempotentException(e);
         }
     }

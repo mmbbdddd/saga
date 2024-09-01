@@ -18,7 +18,7 @@ public interface FsmPayload<S extends State> {
 
     Serializable getId();
 
-    Triple<FlowStatus,S,String> getStatus();
+    Triple<FlowStatus, S, String> getStatus();
 
-    void setStatus(Triple<FlowStatus,S,String> status);
+    void setStatus(Triple<FlowStatus, S, String> status);
 }

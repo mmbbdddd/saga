@@ -25,7 +25,7 @@ public class SessionManagerProxy implements SessionManager {
             sessionManager.set(flowName, flowId, session);
         } catch (SessionException e) {
             throw e;
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new SessionException(e);
         }
     }
@@ -36,7 +36,7 @@ public class SessionManagerProxy implements SessionManager {
             return sessionManager.get(flowName, flowId);
         } catch (SessionException e) {
             throw e;
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new SessionException(e);
         }
     }

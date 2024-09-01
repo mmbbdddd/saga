@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class FsmPayload<S extends Serializable> implements Payload<FsmState<S>> {
+public class FsmPayload<S extends Enum<S>> implements Payload<FsmState<S>> {
     Serializable id;
     FlowStatus   status;
     S            fsmState;
@@ -28,6 +28,6 @@ public class FsmPayload<S extends Serializable> implements Payload<FsmState<S>> 
     }
 
     public void setState(FsmState<S> state) {
-        this.fsmState = state.getState();
+        this.fsmState = state.code();
     }
 }

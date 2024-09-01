@@ -7,7 +7,7 @@ import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SagaFlow<S> extends FlowModel<SagaState<S>> {
+public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
     Map<S, SagaWorker<S>> pipeline;
 
 
@@ -49,11 +49,11 @@ public class SagaFlow<S> extends FlowModel<SagaState<S>> {
     }
 
 
-    private static <S> SagaState<S> buildInit(List<S> tasks) {
+    private static <S extends Enum<S>> SagaState<S> buildInit(List<S> tasks) {
         return new SagaState<>(tasks.get(0), SagaState.Offset.task, true);
     }
 
-    private static <S> Set<SagaState<S>> buildEnds(List<S> tasks) {
+    private static <S extends Enum<S>> Set<SagaState<S>> buildEnds(List<S> tasks) {
         Set<SagaState<S>> ends = new HashSet<>();
         //初始化，并且状态是fail。为结束节点
         ends.add(new SagaState<>(tasks.get(0), SagaState.Offset.fail, false));
@@ -62,7 +62,7 @@ public class SagaFlow<S> extends FlowModel<SagaState<S>> {
         return ends;
     }
 
-    private static <S> Set<SagaState<S>> buildTasks(List<S> tasks) {
+    private static <S extends Enum<S>> Set<SagaState<S>> buildTasks(List<S> tasks) {
         List<SagaState<S>> forwards = tasks.stream()
                 .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(state, offset, true)).collect(Collectors.toList()))
                 .flatMap(Collection::stream)

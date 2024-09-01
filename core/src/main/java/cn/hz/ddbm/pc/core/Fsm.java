@@ -56,7 +56,7 @@ public class Fsm {
      * @param profile
      * @return
      */
-    public static   Fsm  of(String name, String descr, State init, Set<State> tasks, Set<State> ends, Profile  profile) {
+    public static Fsm of(String name, String descr, State init, Set<State> tasks, Set<State> ends, Profile profile) {
         return new Fsm(name, descr, init, tasks, ends, profile);
     }
 
@@ -66,11 +66,11 @@ public class Fsm {
      * @param name
      * @return
      */
-    public static   Fsm  devOf(String name, String descr, State init, Set<State> tasks, Set<State> ends) {
+    public static Fsm devOf(String name, String descr, State init, Set<State> tasks, Set<State> ends) {
         List<String> plugins = new ArrayList<>();
         plugins.add(Coasts.PLUGIN_DIGEST_LOG);
         plugins.add(Coasts.PLUGIN_ERROR_LOG);
-        Fsm  flow = new Fsm(name, descr, init, tasks, ends, Profile.devOf());
+        Fsm flow = new Fsm(name, descr, init, tasks, ends, Profile.devOf());
         return flow;
     }
 
@@ -80,7 +80,7 @@ public class Fsm {
         if (!ctx.getFlow().isRunnableState(state)) {
             throw new FsmEndException();
         }
-        Transition  transition = findEventTable(state, ctx.getEvent());
+        Transition transition = findEventTable(state, ctx.getEvent());
         Assert.notNull(transition, String.format("找不到事件处理器%s@%s", ctx.getEvent(), ctx.getState()));
         ctx.initTransitionAndProcessor(transition);
         ctx.getProcessor().execute(ctx);
@@ -90,7 +90,7 @@ public class Fsm {
         return eventTable.stream().filter(r -> Objects.equals(r.getFrom(), node) && Objects.equals(r.getEvent(), event)).findFirst().orElse(null);
     }
 
-    public void buildEventTable(List<Transition > transitions) {
+    public void buildEventTable(List<Transition> transitions) {
         if (this.eventTable.isEmpty()) {
             eventTable.addAll(transitions);
         } else {
@@ -109,10 +109,8 @@ public class Fsm {
 
 
     public Set<String> nodeNames() {
-        return tasks.stream().map(t->t.code().toString()).collect(Collectors.toSet());
+        return tasks.stream().map(t -> t.code().toString()).collect(Collectors.toSet());
     }
-
-
 
 
     @Override

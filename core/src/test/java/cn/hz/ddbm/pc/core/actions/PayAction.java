@@ -13,7 +13,6 @@ public class PayAction implements SagaAction {
     }
 
 
-
     @Override
     public Boolean executeQuery(FsmContext ctx) throws NoSuchRecordException {
         return null;

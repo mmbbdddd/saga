@@ -5,7 +5,7 @@ import cn.hz.ddbm.pc.core.Plugin;
 import cn.hz.ddbm.pc.core.State;
 import cn.hz.ddbm.pc.core.action.Action;
 
-public interface ActionPluginAdapter  extends Plugin , Action  {
+public interface ActionPluginAdapter extends Plugin, Action {
 
     @Override
     default String code() {
@@ -13,22 +13,22 @@ public interface ActionPluginAdapter  extends Plugin , Action  {
     }
 
     @Override
-    default void preAction( FsmContext  ctx) {
+    default void preAction(FsmContext ctx) {
 
     }
 
     @Override
-    default void postAction( State lastNode, FsmContext  ctx) {
+    default void postAction(State lastNode, FsmContext ctx) {
 
     }
 
     @Override
-    default void onActionException(  State preNode, Exception e, FsmContext ctx) {
+    default void onActionException(State preNode, Exception e, FsmContext ctx) {
 
     }
 
     @Override
-    default void onActionFinally( FsmContext ctx) {
+    default void onActionFinally(FsmContext ctx) {
 
     }
 

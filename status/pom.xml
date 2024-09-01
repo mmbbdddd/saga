@@ -19,7 +19,7 @@
 
     <modules>
         <module>dao</module>
-<!--        <module>memory</module>-->
+        <!--        <module>memory</module>-->
         <module>redis</module>
     </modules>
 </project>

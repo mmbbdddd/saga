@@ -5,8 +5,6 @@ import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.PauseException;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public interface FlowProcessor<C extends FlowContext> {
 
 

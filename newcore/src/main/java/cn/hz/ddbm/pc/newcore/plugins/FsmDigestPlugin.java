@@ -3,7 +3,6 @@ package cn.hz.ddbm.pc.newcore.plugins;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.State;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 
 import java.io.Serializable;
@@ -23,12 +22,12 @@ public class FsmDigestPlugin extends Plugin {
     public void postAction(State lastNode, FlowContext ctx) {
         String       flow         = ctx.getFlow().getName();
         Serializable id           = ctx.getId();
-        String       from         = lastNode.code();
+        Serializable from         = lastNode.code();
         String       action       = ctx.getAction().code();
         Object       actionResult = ctx.getActionResult();
-        String       targetStatus = ctx.getState().code();
+        Serializable targetStatus = ctx.getState().code();
 
-        Logs.digest.info("{},{},{},{},{},{}==>{}", flow,id,from,action,actionResult,from,targetStatus);
+        Logs.digest.info("{},{},{},{},{},{}==>{}", flow, id, from, action, actionResult, from, targetStatus);
     }
 
     @Override

@@ -8,9 +8,10 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FreezedRollbackAction  implements SagaAction {
+public class FreezedRollbackAction implements SagaAction {
     @Setter
     String code;
+
     @Override
     public String code() {
         return code;
@@ -57,7 +58,6 @@ public class FreezedRollbackAction  implements SagaAction {
 //                Pair.of(PayState.freezed_rollback_failover,0.1)
 //        ));
 //    }
-
 
 
 }

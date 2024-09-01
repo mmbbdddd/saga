@@ -1,12 +1,12 @@
 package cn.hz.ddbm.pc.newcore.fsm
 
-import cn.hutool.core.util.TypeUtil
+
 import cn.hz.ddbm.pc.newcore.test.NoneFsmAction
 import org.junit.Test
 
-class FsmRouterActionTest<S > {
+class FsmRouterActionTest<S> {
     @Test
-    public void getgen(){
+    public void getgen() {
         NoneFsmAction a = new NoneFsmAction()
         println(a.getType())
     }

@@ -3,8 +3,8 @@ package cn.hz.ddbm.pc.chaos
 import cn.hutool.core.util.ClassUtil
 import cn.hutool.json.JSONUtil
 import lombok.Data
-import org.junit.Test
 import org.junit.Before
+import org.junit.Test
 
 class RuleTest {
 
@@ -23,7 +23,7 @@ class RuleTest {
         rule.toWeight()
 
 
-          rule = new ChaosRule(
+        rule = new ChaosRule(
                 weight: 0.1,
                 value: '',
                 value_type: 'cn.hz.ddbm.pc.chaos.TF'

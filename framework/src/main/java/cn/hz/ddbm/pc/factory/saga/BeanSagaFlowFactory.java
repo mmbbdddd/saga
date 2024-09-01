@@ -1,10 +1,6 @@
 package cn.hz.ddbm.pc.factory.saga;
 
-import cn.hz.ddbm.pc.factory.fsm.FSM;
-import cn.hz.ddbm.pc.newcore.FlowModel;
-import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
 import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
-import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
 import org.springframework.beans.BeansException;
@@ -34,7 +30,7 @@ public class BeanSagaFlowFactory implements SagaFlowFactory, ApplicationContextA
         }).collect(Collectors.toList());
         return flows.stream().collect(Collectors.toMap(
                 SagaFlow::getName,
-                t->t
+                t -> t
         ));
     }
 

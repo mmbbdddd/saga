@@ -2,20 +2,15 @@ package cn.hz.ddbm.pc.chaos
 
 import cn.hz.ddbm.pc.chaos.actions.TestFsmAction
 import cn.hz.ddbm.pc.chaos.actions.TestSagaAction
-import org.junit.Test
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.junit4.SpringRunner
 
 import javax.annotation.Resource
-import java.lang.reflect.Method
-import static org.mockito.Mockito.*
+
 @SpringBootTest
 @RunWith(SpringRunner)
 @Import(TestConfig.class)

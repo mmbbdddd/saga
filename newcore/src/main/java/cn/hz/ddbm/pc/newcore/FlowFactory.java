@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface FlowFactory<F extends FlowModel> {
 
-    Map<String,F> getFlows();
+    Map<String, F> getFlows();
 }

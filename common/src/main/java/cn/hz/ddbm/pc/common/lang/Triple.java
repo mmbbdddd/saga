@@ -20,10 +20,10 @@ public class Triple<L, M, R> {
     }
 
 
-
     public L getLeft() {
         return left;
     }
+
     public M getMiddle() {
         return middle;
     }
