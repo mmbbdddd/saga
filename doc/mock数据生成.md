@@ -1,6 +1,6 @@
 mock架构图
 
-![img_12.png](img_12.png)
+![img_12.png](images/img_12.png)
 
 技术选型
 

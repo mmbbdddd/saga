@@ -27,7 +27,7 @@
 
 ## 原理
 
-![img_22.png](img_22.png)
+![img_22.png](images/img_22.png)
 
 * 一个长流程复杂事务由N个节点装成
 * 其中每两个执行节点的状态变迁组成了一个原子变迁
@@ -54,7 +54,7 @@ saga事务的本质
 
 ![img_23.png](事务机制.png)
 
-![img_25.png](img_25.png)
+![img_25.png](images/img_25.png)
 
 从机制上讲，SAGA和事务消息是很像的
 

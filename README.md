@@ -4,7 +4,7 @@
 
 ## 0 场景
 
-![img_5.png](img_5.png)
+![img_5.png](doc/img_5.png)
 
 ## 1 流程编排
 
@@ -124,7 +124,7 @@ retry = 2 的情况下 ，有（850+111）/1000可以完成
 
 # 事务实现机制选型
 
-![img_8.png](img_8.png)
+![img_8.png](doc/img_8.png)
 
 1. 数据压力不大，本地事务是最优解
 2. 分布式架构下，事务消息&SAGA事务是唯2可用的解，其他有硬伤
@@ -143,11 +143,13 @@ retry = 2 的情况下 ，有（850+111）/1000可以完成
 
 # 事务实现原理比较
 
-![img_1.png](img_1.png)
-![img_2.png](img_2.png)
-![img_3.png](img_3.png)
-![img_4.png](img_4.png)
-
+![img_1.png](doc/img_1.png)
+![img_2.png](doc/img_2.png)
+![img_3.png](doc/img_3.png)
+![img_9.png](doc/img_9.png)
+saga原理
+![img_10.png](doc/img_10.png)
+关键
 # 性能比较（事务消息/流程编排）
 
 事务消息的结构：生产者>mq>消费者

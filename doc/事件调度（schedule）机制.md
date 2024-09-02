@@ -1,6 +1,6 @@
 # 架构图
 
-![img_29.png](img_29.png)
+![img_29.png](images/img_29.png)
 
 ## spring-cron
 
@@ -44,6 +44,6 @@
 
 # 特性比较
 
-![img_31.png](img_31.png)
+![img_31.png](images/img_31.png)
 
 
