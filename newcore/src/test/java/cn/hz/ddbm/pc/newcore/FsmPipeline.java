@@ -11,8 +11,6 @@ import static cn.hz.ddbm.pc.newcore.FsmPipeline.Pay.init;
 import static cn.hz.ddbm.pc.newcore.FsmPipeline.Pay.send;
 
 public class FsmPipeline {
-    public FsmStateMachine su;
-    public FsmStateMachine fail;
     List<FsmStateMachine>      pipelines;
     Map<Enum, FsmStateMachine> map;
 
@@ -24,8 +22,6 @@ public class FsmPipeline {
             pipelines.add(fsm);
             map.put(states.get(i), fsm);
         }
-        this.su   = new FsmStateMachine(2, send, this);
-        this.fail = new FsmStateMachine(0, init, this);
     }
 
     void doIt(FsmStateMachine.FsmContext ctx) throws FlowEndException {

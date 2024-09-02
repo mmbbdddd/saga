@@ -30,10 +30,20 @@ public class FsmStateMachine<S> {
             case failover:
                 try {
                     if (action.queryIt()) {
-                        ctx.updateState(getNext().state, SubState.task);
+                        try {
+                            ctx.updateState(getNext().state, SubState.task);
+                        } catch (FlowEndException e) {
+                            ctx.updateState(this.state, SubState.su);
+                            throw e;
+                        }
                     } else {
                         if (retryOver()) {
-                            ctx.updateState(getPre().state, SubState.task);
+                            try {
+                                ctx.updateState(getPre().state, SubState.task);
+                            } catch (FlowEndException e) {
+                                ctx.updateState(this.state, SubState.fail);
+                                throw e;
+                            }
                         } else {
                             ctx.updateState(state, SubState.task);
                         }
@@ -50,14 +60,14 @@ public class FsmStateMachine<S> {
 
     private FsmStateMachine<S> getPre() throws FlowEndException {
         if (index == 0) {
-            throw  new FlowEndException();
+            throw new FlowEndException();
         }
         return pipeline.pipelines.get(index - 1);
     }
 
     private FsmStateMachine<S> getNext() throws FlowEndException {
         if (index == pipeline.pipelines.size() - 1) {
-            throw  new FlowEndException();
+            throw new FlowEndException();
         }
         FsmStateMachine<S> next = pipeline.pipelines.get(index + 1);
         return next;
@@ -96,6 +106,8 @@ public class FsmStateMachine<S> {
         task,
         failover,
         retry,
+        su,
+        fail,
     }
 
 }
