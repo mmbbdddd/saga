@@ -5,7 +5,9 @@ import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
+import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -139,12 +141,12 @@ public interface FSM<S extends Enum<S>> {
             this.transitions = transitions;
         }
 
-        public State<S> onEventTo(String event, String action, S to) {
+        public State<S> onEventTo(String event, Class<? extends FsmCommandAction> action, S to) {
             transitions.flow.to(from, event, action, to);
             return this;
         }
 
-        public State<S> onEventRouter(String event, String action, S failover) {
+        public State<S> onEventRouter(String event, Class<? extends FsmRouterAction> action, S failover) {
             transitions.flow.router(from, event, action, failover);
             return this;
         }

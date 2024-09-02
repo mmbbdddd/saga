@@ -28,13 +28,13 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
         return worker;
     }
 
-    public FsmFlow<S> to(S from, String event, String action, S to) {
+    public FsmFlow<S> to(S from, String event, Class<? extends FsmCommandAction> action, S to) {
         ToFsmWorker<S> toFsmWorker = new ToFsmWorker<>(from, action, to);
         this.transitionTable.put(from, event, toFsmWorker);
         return this;
     }
 
-    public FsmFlow<S> router(S from, String event, String action, S failover) {
+    public FsmFlow<S> router(S from, String event, Class<? extends FsmRouterAction> action, S failover) {
         SagaFsmWorker<S> sagaFsmWorker = new SagaFsmWorker<>(from, action, failover);
         this.transitionTable.put(from, event, sagaFsmWorker);
         this.transitionTable.put(failover, Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);

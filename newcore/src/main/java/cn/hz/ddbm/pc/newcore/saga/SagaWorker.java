@@ -14,25 +14,25 @@ import java.util.Objects;
 
 @Data
 public class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S>> {
-    Integer           index;
-    S                 currentState;
-    ForwardQuantum<S> forward;
-    BackoffQuantum<S> backoff;
-    String            action;
+    Integer                     index;
+    S                           currentState;
+    ForwardQuantum<S>           forward;
+    BackoffQuantum<S>           backoff;
+    Class<? extends SagaAction> sagaAction;
 
-    public SagaWorker(Integer index, S pre, S task, S next, String sagaAction) {
+    public SagaWorker(Integer index, S pre, S task, S next, Class<? extends SagaAction> sagaAction) {
         Assert.notNull(task, "task is null");
         this.index        = index;
         this.currentState = task;
         this.forward      = new ForwardQuantum<>(task, next);
         this.backoff      = new BackoffQuantum<>(task, pre);
-        this.action       = sagaAction;
+        this.sagaAction   = sagaAction;
     }
 
     @Override
     public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
         FlowProcessorService processor = ctx.getProcessor();
-        ctx.setAction((SagaAction) processor.getAction(action, SagaAction.class));
+        ctx.setAction((SagaAction) processor.getAction(sagaAction));
         SagaAction sagaAction = (SagaAction) ctx.getAction();
         ctx.setAction(sagaAction);
         if (ctx.getState().getIsForward()) {

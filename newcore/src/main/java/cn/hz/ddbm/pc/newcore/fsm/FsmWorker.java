@@ -19,25 +19,25 @@ public abstract class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>>
 class SagaFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
     FsmState<S> from;
     FsmState<S> failover;
-    String      action;
+    Class<? extends FsmRouterAction> action;
 
 
-    public SagaFsmWorker(S from, String sagaAction, S failover) {
+    public SagaFsmWorker(S from, Class<? extends FsmRouterAction> action, S failover) {
         this.from     = new FsmState<>(from);
         this.failover = new FsmState<>(failover);
-        this.action   = sagaAction;
+        this.action   = action;
     }
 
     @Override
     public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException {
         FlowProcessorService processor = ctx.getProcessor();
         FsmState<S>          lastState = ctx.getState();
-        ctx.setAction((FsmRouterAction) processor.getAction(action, FsmRouterAction.class));
+        ctx.setAction((FsmRouterAction) processor.getAction(action));
         FsmRouterAction<S> sagaAction = (FsmRouterAction) ctx.getAction();
         //如果任务可执行
         if (Objects.equals(lastState, from)) {
             //加锁
-           processor.tryLock(ctx);
+            processor.tryLock(ctx);
 
             processor.plugin().pre(ctx);
             //设置容错
@@ -93,13 +93,13 @@ class SagaFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
 
 class ToFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
 
-    FsmState<S> from;
-    FsmState<S> to;
-    String      action;
+    FsmState<S>             from;
+    FsmState<S>             to;
+    Class<? extends FsmCommandAction> action;
 
-    public ToFsmWorker(S from, String commandAction, S to) {
+    public ToFsmWorker(S from, Class<? extends FsmCommandAction> action, S to) {
         this.from   = new FsmState<>(from);
-        this.action = commandAction;
+        this.action = action;
         this.to     = new FsmState<>(to);
     }
 
@@ -109,7 +109,7 @@ class ToFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
         FsmFlow<S>           flow      = ctx.getFlow();
         Serializable         id        = ctx.getId();
         FsmState<S>          lastNode  = ctx.getState();
-        ctx.setAction((FsmCommandAction) processor.getAction(action, FsmCommandAction.class));
+        ctx.setAction((FsmCommandAction) processor.getAction(action));
         FsmCommandAction<S> commandAction = (FsmCommandAction) ctx.getAction();
         try {
             processor.plugin().pre(ctx);

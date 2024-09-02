@@ -7,6 +7,7 @@ import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.fsm.FsmActionProxy;
+import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
 import cn.hz.ddbm.pc.newcore.infra.*;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmLocker;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmSessionManager;
@@ -190,14 +191,14 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         return ss.get(flowName, id, state, Coast.STATISTICS.EXECUTE_TIMES);
     }
 
-    public <T> T getAction(String action, Class<T> type) {
+    public <T> T getAction(Class<T> action) {
         Assert.notNull(action, "action is null");
         if (runMode.equals(RunMode.chaos)) {
-            return SpringUtil.getBean("chaosAction", type);
+            return SpringUtil.getBean("chaosAction");
         } else {
             T actionBean = (T) actionMap.get(action);
             if (null == actionBean) {
-                if (type.equals(SagaAction.class)) {
+                if (action.equals(SagaAction.class)) {
                     return (T) actionMap.get(Coast.NONE_SAGA_ACTION);
                 } else {
                     return (T) actionMap.get(Coast.NONE_FSM_ACTION);

@@ -1,6 +1,8 @@
 package cn.hz.ddbm.pc.fsm;
 
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.actions.fsm.FreezedAction;
+import cn.hz.ddbm.pc.actions.fsm.SendAction;
 import cn.hz.ddbm.pc.factory.fsm.FSM;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
@@ -54,10 +56,10 @@ public class PayFsm implements FSM<PayState> {
     @Override
     public void transitions(Transitions<PayState> transitions) {
         transitions.state(init)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, "freezeAction", freezed)
+                .onEventRouter(Coast.FSM.EVENT_DEFAULT, FreezedAction.class, freezed)
                 .endState()
                 .state(freezed)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, "sendAction", sendfailover)
+                .onEventRouter(Coast.FSM.EVENT_DEFAULT, SendAction.class, sendfailover)
                 .endState();
     }
 
