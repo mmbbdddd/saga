@@ -2,10 +2,7 @@ package cn.hz.ddbm.pc.newcore.fsm;
 
 import cn.hz.ddbm.pc.FlowProcessorService;
 import cn.hz.ddbm.pc.newcore.Worker;
-import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
-import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.exception.StatusException;
+import cn.hz.ddbm.pc.newcore.exception.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,7 +12,7 @@ import java.util.Objects;
 public abstract class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
 
     @Override
-    public abstract void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException;
+    public abstract void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException;
 
 }
 
@@ -32,7 +29,7 @@ class SagaFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
     }
 
     @Override
-    public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException {
+    public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException {
         FlowProcessorService processor = ctx.getProcessor();
         FsmState<S>          lastState = ctx.getState();
         ctx.setAction((FsmRouterAction) processor.getAction(action, FsmRouterAction.class));
@@ -40,9 +37,8 @@ class SagaFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
         //如果任务可执行
         if (Objects.equals(lastState, from)) {
             //加锁
-            if (!processor.tryLock(ctx)) {
-                return;
-            }
+           processor.tryLock(ctx);
+
             processor.plugin().pre(ctx);
             //设置容错
             ctx.setState(failover);

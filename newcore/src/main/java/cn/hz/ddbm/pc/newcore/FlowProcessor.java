@@ -40,6 +40,7 @@ public interface FlowProcessor<C extends FlowContext> {
             } catch (FlowEndException e) {
                 throw e;
             } catch (Exception e) {
+                e.printStackTrace();
 
             }
         }

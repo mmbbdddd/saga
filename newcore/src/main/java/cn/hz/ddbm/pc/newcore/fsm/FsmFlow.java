@@ -34,7 +34,7 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
         return this;
     }
 
-    public FsmFlow<S> saga(S from, String event, String action, S failover) {
+    public FsmFlow<S> router(S from, String event, String action, S failover) {
         SagaFsmWorker<S> sagaFsmWorker = new SagaFsmWorker<>(from, action, failover);
         this.transitionTable.put(from, event, sagaFsmWorker);
         this.transitionTable.put(failover, Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);

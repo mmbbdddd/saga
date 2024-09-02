@@ -25,6 +25,7 @@ public class FsmActionProxy<S extends Enum<S>> implements FsmCommandAction<S>, F
         try {
             ((FsmCommandAction) action).command(ctx);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ActionException(e);
         }
     }

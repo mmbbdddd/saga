@@ -6,6 +6,7 @@ import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
+import cn.hz.ddbm.pc.newcore.exception.LockException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import lombok.Data;
 
@@ -29,7 +30,7 @@ public class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S>> {
     }
 
     @Override
-    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException {
+    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
         FlowProcessorService processor = ctx.getProcessor();
         ctx.setAction((SagaAction) processor.getAction(action, SagaAction.class));
         SagaAction sagaAction = (SagaAction) ctx.getAction();
@@ -63,7 +64,7 @@ class ForwardQuantum<S extends Enum<S>> {
         this.rollback = new SagaState<>(curr, SagaState.Offset.task, false);
     }
 
-    public void onEvent(SagaContext<S> ctx) throws IdempotentException, ActionException {
+    public void onEvent(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
         FlowProcessorService processor    = ctx.getProcessor();
         SagaState<S>         lastState    = ctx.getState().cloneSelf();
         SagaAction           sagaAction   = (SagaAction) ctx.getAction();
@@ -71,9 +72,7 @@ class ForwardQuantum<S extends Enum<S>> {
         //如果任务可执行
         if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
             //加锁
-            if (!processor.tryLock(ctx)) {
-                return;
-            }
+            processor.tryLock(ctx);
             processor.plugin().pre(ctx);
             //设置容错
             ctx.setState(failover);
@@ -154,7 +153,7 @@ class BackoffQuantum<S extends Enum<S>> {
         this.manual           = FlowStatus.MANUAL;
     }
 
-    public void onEvent(SagaContext<S> ctx) throws IdempotentException {
+    public void onEvent(SagaContext<S> ctx) throws IdempotentException, LockException {
         FlowProcessorService processor    = ctx.getProcessor();
         SagaState<S>         lastState    = ctx.getState().cloneSelf();
         SagaAction           sagaAction   = (SagaAction) ctx.getAction();
@@ -162,9 +161,7 @@ class BackoffQuantum<S extends Enum<S>> {
         //如果任务可执行
         if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
             //加锁
-            if (!processor.tryLock(ctx)) {
-                return;
-            }
+            processor.tryLock(ctx);
             processor.plugin().pre(ctx);
             //设置容错
             ctx.setState(rollbackFailover);

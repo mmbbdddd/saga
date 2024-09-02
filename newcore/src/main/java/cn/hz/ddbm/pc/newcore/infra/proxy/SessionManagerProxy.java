@@ -24,7 +24,7 @@ public class SessionManagerProxy implements SessionManager {
     @Override
     public void set(String flowName, Serializable flowId, Map<String, Object> session) throws SessionException {
         try {
-            SpringUtil.getBean(ChaosHandler.class).session();
+//            SpringUtil.getBean(ChaosHandler.class).session();
             sessionManager.set(flowName, flowId, session);
         } catch (SessionException e) {
             throw e;
@@ -36,11 +36,12 @@ public class SessionManagerProxy implements SessionManager {
     @Override
     public Map<String, Object> get(String flowName, Serializable flowId) throws SessionException {
         try {
-            SpringUtil.getBean(ChaosHandler.class).session();
+//            SpringUtil.getBean(ChaosHandler.class).session();
             return sessionManager.get(flowName, flowId);
         } catch (SessionException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new SessionException(e);
         }
     }

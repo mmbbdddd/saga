@@ -93,7 +93,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         return sessionManagerMap.get(profile.getSession()).get(flowName, id);
     }
 
-    public boolean tryLock(FlowContext ctx) {
+    public boolean tryLock(FlowContext ctx) throws LockException {
         Profile profile = ctx.getProfile();
         String  key     = String.format("lock:%s:%s:%s", profile.getNamespace(), ctx.getFlow().getName(), ctx.getId());
 
@@ -101,7 +101,7 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
             lockerMap.get(profile.getLock()).tryLock(key, profile.getLockTimeoutMicros());
             return true;
         } catch (LockException e) {
-            return false;
+            throw new LockException(e);
         }
     }
 

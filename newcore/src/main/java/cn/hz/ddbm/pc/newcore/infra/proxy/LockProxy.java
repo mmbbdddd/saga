@@ -21,7 +21,6 @@ public class LockProxy implements Locker {
     @Override
     public void tryLock(String key, Integer timeout) throws LockException {
         try {
-            SpringUtil.getBean(ChaosHandler.class).locker();
             locker.tryLock(key, timeout);
         } catch (LockException e) {
             throw e;
@@ -33,7 +32,6 @@ public class LockProxy implements Locker {
     @Override
     public void releaseLock(String key) throws LockException {
         try {
-            SpringUtil.getBean(ChaosHandler.class).locker();
             locker.releaseLock(key);
         } catch (LockException e) {
             throw e;

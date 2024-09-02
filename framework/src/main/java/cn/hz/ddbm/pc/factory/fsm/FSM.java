@@ -67,7 +67,7 @@ public interface FSM<S extends Enum<S>> {
      *
      * @param
      */
-    Transitions<S> transitions(Transitions<S> transitions);
+    void transitions(Transitions<S> transitions);
 
     /**
      * 流程的配置，例如状态管理，会话管理，缺省重试次数，超时事件，节点属性，atcion属性等
@@ -88,13 +88,7 @@ public interface FSM<S extends Enum<S>> {
         Set<S>  tasks = getTaskNodes(nodes);
         FsmFlow flow  = new FsmFlow(fsmId(), init, ends, tasks);
 
-        transitions(new Transitions<S>()).transitions.forEach(t -> {
-            if (t.getSaga()) {
-                flow.saga(t.getFrom(), t.getEvent(), t.getAction(), t.getFailover());
-            } else {
-                flow.to(t.getFrom(), t.getEvent(), t.getAction(), t.to);
-            }
-        });
+        transitions(new Transitions<>(flow));
 //        flow.saga()
 
         Profile profile = profile();
@@ -121,28 +115,45 @@ public interface FSM<S extends Enum<S>> {
         return all;
     }
 
-    class Transitions<S> {
-        List<Transition<S>> transitions;
 
-        public Transitions() {
-            this.transitions = new ArrayList<>();
+    class Transitions<S extends Enum<S>> {
+        FsmFlow<S> flow;
+        State<S>   state;
+
+        public Transitions(FsmFlow<S> flow) {
+            this.flow = flow;
         }
 
-        public Transitions<S> router(S from, String event, String action, S failover) {
-            this.transitions.add(new Transition<>(
-                    true, from, null, failover, action, event
-            ));
-            return this;
+        public State<S> state(S payState) {
+            this.state = new State<>(payState, this);
+            return state;
         }
-
-        public Transitions<S> to(S from, String event, String action, S to) {
-            this.transitions.add(new Transition<>(
-                    false, from, to, null, action, event
-            ));
-            return this;
-        }
-
     }
+
+    class State<S extends Enum<S>> {
+        Transitions<S> transitions;
+        S              from;
+
+        public State(S from, Transitions<S> transitions) {
+            this.from        = from;
+            this.transitions = transitions;
+        }
+
+        public State<S> onEventTo(String event, String action, S to) {
+            transitions.flow.to(from, event, action, to);
+            return this;
+        }
+
+        public State<S> onEventRouter(String event, String action, S failover) {
+            transitions.flow.router(from, event, action, failover);
+            return this;
+        }
+
+        public Transitions<S> endState() {
+            return transitions;
+        }
+    }
+
 
     @Data
     class Transition<S> {
