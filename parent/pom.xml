@@ -6,14 +6,14 @@
 
     <groupId>cn.hz.ddbm.pc</groupId>
     <artifactId>parent</artifactId>
-    <version>${pc.version}</version>
+    <version>0.9.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <pc.version>0.9.8-SNAPSHOT</pc.version>
+        <pc.version>0.9.9-SNAPSHOT</pc.version>
         <groovy.version>4.0.22</groovy.version>
         <mockito.version>1.10.19</mockito.version>
         <fastjson.version>1.2.83</fastjson.version>

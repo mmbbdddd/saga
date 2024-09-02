@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.hz.ddbm.pc</groupId>
     <artifactId>pc</artifactId>
-    <version>0.9.8-SNAPSHOT</version>
+    <version>0.9.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>

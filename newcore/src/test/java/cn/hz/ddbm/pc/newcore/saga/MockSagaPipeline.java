@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.actions.fsm.FreezedAction;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.saga.actions.PayCommitAction;
 import cn.hz.ddbm.pc.newcore.saga.actions.PayFreezedAction;

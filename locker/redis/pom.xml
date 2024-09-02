@@ -6,7 +6,7 @@
     <parent>
         <groupId>cn.hz.ddbm.pc</groupId>
         <artifactId>parent</artifactId>
-        <version>0.9.8-SNAPSHOT</version>
+        <version>0.9.9-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <artifactId>lock-redis</artifactId>

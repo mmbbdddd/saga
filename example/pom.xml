@@ -6,7 +6,7 @@
     <parent>
         <groupId>cn.hz.ddbm.pc</groupId>
         <artifactId>parent</artifactId>
-        <version>0.9.8-SNAPSHOT</version>
+        <version>0.9.9-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <artifactId>example</artifactId>
@@ -30,17 +30,7 @@
             <artifactId>framework</artifactId>
             <version>${pc.version}</version>
         </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>session-memory</artifactId>
-            <version>${pc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>status-memory</artifactId>
-            <version>${pc.version}</version>
-        </dependency>
-        <dependency>
+          <dependency>
             <groupId>cn.hz.ddbm.pc</groupId>
             <artifactId>factory-dsl</artifactId>
             <version>${pc.version}</version>
@@ -50,12 +40,6 @@
             <groupId>cn.hz.ddbm.pc</groupId>
             <artifactId>configuration-spring</artifactId>
             <version>${pc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>lock-jdk</artifactId>
-            <version>${pc.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>

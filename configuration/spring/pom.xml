@@ -7,7 +7,7 @@
     <parent>
         <groupId>cn.hz.ddbm.pc</groupId>
         <artifactId>parent</artifactId>
-        <version>0.9.8-snapshot</version>
+        <version>0.9.9-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <artifactId>configuration-spring</artifactId>
@@ -46,37 +46,13 @@
             <version>${pc.version}</version>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>factory-json</artifactId>
-            <version>${pc.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>factory-xml</artifactId>
-            <version>${pc.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>session-memory</artifactId>
-            <version>${pc.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
+         <dependency>
             <groupId>cn.hz.ddbm.pc</groupId>
             <artifactId>session-redis</artifactId>
             <version>${pc.version}</version>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>status-memory</artifactId>
-            <version>${pc.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
+         <dependency>
             <groupId>cn.hz.ddbm.pc</groupId>
             <artifactId>status-redis</artifactId>
             <version>${pc.version}</version>
@@ -87,17 +63,6 @@
             <artifactId>status-dao</artifactId>
             <version>${pc.version}</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>statistics-simple</artifactId>
-            <version>${pc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>lock-jdk</artifactId>
-            <version>${pc.version}</version>
-            <scope>compile</scope>
         </dependency>
 
 
