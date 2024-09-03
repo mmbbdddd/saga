@@ -9,10 +9,7 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -141,7 +138,7 @@ public interface FSM<S extends Enum<S>> {
             this.transitions = transitions;
         }
 
-        public State<S> onEventRouter(String event, Class<? extends FsmAction> action, Function<Object,S> router) {
+        public State<S> onEventRouter(String event, Class<? extends FsmAction> action, Map<S,String> router) {
             transitions.flow.router(from, event, action);
             return this;
         }

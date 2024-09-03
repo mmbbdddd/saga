@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
@@ -58,28 +59,13 @@ public class PayFsm implements FSM<PayState> {
     @Override
     public void transitions(Transitions<PayState> transitions) {
         transitions.state(init)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, FreezedAction.class, new Function<Object, PayState>() {
-                    @Override
-                    public PayState apply(Object object) {
-                        return null;
-                    }
-                })
+                .onEventRouter(Coast.FSM.EVENT_DEFAULT, FreezedAction.class, new HashMap<>())
                 .endState()
                 .state(freezed)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, SendAction.class, new Function<Object, PayState>() {
-                    @Override
-                    public PayState apply(Object object) {
-                        return null;
-                    }
-                })
+                .onEventRouter(Coast.FSM.EVENT_DEFAULT, SendAction.class, new HashMap<>())
                 .endState()
                 .state(sended)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, PayAction.class, new Function<Object, PayState>() {
-                    @Override
-                    public PayState apply(Object object) {
-                        return null;
-                    }
-                })
+                .onEventRouter(Coast.FSM.EVENT_DEFAULT, PayAction.class, new HashMap<>())
                 .endState();
     }
 
