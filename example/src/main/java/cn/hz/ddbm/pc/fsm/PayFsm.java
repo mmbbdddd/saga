@@ -56,10 +56,10 @@ public class PayFsm implements FSM<PayState> {
     @Override
     public void transitions(Transitions<PayState> transitions) {
         transitions.state(init)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, FreezedAction.class, freezed)
+                .onEventRouter(Coast.FSM.EVENT_DEFAULT, FreezedAction.class)
                 .endState()
                 .state(freezed)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, SendAction.class, sendfailover)
+                .onEventRouter(Coast.FSM.EVENT_DEFAULT, SendAction.class)
                 .endState();
     }
 

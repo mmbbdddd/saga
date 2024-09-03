@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Assert;
-import cn.hz.ddbm.pc.FlowProcessorService;
+import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
@@ -31,7 +31,7 @@ public class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S>> {
 
     @Override
     public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
-        FlowProcessorService processor = ctx.getProcessor();
+        ProcesorService processor = ctx.getProcessor();
         ctx.setAction((SagaAction) processor.getAction(sagaAction));
         SagaAction sagaAction = (SagaAction) ctx.getAction();
         ctx.setAction(sagaAction);
@@ -65,8 +65,8 @@ class ForwardQuantum<S extends Enum<S>> {
     }
 
     public void onEvent(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
-        FlowProcessorService processor    = ctx.getProcessor();
-        SagaState<S>         lastState    = ctx.getState().cloneSelf();
+        ProcesorService processor = ctx.getProcessor();
+        SagaState<S>    lastState = ctx.getState().cloneSelf();
         SagaAction           sagaAction   = (SagaAction) ctx.getAction();
         SagaState.Offset     currentState = lastState.getOffset();
         //如果任务可执行
@@ -154,8 +154,8 @@ class BackoffQuantum<S extends Enum<S>> {
     }
 
     public void onEvent(SagaContext<S> ctx) throws IdempotentException, LockException {
-        FlowProcessorService processor    = ctx.getProcessor();
-        SagaState<S>         lastState    = ctx.getState().cloneSelf();
+        ProcesorService processor = ctx.getProcessor();
+        SagaState<S>    lastState = ctx.getState().cloneSelf();
         SagaAction           sagaAction   = (SagaAction) ctx.getAction();
         SagaState.Offset     currentState = lastState.getOffset();
         //如果任务可执行

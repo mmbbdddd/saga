@@ -2,22 +2,16 @@ package cn.hz.ddbm.pc.chaos;
 
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 
-public class ChaosAction implements SagaAction, FsmCommandAction, FsmRouterAction {
+public class ChaosAction implements SagaAction,  FsmAction {
 
     @Override
     public String code() {
         return "chaosAction";
-    }
-
-    @Override
-    public void command(FsmContext ctx) throws ActionException {
-
     }
 
     @Override

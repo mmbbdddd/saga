@@ -2,8 +2,7 @@ package cn.hz.ddbm.pc.newcore.fsm;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.FlowProcessorService;
-import cn.hz.ddbm.pc.newcore.Action;
+import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.config.Coast;
@@ -12,23 +11,16 @@ import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
-import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FsmProcessor<S extends Enum<S>> extends FlowProcessorService<FsmContext<S>> {
+public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<S>> {
     public void afterPropertiesSet() {
         initParent();
 
-        SpringUtil.getBeansOfType(Action.class).forEach((key, action) -> {
-            if (action instanceof SagaAction) {
-            } else {
-                this.actionMap.put(key, new FsmActionProxy<>(action));
-            }
-        });
 
         SpringUtil.getBeansOfType(FsmFlowFactory.class).forEach((key, flowFactory) -> {
             this.flows.putAll(flowFactory.getFlows());
@@ -46,11 +38,11 @@ public class FsmProcessor<S extends Enum<S>> extends FlowProcessorService<FsmCon
     }
 
     @Override
-    public void workerProcess(FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException, TransitionNotFoundException {
+    public void workerProcess(FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
         workerProcess(Coast.FSM.EVENT_DEFAULT, ctx);
     }
 
-    public void workerProcess(String event, FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException, TransitionNotFoundException {
+    public void workerProcess(String event, FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
         Assert.notNull(ctx, "ctx is null");
         event = null == event ? Coast.FSM.EVENT_DEFAULT : event;
         ctx.setProcessor(this);
@@ -76,7 +68,6 @@ public class FsmProcessor<S extends Enum<S>> extends FlowProcessorService<FsmCon
         }
         FsmWorker worker = null;
         worker = flow.getWorker(ctx.getState(), event);
-
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);

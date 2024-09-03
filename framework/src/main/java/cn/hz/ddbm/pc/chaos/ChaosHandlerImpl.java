@@ -2,10 +2,8 @@ package cn.hz.ddbm.pc.chaos;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.common.lang.Triple;
-import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosTargetType;
-import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
-import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import cn.hz.ddbm.pc.newcore.infra.Locker;
 import cn.hz.ddbm.pc.newcore.infra.SessionManager;
 import cn.hz.ddbm.pc.newcore.infra.StatusManager;
@@ -19,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ChaosHandlerImpl   {
+public class ChaosHandlerImpl {
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> chaosRuleMap;
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> resultMap;
 
@@ -77,14 +75,10 @@ public class ChaosHandlerImpl   {
                 return SessionManager.class;
             case lock:
                 return Locker.class;
-            case fsmAction:
-                return FsmCommandAction.class;
-            case fsmRouterAction:
-                return FsmRouterAction.class;
             case sagaAction:
                 return SagaAction.class;
             default:
-                return FsmCommandAction.class;
+                return FsmAction.class;
         }
     }
 
@@ -99,12 +93,6 @@ public class ChaosHandlerImpl   {
             return null;
         }
     }
-
-
-
-
-
-
 
 
 }

@@ -3,20 +3,25 @@ package cn.hz.ddbm.pc.newcore;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import lombok.Data;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 public class FsmStateMachine<S> {
-    Integer     index;
-    S           state;
-    FsmPipeline pipeline;
-    FsmAction   action;
+    Integer        index;
+    S              state;
+    FsmPipeline    pipeline;
+    FsmSyncAdapter action;
 
     public FsmStateMachine(Integer index, S state, FsmPipeline pipeline) {
         this.index    = index;
         this.state    = state;
         this.pipeline = pipeline;
-        this.action   = new FsmAction();
+        this.action   = new FsmSyncAdapter();
     }
 
     public void onEvent(FsmContext ctx) throws FlowEndException {
+
 
         switch (ctx.subState) {
             case task:
@@ -97,8 +102,26 @@ public class FsmStateMachine<S> {
 
         }
 
-        Boolean queryIt() {
+        Boolean queryIt() throws Exception {
             return true;
+        }
+    }
+
+    ExecutorService es = Executors.newFixedThreadPool(2);
+
+    class FsmSyncAdapter extends FsmAction {
+        Future<Boolean> future;
+
+        public Boolean doit() {
+            return true;
+        }
+
+        void doIt() {
+            future = es.submit(() -> doit());
+        }
+
+        Boolean queryIt() throws Exception {
+            return future.get();
         }
     }
 

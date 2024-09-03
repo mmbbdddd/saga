@@ -6,6 +6,7 @@ import cn.hz.ddbm.pc.chaos.ChaosHandlerImpl;
 import cn.hz.ddbm.pc.chaos.ChaosRule;
 import cn.hz.ddbm.pc.factory.fsm.BeanFsmFlowFactory;
 import cn.hz.ddbm.pc.factory.saga.BeanSagaFlowFactory;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.PauseException;
@@ -36,50 +37,42 @@ public class ChaosService extends BaseService {
     ChaosHandlerImpl chaosHandler;
 
     public void batchFsms(String flowName, List<FsmPayload> payloads, List<ChaosRule> rules) {
-        this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
-        this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
         super.batchFsms(flowName, payloads);
     }
 
 
     public void batchSagas(String flowName, List<SagaPayload> payloads, List<ChaosRule> rules) {
-        this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
-        this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
         super.batchSagas(flowName, payloads);
     }
 
 
     public void sagas(String flowName, SagaPayload payload, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
-        this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
         super.sagas(flowName, payload);
     }
 
 
     public void saga(String flowName, SagaPayload payload, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
-        this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
         super.saga(flowName, payload);
     }
 
 
     public void fsms(String flowName, FsmPayload payload, String event, Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        if (mockBean) {
-            this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
-            this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
-        }
+        System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
         super.fsms(flowName, payload, event);
     }
 
 
     public void fsm(String flowName, FsmPayload payload, String event, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        this.sagaProcessor.runMode = FlowProcessorService.RunMode.chaos;
-        this.fsmProcessor.runMode  = FlowProcessorService.RunMode.chaos;
+        System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
         super.fsm(flowName, payload, event);
     }

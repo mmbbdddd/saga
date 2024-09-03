@@ -1,41 +1,35 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
-import cn.hz.ddbm.pc.FlowProcessorService;
+import cn.hutool.core.lang.Assert;
+import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
+import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 @Data
-public abstract class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
+public class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
+    FsmState<S>       from;
+    FsmActionProxy<S> action;
 
-    @Override
-    public abstract void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException;
-
-}
-
-class SagaFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
-    FsmState<S> from;
-    FsmState<S> failover;
-    Class<? extends FsmRouterAction> action;
-
-
-    public SagaFsmWorker(S from, Class<? extends FsmRouterAction> action, S failover) {
-        this.from     = new FsmState<>(from);
-        this.failover = new FsmState<>(failover);
-        this.action   = action;
+    public FsmWorker(S from, Class<? extends FsmAction> actionClass) {
+        this.from   = new FsmState<>(from, FsmState.Offset.task);
+        this.action = new FsmActionProxy(actionClass);
     }
 
     @Override
-    public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException {
-        FlowProcessorService processor = ctx.getProcessor();
-        FsmState<S>          lastState = ctx.getState();
-        ctx.setAction((FsmRouterAction) processor.getAction(action));
-        FsmRouterAction<S> sagaAction = (FsmRouterAction) ctx.getAction();
+    public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException {
+        FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
+        ctx.setAction(action);
         //如果任务可执行
-        if (Objects.equals(lastState, from)) {
+        FsmState<S>     lastSate = ctx.getState();
+        FsmState.Offset offset   = ctx.getState().offset;
+
+        FsmState<S> failover = new FsmState<>(from.state, FsmState.Offset.failover);
+        if (Objects.equals(offset, FsmState.Offset.task)) {
             //加锁
             processor.tryLock(ctx);
 
@@ -47,81 +41,39 @@ class SagaFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
             processor.idempotent(ctx.getAction().code(), ctx);
             //执行业务
             try {
-                sagaAction.execute(ctx);
-                processor.plugin().post(lastState, ctx);
+                action.execute(ctx);
+                processor.plugin().post(from, ctx);
             } catch (ActionException e) {
-                processor.plugin().error(lastState, e, ctx);
+                processor.plugin().error(from, e, ctx);
                 throw e;
             } finally {
                 processor.unLock(ctx);
                 processor.plugin()._finally(ctx);
                 processor.metricsNode(ctx);
             }
-        } else if (Objects.equals(lastState, failover)) {
+        } else if (Objects.equals(offset, FsmState.Offset.failover)) {
             try {
-                S queryResult = sagaAction.executeQuery(ctx);
+                S queryResult = action.executeQuery(ctx);
+                Assert.notNull(queryResult, "queryResult is null");
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
-                if (queryResult == null) {
-                    processor.unidempotent(ctx.getAction().code(), ctx);
-                    ctx.setState(from);
-                } else {
-                    //业务有返回
-                    if (!ctx.getFlow().isState(queryResult)) {
-                        throw new IllegalArgumentException("queryResult[" + queryResult + "] not a right state code");
-                    }
-                    ctx.setState(new FsmState<>(queryResult));
+                //业务有返回
+                if (!ctx.getFlow().isRightState(FsmState.of(queryResult))) {
+                    throw new IllegalArgumentException("queryResult[" + queryResult + "] not a right state code");
                 }
-
-                processor.plugin().post(lastState, ctx);
+                ctx.setState(FsmState.of(queryResult));
+                processor.plugin().post(lastSate, ctx);
             } catch (NoSuchRecordException e) {
                 processor.unidempotent(ctx.getAction().code(), ctx);
                 ctx.setState(from);
-                processor.plugin().error(lastState, e, ctx);
+                processor.plugin().error(lastSate, e, ctx);
             } catch (ActionException e) {
                 ctx.setState(failover);
-                processor.plugin().error(lastState, e, ctx);
+                processor.plugin().error(lastSate, e, ctx);
                 throw e;
             } finally {
                 processor.plugin()._finally(ctx);
                 processor.metricsNode(ctx);
             }
-        }
-
-    }
-}
-
-
-class ToFsmWorker<S extends Enum<S>> extends FsmWorker<S> {
-
-    FsmState<S>             from;
-    FsmState<S>             to;
-    Class<? extends FsmCommandAction> action;
-
-    public ToFsmWorker(S from, Class<? extends FsmCommandAction> action, S to) {
-        this.from   = new FsmState<>(from);
-        this.action = action;
-        this.to     = new FsmState<>(to);
-    }
-
-    @Override
-    public void execute(FsmContext<S> ctx) throws StatusException, ActionException {
-        FlowProcessorService processor = ctx.getProcessor();
-        FsmFlow<S>           flow      = ctx.getFlow();
-        Serializable         id        = ctx.getId();
-        FsmState<S>          lastNode  = ctx.getState();
-        ctx.setAction((FsmCommandAction) processor.getAction(action));
-        FsmCommandAction<S> commandAction = (FsmCommandAction) ctx.getAction();
-        try {
-            processor.plugin().pre(ctx);
-            commandAction.command(ctx);
-            ctx.setState(to);
-            processor.plugin().post(lastNode, ctx);
-        } catch (ActionException e) {
-            processor.plugin().error(lastNode, e, ctx);
-            throw e;
-        } finally {
-            processor.plugin()._finally(ctx);
-            processor.metricsNode(ctx);
         }
     }
 

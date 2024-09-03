@@ -6,6 +6,9 @@ public class Coast {
     public static final String CHAOS_ACTION            = "chaosAction";
     public static final String PLUGIN_EXECUTOR_SERVICE = "pluginExecutorService";
     public static final String ACTION_EXECUTOR_SERVICE = "actionExecutorService";
+    public static final String RUN_MODE    = "run_mode";
+    public static final String RUN_MODE_CHAOS = "chaos";
+    public static final String RUN_MODE_STABLE = "stable";
 
     public static class STATISTICS {
         public final static String EXECUTE_TIMES = "execute_times";

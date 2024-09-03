@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Assert;
-import cn.hz.ddbm.pc.FlowProcessorService;
+import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
 import lombok.Data;
 
@@ -20,9 +20,9 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     final     AtomicInteger        loopErrorTimes;
     transient FlowStatus           status;
     transient S                    state;
-    transient W                    worker;
-    transient FlowProcessorService processor;
-    transient Action               action;
+    transient W               worker;
+    transient ProcesorService processor;
+    transient Action          action;
     transient ActionResult         actionResult;
 
     public FlowContext(F flow, Payload<S> payload, Map<String, Object> session) {

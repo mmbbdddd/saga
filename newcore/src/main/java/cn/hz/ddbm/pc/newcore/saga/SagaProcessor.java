@@ -2,7 +2,7 @@ package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.FlowProcessorService;
+import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
@@ -16,15 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SagaProcessor<S extends Enum<S>> extends FlowProcessorService<SagaContext<S>> {
+public class SagaProcessor<S extends Enum<S>> extends ProcesorService<SagaContext<S>> {
 
 
     public void afterPropertiesSet() {
         initParent();
-        SpringUtil.getBeansOfType(SagaAction.class).forEach((key, action) -> {
-            this.actionMap.put(key, new SagaActionProxy(action));
-
-        });
         SpringUtil.getBeansOfType(SagaFlowFactory.class).forEach((key, flowFactory) -> {
             this.flows.putAll(flowFactory.getFlows());
         });

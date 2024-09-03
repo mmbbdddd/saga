@@ -6,13 +6,13 @@ import cn.hz.ddbm.pc.fsm.PayTest;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 import org.assertj.core.util.Sets;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SendAction implements FsmRouterAction<PayState> {
+public class SendAction implements FsmAction<PayState> {
     @Override
     public void execute(FsmContext<PayState> ctx) throws ActionException {
 

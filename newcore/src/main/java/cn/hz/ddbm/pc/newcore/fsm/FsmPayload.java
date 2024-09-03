@@ -24,10 +24,10 @@ public class FsmPayload<S extends Enum<S>> implements Payload<FsmState<S>> {
     }
 
     public FsmState<S> getState() {
-        return new FsmState<>(fsmState);
+        return new FsmState<>(fsmState, FsmState.Offset.task);
     }
 
     public void setState(FsmState<S> state) {
-        this.fsmState = state.code();
+        this.fsmState = state.code().getKey();
     }
 }

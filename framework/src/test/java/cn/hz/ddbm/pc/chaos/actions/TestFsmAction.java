@@ -2,17 +2,12 @@ package cn.hz.ddbm.pc.chaos.actions;
 
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmCommandAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TestFsmAction implements FsmCommandAction, FsmRouterAction {
-    @Override
-    public void command(FsmContext ctx) throws ActionException {
-        System.out.println("xxxx");
-    }
+public class TestFsmAction implements FsmAction {
 
     @Override
     public void execute(FsmContext ctx) throws ActionException {

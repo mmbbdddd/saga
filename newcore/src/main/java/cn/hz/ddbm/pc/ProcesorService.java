@@ -6,8 +6,6 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.fsm.FsmActionProxy;
-import cn.hz.ddbm.pc.newcore.fsm.FsmRouterAction;
 import cn.hz.ddbm.pc.newcore.infra.*;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmLocker;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmSessionManager;
@@ -15,10 +13,6 @@ import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatisticsSupport;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.saga.SagaAction;
-import cn.hz.ddbm.pc.newcore.saga.SagaActionProxy;
-import cn.hz.ddbm.pc.newcore.test.NoneFsmAction;
-import cn.hz.ddbm.pc.newcore.test.NoneSagaAction;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.io.IOException;
@@ -26,27 +20,25 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public abstract class FlowProcessorService<C extends FlowContext> implements FlowProcessor<C>, InitializingBean {
+public abstract class ProcesorService<C extends FlowContext> implements FlowProcessor<C>, InitializingBean {
     protected Map<String, FlowModel> flows;
     Map<Coast.SessionType, SessionManager>       sessionManagerMap;
     Map<Coast.StatusType, StatusManager>         statusManagerMap;
     Map<Coast.LockType, Locker>                  lockerMap;
     Map<Coast.ScheduleType, ScheduleManger>      scheduleMangerMap;
     Map<Coast.StatisticsType, StatisticsSupport> statisticsSupportMap;
-    protected Map<String, Action> actionMap;
 
     PluginService pluginService;
 
-    public FlowProcessorService() {
+    public ProcesorService() {
         this.flows                = new HashMap<>();
         this.sessionManagerMap    = new HashMap<>();
         this.statusManagerMap     = new HashMap<>();
         this.lockerMap            = new HashMap<>();
         this.scheduleMangerMap    = new HashMap<>();
         this.statisticsSupportMap = new HashMap<>();
-        this.actionMap            = new HashMap<>();
-        this.runMode              = RunMode.stable;
 
         this.pluginService = new PluginService(getDefaultPlugins());
         this.statisticsSupportMap.put(Coast.StatisticsType.jvm, new JvmStatisticsSupport());
@@ -54,8 +46,6 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         this.statusManagerMap.put(Coast.StatusType.jvm, new JvmStatusManager());
 //        this.scheduleMangerMap.put(Coast.ScheduleType.timer, new TimerScheduleManager());
         this.lockerMap.put(Coast.LockType.jvm, new JvmLocker());
-        this.actionMap.put(Coast.NONE_FSM_ACTION, new FsmActionProxy<>(new NoneFsmAction<>()));
-        this.actionMap.put(Coast.NONE_SAGA_ACTION, new SagaActionProxy(new NoneSagaAction()));
     }
 
 
@@ -191,29 +181,16 @@ public abstract class FlowProcessorService<C extends FlowContext> implements Flo
         return ss.get(flowName, id, state, Coast.STATISTICS.EXECUTE_TIMES);
     }
 
-    public <T> T getAction(Class<T> action) {
+    public static <T> T getAction(Class<T> action) {
         Assert.notNull(action, "action is null");
-        if (runMode.equals(RunMode.chaos)) {
+        String runMode = System.getProperty(Coast.RUN_MODE);
+        if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
             return SpringUtil.getBean("chaosAction");
         } else {
-            T actionBean = (T) actionMap.get(action);
-            if (null == actionBean) {
-                if (action.equals(SagaAction.class)) {
-                    return (T) actionMap.get(Coast.NONE_SAGA_ACTION);
-                } else {
-                    return (T) actionMap.get(Coast.NONE_FSM_ACTION);
-                }
-            } else {
-                return actionBean;
-            }
+            return SpringUtil.getBean(action);
         }
     }
 
-    protected RunMode runMode;
-
-    enum RunMode {
-        stable, chaos;
-    }
 }
 
 
