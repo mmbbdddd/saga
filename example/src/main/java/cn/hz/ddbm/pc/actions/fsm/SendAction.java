@@ -20,19 +20,13 @@ public class SendAction implements FsmAction<PayState> {
 
     @Override
     public PayState executeQuery(FsmContext<PayState> ctx) throws NoSuchRecordException, ActionException {
-        PayState result = RandomUitl.selectByWeight("f3", Sets.set(
-                Pair.of(PayState.sended, 0.1),
-                Pair.of(PayState.sendfailover, 0.1),
-                Pair.of(PayState.su, 0.7),
-                Pair.of(PayState.fail, 0.1)
+        PayState result = RandomUitl.selectByWeight("f2", Sets.set(
+                Pair.of(PayState.sended, 0.7)
         ));
 
         switch (result) {
             case sended: {
-                return PayState.sendfailover;
-            }
-            case sendfailover: {
-                return PayState.sendfailover;
+                return PayState.sended;
             }
             case su: {
                 PayTest.freezed.decrementAndGet();
