@@ -18,7 +18,7 @@ public class FsmActionProxy<S extends Enum<S>> implements FsmAction<S> {
 
     @Override
     public String code() {
-        return action.code();
+        return getOrInitAction().code();
     }
 
 
@@ -36,6 +36,7 @@ public class FsmActionProxy<S extends Enum<S>> implements FsmAction<S> {
         try {
             getOrInitAction().execute(ctx);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ActionException(e);
         }
     }
