@@ -16,113 +16,94 @@ import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 混沌发生器
+ * 1，根据规则混沌
+ * 2，根据规则生成交易结果
+ * <p>
+ * 规则格式
+ * action：ChaosTargetType值。
+ * type
+ */
 public class ChaosHandlerImpl implements ChaosHandler {
-    Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> chaosRuleMap;
-    Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> resultMap;
+    Set<Pair<ChaosRule, Double>> errorRules;
+    Set<Pair<ChaosRule, Double>> resultRules;
 
     public ChaosHandlerImpl() {
-        this.chaosRuleMap = new HashMap<>();
-        this.resultMap    = new HashMap<>();
+        this.errorRules  = new HashSet<>();
+        this.resultRules = new HashSet<>();
     }
 
     public void setChaosRules(List<ChaosRule> rules) {
         if (null == rules || rules.isEmpty()) return;
-        Map<Pair<String, String>, List<Triple<String, String, ChaosRule>>> t1 = rules.stream()
-                .filter(r -> r.getAction().equals("exception"))
-                .map(r -> Triple.of(r.getType(), r.getMethod(), r))
-                .collect(Collectors.groupingBy(t -> Pair.of(t.getLeft(), t.getMiddle())));
-        Map<Pair<String, String>, List<Triple<String, String, ChaosRule>>> t2 = rules.stream()
-                .filter(r -> r.getAction().equals("result"))
-                .map(r -> Triple.of(r.getType(), r.getMethod(), r))
-                .collect(Collectors.groupingBy(t -> Pair.of(t.getLeft(), t.getMiddle())));
-        this.chaosRuleMap = new HashMap<>();
-        this.resultMap    = new HashMap<>();
-        t1.forEach((pair, triple) -> {
-            this.chaosRuleMap.put(pair, triple.stream()
-                    .map(t -> Pair.of(t.getRight(), t.getRight().toWeight()))
-                    .collect(Collectors.toSet()));
-            //插入正常执行概率
-            this.chaosRuleMap.get(pair).add(Pair.of(ChaosRule.DEFAULT, 1.0));
-        });
-        t2.forEach((pair, triple) -> {
-            this.resultMap.put(pair, triple.stream()
-                    .map(t -> Pair.of(t.getRight(), t.getRight().toWeight()))
-                    .collect(Collectors.toSet()));
-        });
+        this.errorRules  = new HashSet<>();
+        this.resultRules = new HashSet<>();
+        this.errorRules  = rules.stream()
+                .filter(r -> r.getType().equals(ChaosRuleType.EXCEPTION))
+                .map(r -> Pair.of(r, r.toWeight()))
+                .collect(Collectors.toSet());
+        this.resultRules = rules.stream().filter(r -> r.getType().equals(ChaosRuleType.RESULT)).map(r -> Pair.of(r, r.toWeight())).collect(Collectors.toSet());
 
     }
 
-    public void handle(ChaosTargetType chaosTargetType, Object proxy, Method method, Object[] args) throws Exception {
-        Class                        clz   = getTargetClass(chaosTargetType);
-        Set<Pair<ChaosRule, Double>> rules = chaosRuleMap.get(Pair.of(clz.getSimpleName(), method.getName()));
-        if (null != rules) {
-            String    classSimpleName = clz.getSimpleName();
-            String    key             = classSimpleName + "." + method.getName();
-            ChaosRule rule            = RandomUitl.selectByWeight(key, rules);
+    /**
+     * 业务逻辑混沌注入
+     *
+     * @throws Exception
+     */
+    public void handle() throws Exception {
+        if (null != errorRules) {
+            ChaosRule rule = RandomUitl.selectByWeight("error", errorRules);
             if (rule.isException()) {
                 rule.raiseException();
             }
         }
     }
 
-    private Class getTargetClass(ChaosTargetType type) {
-        Class clz = null;
-        switch (type) {
-            case status:
-                return StatusManager.class;
-            case session:
-                return SessionManager.class;
-            case lock:
-                return Locker.class;
-            case sagaAction:
-                return SagaAction.class;
-            default:
-                return FsmAction.class;
-        }
-    }
 
-
+    /**
+     * 模拟生成FsmRouter的结果
+     */
     @Override
     public <S extends Enum<S>> S handleRouter(FsmContext<S> ctx, FsmRouter<S> router) {
-        Action                       action         = ctx.getAction();
-        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildRouterRule(action, router);
-        return (S) RandomUitl.selectByWeight(String.format("%s_%s", action.code(), "router"), fsmQueryResult).toValue();
+        Set<Pair<S, Double>> fsmQueryResult = router.getStateExpressions().values().stream().map(s -> Pair.of(s, Math.random())).collect(Collectors.toSet());
+        return RandomUitl.selectByWeight("router", fsmQueryResult);
     }
 
-
+    /**
+     * 模拟生成FsmAction.executeQuery的返回对象。
+     */
     @Override
     public Object executeQuery(FsmContext<?> ctx) {
-        Action                       action         = ctx.getAction();
-        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildActonResultRules(action, "executeQuery");
-        return RandomUitl.selectByWeight(String.format("%s_%s", action.code(), "executeQuery"), fsmQueryResult).toValue();
+        return new Object();
     }
 
 
+    /**
+     * 模拟生成SagaAction.executeQuery的返回对象。
+     */
     @Override
     public Boolean executeQuery(SagaContext<?> ctx) {
-        Action                       action         = ctx.getAction();
-        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildActonResultRules(action, "executeQuery");
-        return (Boolean) RandomUitl.selectByWeight(String.format("%s_%s", action.code(), "executeQuery"), fsmQueryResult).toValue();
+        Set<Pair<Boolean, Double>> fsmQueryResult = new HashSet<>();
+        fsmQueryResult.add(Pair.of(true, 0.8));
+        fsmQueryResult.add(Pair.of(true, 0.2));
+        return RandomUitl.selectByWeight("SagaAction", fsmQueryResult);
     }
 
+    /**
+     * 模拟生成SagaAction.rollbackQuery的返回对象。
+     */
     @Override
     public Boolean rollbackQuery(SagaContext<?> ctx) {
-        Action                       action         = ctx.getAction();
-        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildActonResultRules(action, "rollbackQuery");
-        return (Boolean) RandomUitl.selectByWeight(String.format("%s_%s", action.code(), "executeQuery"), fsmQueryResult).toValue();
+        Set<Pair<Boolean, Double>> fsmQueryResult = new HashSet<>();
+        fsmQueryResult.add(Pair.of(true, 0.8));
+        fsmQueryResult.add(Pair.of(true, 0.2));
+        return RandomUitl.selectByWeight("SagaAction", fsmQueryResult);
+
     }
 
-    private Set<Pair<ChaosRule, Double>> getOrBuildActonResultRules(Action action, String methodName) {
-        return null;
-    }
 
-    private <S extends Enum<S>> Set<Pair<ChaosRule, Double>> getOrBuildRouterRule(Action action, FsmRouter<S> router) {
-        return null;
-    }
 }

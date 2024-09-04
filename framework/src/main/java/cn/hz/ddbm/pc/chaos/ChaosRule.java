@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.chaos;
 
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosTargetType;
 import lombok.Data;
 
 @Data
@@ -15,12 +16,12 @@ public class ChaosRule {
         return rule;
     }
 
-    String action;
-    String type;
-    String method;
-    String value;
-    String weight;
-    String value_type;
+    ChaosTargetType target;
+    ChaosRuleType   type;
+    String          method;
+    String          value;
+    String          weight;
+    Class           valueType;
 
     public Object toValue() {
         Class<Enum> valueType = getValueEnumType();
@@ -28,7 +29,6 @@ public class ChaosRule {
             try {
                 return Enum.valueOf(valueType, value);
             } catch (Exception e) {
-                e.printStackTrace();
                 return null;
             }
         }
@@ -36,29 +36,15 @@ public class ChaosRule {
     }
 
     private Class<Enum> getValueEnumType() {
-        if (value_type != null) {
-            if (!StrUtil.isBlank(value_type)) {
-                try {
-                    return ClassUtil.loadClass(value_type);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
+        if (valueType != null) {
+            return (Class<Enum>) valueType;
         }
         return null;
     }
 
     private Class<Exception> getValueExceptionType() {
-        if (value_type != null) {
-            if (!StrUtil.isBlank(value_type)) {
-                try {
-                    return ClassUtil.loadClass(value_type);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
+        if (valueType != null) {
+            return (Class<Exception>) valueType;
         }
         return null;
     }

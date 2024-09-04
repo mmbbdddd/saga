@@ -25,7 +25,8 @@ public class ChaosAction implements SagaAction, FsmAction {
 
     @Override
     public Object executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
-        return ProcesorService.chaosHandler().executeQuery(ctx);
+//        return ProcesorService.chaosHandler().executeQuery(ctx);
+        return new Object();
     }
 
 
@@ -36,7 +37,8 @@ public class ChaosAction implements SagaAction, FsmAction {
 
     @Override
     public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return ProcesorService.chaosHandler().executeQuery(ctx);
+//        return ProcesorService.chaosHandler().executeQuery(ctx);
+        return true;
     }
 
     @Override
@@ -46,6 +48,7 @@ public class ChaosAction implements SagaAction, FsmAction {
 
     @Override
     public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return ProcesorService.chaosHandler().rollbackQuery(ctx);
+//        return ProcesorService.chaosHandler().rollbackQuery(ctx);
+        return true;
     }
 }

@@ -9,6 +9,7 @@ import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.exception.RouterException;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.utils.ExpressionEngineUtils;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.Objects;
 public class FsmRouter<S extends Enum<S>> {
     String noRecordExpression;
     String prcessingExpression;
+    @Getter
     protected Map<String, S> stateExpressions;
 
     public FsmRouter(String noRecordExpression, String prcessingExpression, Map<String, S> stateExpressions) {

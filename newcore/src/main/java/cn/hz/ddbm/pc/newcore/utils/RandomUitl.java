@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.utils;
 
 import cn.hutool.cache.Cache;
 import cn.hutool.cache.CacheUtil;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.lang.func.Func0;
 
@@ -42,6 +43,7 @@ public class RandomUitl {
         private TreeMap<Double, K> weightMap = new TreeMap<Double, K>();
 
         public WeightRandom(Set<Pair<K, Double>> list) {
+            Assert.notNull(list,"args is null");
             for (Pair<K, Double> pair : list) {
                 double lastWeight = this.weightMap.size() == 0 ? 0 : this.weightMap.lastKey().doubleValue();//统一转为double
                 this.weightMap.put(pair.getValue().doubleValue() + lastWeight, pair.getKey());//权重累加
