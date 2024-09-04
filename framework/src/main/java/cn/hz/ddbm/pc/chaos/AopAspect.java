@@ -1,6 +1,8 @@
 package cn.hz.ddbm.pc.chaos;
 
 import cn.hz.ddbm.pc.newcore.chaos.ChaosTargetType;
+import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -37,7 +39,8 @@ public class AopAspect {
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
         chaosHandler.handle(ChaosTargetType.sagaAction, target, method, args);
-        return chaosHandler.generateResult(ChaosTargetType.sagaAction, target, method, args);
+        SagaContext ctx = (SagaContext) args[0];
+        return chaosHandler.rollbackQuery(ctx);
     }
 
     @Around(" execution(* cn.hz.ddbm.pc.newcore.saga.SagaAction.rollback(..))")
@@ -55,7 +58,8 @@ public class AopAspect {
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
         chaosHandler.handle(ChaosTargetType.sagaAction, target, method, args);
-        return chaosHandler.generateResult(ChaosTargetType.sagaAction, target, method, args);
+        SagaContext ctx = (SagaContext) args[0];
+        return chaosHandler.rollbackQuery(ctx);
     }
 
     @Around(" execution(* cn.hz.ddbm.pc.newcore.fsm.FsmAction.execute(..))")
@@ -73,7 +77,8 @@ public class AopAspect {
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
         chaosHandler.handle(ChaosTargetType.fsmAction, target, method, args);
-        return chaosHandler.generateResult(ChaosTargetType.fsmAction, target, method, args);
+        FsmContext ctx = (FsmContext) args[0];
+        return chaosHandler.executeQuery(ctx);
     }
 
 

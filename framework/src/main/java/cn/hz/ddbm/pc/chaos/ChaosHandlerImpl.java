@@ -87,42 +87,42 @@ public class ChaosHandlerImpl implements ChaosHandler {
         }
     }
 
-    public Object generateResult(ChaosTargetType type, Object proxy, Method method, Object[] args) {
-        Class                        clz             = getTargetClass(type);
-        String                       key             = clz.getSimpleName() + "." + method.getName();
-        Set<Pair<ChaosRule, Double>> sagaResultRules = resultMap.get(Pair.of(clz.getSimpleName(), method.getName()));
-        if (null != sagaResultRules) {
-            ChaosRule rule = RandomUitl.selectByWeight(key, sagaResultRules);
-            return rule.toValue();
-        } else {
-            return null;
-        }
-    }
-
 
     @Override
     public <S extends Enum<S>> S handleRouter(FsmContext<S> ctx, FsmRouter<S> router) {
-        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildRouterRule(router);
-        return (S) RandomUitl.selectByWeight(router.toString(), fsmQueryResult).toValue();
+        Action                       action         = ctx.getAction();
+        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildRouterRule(action, router);
+        return (S) RandomUitl.selectByWeight(String.format("%s_%s", action.code(), "router"), fsmQueryResult).toValue();
     }
 
 
     @Override
     public Object executeQuery(FsmContext<?> ctx) {
-        return null;
+        Action                       action         = ctx.getAction();
+        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildActonResultRules(action, "executeQuery");
+        return RandomUitl.selectByWeight(String.format("%s_%s", action.code(), "executeQuery"), fsmQueryResult).toValue();
     }
+
 
     @Override
     public Boolean executeQuery(SagaContext<?> ctx) {
-        return null;
+        Action                       action         = ctx.getAction();
+        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildActonResultRules(action, "executeQuery");
+        return (Boolean) RandomUitl.selectByWeight(String.format("%s_%s", action.code(), "executeQuery"), fsmQueryResult).toValue();
     }
 
     @Override
     public Boolean rollbackQuery(SagaContext<?> ctx) {
+        Action                       action         = ctx.getAction();
+        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildActonResultRules(action, "rollbackQuery");
+        return (Boolean) RandomUitl.selectByWeight(String.format("%s_%s", action.code(), "executeQuery"), fsmQueryResult).toValue();
+    }
+
+    private Set<Pair<ChaosRule, Double>> getOrBuildActonResultRules(Action action, String methodName) {
         return null;
     }
 
-    private <S extends Enum<S>> Set<Pair<ChaosRule, Double>> getOrBuildRouterRule(FsmRouter<S> router) {
+    private <S extends Enum<S>> Set<Pair<ChaosRule, Double>> getOrBuildRouterRule(Action action, FsmRouter<S> router) {
         return null;
     }
 }
