@@ -43,9 +43,9 @@ public class ChaosHandlerImpl implements ChaosHandler {
         this.resultRules = new HashSet<>();
         this.errorRules  = rules.stream()
                 .filter(r -> r.getType().equals(ChaosRuleType.EXCEPTION))
-                .map(r -> Pair.of(r, r.toWeight()))
+                .map(r -> Pair.of(r, r.getWeight()))
                 .collect(Collectors.toSet());
-        this.resultRules = rules.stream().filter(r -> r.getType().equals(ChaosRuleType.RESULT)).map(r -> Pair.of(r, r.toWeight())).collect(Collectors.toSet());
+        this.resultRules = rules.stream().filter(r -> r.getType().equals(ChaosRuleType.RESULT)).map(r -> Pair.of(r, r.getWeight())).collect(Collectors.toSet());
 
     }
 

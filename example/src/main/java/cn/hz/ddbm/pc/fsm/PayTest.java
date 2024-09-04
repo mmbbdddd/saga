@@ -3,7 +3,9 @@ package cn.hz.ddbm.pc.fsm;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ChaosService;
 import cn.hz.ddbm.pc.chaos.ChaosRule;
+import cn.hz.ddbm.pc.chaos.ChaosRuleType;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosTargetType;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import org.junit.Test;
@@ -36,20 +38,11 @@ public class PayTest {
     @Test
     public void chaos() throws Exception {
         List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
-            //注入业务逻辑异常，概率20%
-//            add(new ChaosRule(ChaosTarget.ACTION, "true", "action异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
-//                add(RuntimeException.class);
-//                add(Exception.class);
-//            }}));
-//            注入锁错误
-//            add(new ChaosRule(ChaosTarget.LOCK, "true", "锁异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
-//                add(RuntimeException.class);
-//                add(Exception.class);
-//            }}));
+            this.add(new ChaosRule(ChaosRuleType.EXCEPTION, RuntimeException.class, 0.1));
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.executeFSMs("test", new FsmPayload(1, FlowStatus.INIT, PayState.init), null, true, null);
+            chaosService.executeFSMs("test", new FsmPayload(1, FlowStatus.INIT, PayState.init), null, true, rules);
         } catch (Exception e) {
             e.printStackTrace();
         }
