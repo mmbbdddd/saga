@@ -13,7 +13,7 @@ import java.util.Map;
  * El引擎。动静分离
  */
 public class ExpressionEngineUtils {
-    private static final ExpressionParser parser = new SpelExpressionParser();
+    private static final ExpressionParser              parser = new SpelExpressionParser();
 
     public static Object eval(String expression) {
         return eval(expression, new HashMap<>());
@@ -27,7 +27,7 @@ public class ExpressionEngineUtils {
     }
 
     public static <T> T eval(String expression, Map<String, Object> context, Class<T> type) {
-        EvaluationContext evaluationContext = new StandardEvaluationContext();
+        EvaluationContext evaluationContext = new StandardEvaluationContext(context);
         evaluationContext.getPropertyAccessors().add(new MapAccessor());
         context.forEach(evaluationContext::setVariable);
         return parser.parseExpression(expression).getValue(evaluationContext, type);

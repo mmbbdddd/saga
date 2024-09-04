@@ -2,7 +2,7 @@ package cn.hz.ddbm.pc.fsm;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.actions.fsm.FreezedAction;
-import cn.hz.ddbm.pc.actions.fsm.CommitPayAction;
+import cn.hz.ddbm.pc.actions.fsm.PayCommitAction;
 import cn.hz.ddbm.pc.actions.fsm.PayRollbackAction;
 import cn.hz.ddbm.pc.actions.fsm.SendAction;
 import cn.hz.ddbm.pc.factory.fsm.FSM;
@@ -64,13 +64,15 @@ public class PayFsm implements FSM<PayState> {
                 .onEvent(Coast.FSM.EVENT_DEFAULT, FreezedAction.class, new LocalToRouter<>(freezed))
                 .endState()
                 .state(freezed)
-                .onEvent(Coast.FSM.EVENT_DEFAULT, SendAction.class, new RemoteRouter<>("result.code=='0005'", "result.code=='0004'", new HashMap<String, PayState>() {{
-                    put("result.code=='0000'", sendSuccess);
-                    put("result.code=='0001'", sendFail);
-                }}))
+                .onEvent(Coast.FSM.EVENT_DEFAULT, SendAction.class,
+                        new RemoteRouter<>("result.code=='0005'", "result.code=='0004'",
+                                new HashMap<String, PayState>() {{
+                                    put("result.code=='0000'", sendSuccess);
+                                    put("result.code=='0001'", sendFail);
+                                }}))
                 .endState()
                 .state(sendSuccess)
-                .onEvent(Coast.FSM.EVENT_DEFAULT, CommitPayAction.class, new LocalToRouter<>(su))
+                .onEvent(Coast.FSM.EVENT_DEFAULT, PayCommitAction.class, new LocalToRouter<>(su))
                 .endState()
                 .state(sendFail)
                 .onEvent(Coast.FSM.EVENT_DEFAULT, PayRollbackAction.class, new LocalToRouter<>(fail))

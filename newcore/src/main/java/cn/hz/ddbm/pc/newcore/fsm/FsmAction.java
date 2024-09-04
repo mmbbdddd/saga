@@ -7,6 +7,6 @@ import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 public interface FsmAction<S extends Enum<S>> extends Action {
     void execute(FsmContext<S> ctx) throws ActionException;
 
-    S executeQuery(FsmContext<S> ctx) throws NoSuchRecordException, ActionException;
+    Object executeQuery(FsmContext<S> ctx) throws NoSuchRecordException, ActionException;
 
 }

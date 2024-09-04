@@ -139,7 +139,7 @@ public interface FSM<S extends Enum<S>> {
         }
 
         public State<S> onEvent(String event, Class<? extends FsmAction> action, FsmRouter<S> router) {
-            transitions.flow.onEvent(from, event, action);
+            transitions.flow.onEvent(from, event, action,router);
             return this;
         }
 

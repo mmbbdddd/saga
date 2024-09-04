@@ -20,7 +20,7 @@ public class ChaosAction implements SagaAction,  FsmAction {
     }
 
     @Override
-    public Enum executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
+    public Object executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
         return null;
     }
 

@@ -1,6 +1,9 @@
 package cn.hz.ddbm.pc.newcore.fsm.action;
 
+import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
+import cn.hz.ddbm.pc.newcore.fsm.ProcessingException;
 
 import java.util.Map;
 
@@ -9,8 +12,9 @@ import java.util.Map;
  *
  * @param <S>
  */
-public class LocalRouter<S> extends FsmRouter<S> {
+public class LocalRouter<S extends Enum<S>> extends FsmRouter<S> {
     public LocalRouter(Map<String, S> stateExpression) {
         super( "false","false",stateExpression);
     }
+
 }

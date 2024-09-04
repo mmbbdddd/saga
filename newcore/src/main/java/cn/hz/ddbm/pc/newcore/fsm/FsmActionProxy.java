@@ -42,7 +42,7 @@ public class FsmActionProxy<S extends Enum<S>> implements FsmAction<S> {
     }
 
     @Override
-    public S executeQuery(FsmContext<S> ctx) throws NoSuchRecordException, ActionException {
+    public Object executeQuery(FsmContext<S> ctx) throws  ActionException {
         try {
             return getOrInitAction().executeQuery(ctx);
         } catch (Exception e) {

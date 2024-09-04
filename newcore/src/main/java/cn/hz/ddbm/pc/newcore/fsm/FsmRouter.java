@@ -1,16 +1,43 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
 
+import cn.hutool.json.JSONUtil;
+import cn.hz.ddbm.pc.newcore.exception.ActionException;
+import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.exception.RouterException;
+import cn.hz.ddbm.pc.newcore.log.Logs;
+import cn.hz.ddbm.pc.newcore.utils.ExpressionEngineUtils;
+
+import java.util.HashMap;
 import java.util.Map;
 
-public class FsmRouter<S> {
+public class FsmRouter<S extends Enum<S>> {
     String         noRecordExpression;
     String         prcessingExpression;
-    Map<String, S> stateExpression;
+    protected Map<String, S> stateExpressions;
 
-    public FsmRouter(String noRecordExpression,String prcessingExpression, Map<String, S> stateExpression) {
-        this.noRecordExpression = noRecordExpression;
+    public FsmRouter(String noRecordExpression, String prcessingExpression, Map<String, S> stateExpressions) {
+        this.noRecordExpression  = noRecordExpression;
         this.prcessingExpression = prcessingExpression;
-        this.stateExpression    = stateExpression;
+        this.stateExpressions    = stateExpressions;
+    }
+
+    public S router(FsmContext<S> ctx, Object queryResult) throws NoSuchRecordException, ProcessingException {
+        return stateExpressions.entrySet()
+                .stream()
+                .filter(entry -> {
+                    try {
+                        String              expression    = entry.getKey();
+                        Map<String, Object> routerContext = new HashMap<>();
+                        routerContext.put("result", queryResult);
+                        return ExpressionEngineUtils.eval(expression, routerContext, Boolean.class);
+                    } catch (Exception e) {
+                        Logs.error.error("路由错误", e);
+                        return false;
+                    }
+                })
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElseThrow(() -> new RouterException(String.format("路由错误，匹配不到路由结果,%s,%s,%s", ctx.getFlow(), JSONUtil.toJsonStr(queryResult), JSONUtil.toJsonStr(stateExpressions))));
     }
 }

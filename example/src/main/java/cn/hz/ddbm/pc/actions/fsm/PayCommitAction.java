@@ -7,11 +7,13 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+
 @Component
-public class CommitPayAction implements FsmAction<PayState> {
+public class PayCommitAction implements FsmAction<PayState> {
     @Override
     public String code() {
-        return "payAction";
+        return "commitPayAction";
     }
 
     @Override
@@ -20,7 +22,9 @@ public class CommitPayAction implements FsmAction<PayState> {
     }
 
     @Override
-    public PayState executeQuery(FsmContext<PayState> ctx) throws NoSuchRecordException, ActionException {
-        return null;
+    public Object executeQuery(FsmContext<PayState> ctx) throws NoSuchRecordException, ActionException {
+        return new HashMap<String, Object>() {{
+            put("code", "0000");
+        }};
     }
 }

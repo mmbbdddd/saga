@@ -11,6 +11,8 @@ import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 import org.assertj.core.util.Sets;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+
 @Component
 public class SendAction implements FsmAction<PayState> {
     @Override
@@ -19,11 +21,10 @@ public class SendAction implements FsmAction<PayState> {
     }
 
     @Override
-    public PayState executeQuery(FsmContext<PayState> ctx) throws NoSuchRecordException, ActionException {
-
-
-
-        return null;
+    public Object executeQuery(FsmContext<PayState> ctx) throws NoSuchRecordException, ActionException {
+        return new HashMap<String, Object>() {{
+            put("code", "0000");
+        }};
     }
 
     @Override

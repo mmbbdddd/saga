@@ -14,7 +14,7 @@ public class NoneFsmAction<S extends Enum<S>> implements FsmAction<S>  {
     }
 
     @Override
-    public S executeQuery(FsmContext<S> ctx) throws NoSuchRecordException, ActionException {
+    public Object executeQuery(FsmContext<S> ctx) throws NoSuchRecordException, ActionException {
         return null;
     }
 

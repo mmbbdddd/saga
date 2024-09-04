@@ -1,5 +1,9 @@
 package cn.hz.ddbm.pc.newcore.fsm.action;
 
+import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.fsm.ProcessingException;
+
 import java.util.HashMap;
 
 /**
@@ -7,10 +11,14 @@ import java.util.HashMap;
  *
  * @param <S>
  */
-public class LocalToRouter<S> extends LocalRouter<S> {
+public class LocalToRouter<S extends Enum<S>> extends LocalRouter<S> {
     public LocalToRouter(S to) {
         super(new HashMap<String, S>() {{
             this.put("true", to);
         }});
+    }
+
+    public S router(FsmContext<S> ctx, Object queryResult) throws NoSuchRecordException, ProcessingException {
+        return stateExpressions.values().stream().findFirst().get();
     }
 }

@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @param <S>
  */
-public class RemoteRouter<S> extends FsmRouter<S> {
+public class RemoteRouter<S extends Enum<S>> extends FsmRouter<S> {
     public RemoteRouter(String noRecordExpression,String processingExpression,Map<String, S> stateExpression) {
         super(noRecordExpression, processingExpression, stateExpression);
     }
