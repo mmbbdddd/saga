@@ -14,11 +14,11 @@ import java.util.Objects;
 
 @Data
 public class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S>> {
-    Integer                     index;
-    S                           currentState;
-    ForwardQuantum<S>           forward;
-    BackoffQuantum<S>           backoff;
-    Class<? extends SagaAction> sagaAction;
+    Integer           index;
+    S                 currentState;
+    ForwardQuantum<S> forward;
+    BackoffQuantum<S> backoff;
+    SagaActionProxy   action;
 
     public SagaWorker(Integer index, S pre, S task, S next, Class<? extends SagaAction> sagaAction) {
         Assert.notNull(task, "task is null");
@@ -26,15 +26,12 @@ public class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S>> {
         this.currentState = task;
         this.forward      = new ForwardQuantum<>(task, next);
         this.backoff      = new BackoffQuantum<>(task, pre);
-        this.sagaAction   = sagaAction;
+        this.action       = new SagaActionProxy(sagaAction);
     }
 
     @Override
     public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
-        ProcesorService processor = ctx.getProcessor();
-        ctx.setAction((SagaAction) processor.getAction(sagaAction));
-        SagaAction sagaAction = (SagaAction) ctx.getAction();
-        ctx.setAction(sagaAction);
+        ctx.setAction(action);
         if (ctx.getState().getIsForward()) {
             forward.onEvent(ctx);
         } else {
@@ -65,10 +62,10 @@ class ForwardQuantum<S extends Enum<S>> {
     }
 
     public void onEvent(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
-        ProcesorService processor = ctx.getProcessor();
-        SagaState<S>    lastState = ctx.getState().cloneSelf();
-        SagaAction           sagaAction   = (SagaAction) ctx.getAction();
-        SagaState.Offset     currentState = lastState.getOffset();
+        ProcesorService  processor    = ctx.getProcessor();
+        SagaState<S>     lastState    = ctx.getState().cloneSelf();
+        SagaAction       sagaAction   = (SagaAction) ctx.getAction();
+        SagaState.Offset currentState = lastState.getOffset();
         //如果任务可执行
         if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
             //加锁
@@ -154,10 +151,10 @@ class BackoffQuantum<S extends Enum<S>> {
     }
 
     public void onEvent(SagaContext<S> ctx) throws IdempotentException, LockException {
-        ProcesorService processor = ctx.getProcessor();
-        SagaState<S>    lastState = ctx.getState().cloneSelf();
-        SagaAction           sagaAction   = (SagaAction) ctx.getAction();
-        SagaState.Offset     currentState = lastState.getOffset();
+        ProcesorService  processor    = ctx.getProcessor();
+        SagaState<S>     lastState    = ctx.getState().cloneSelf();
+        SagaAction       sagaAction   = (SagaAction) ctx.getAction();
+        SagaState.Offset currentState = lastState.getOffset();
         //如果任务可执行
         if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
             //加锁

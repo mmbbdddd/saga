@@ -1,17 +1,24 @@
 package cn.hz.ddbm.pc.chaos;
 
+import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.common.lang.Triple;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
-public class ChaosAction implements SagaAction,  FsmAction {
+import java.util.HashSet;
+import java.util.Set;
 
+public class ChaosAction implements SagaAction, FsmAction {
     @Override
     public String code() {
-        return "chaosAction";
+        return Coast.CHAOS_ACTION;
     }
 
     @Override
@@ -21,7 +28,7 @@ public class ChaosAction implements SagaAction,  FsmAction {
 
     @Override
     public Object executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
-        return null;
+        return ProcesorService.chaosHandler().executeQuery(ctx);
     }
 
 
@@ -32,7 +39,7 @@ public class ChaosAction implements SagaAction,  FsmAction {
 
     @Override
     public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return null;
+        return ProcesorService.chaosHandler().executeQuery(ctx);
     }
 
     @Override
@@ -42,6 +49,6 @@ public class ChaosAction implements SagaAction,  FsmAction {
 
     @Override
     public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return null;
+        return ProcesorService.chaosHandler().rollbackQuery(ctx);
     }
 }

@@ -36,45 +36,45 @@ public class ChaosService extends BaseService {
     @Autowired
     ChaosHandlerImpl chaosHandler;
 
-    public void batchFsms(String flowName, List<FsmPayload> payloads, List<ChaosRule> rules) {
+    public void batchFSMs(String flowName, List<FsmPayload> payloads, List<ChaosRule> rules) {
         System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
-        super.batchFsms(flowName, payloads);
+        super.batchFSMs(flowName, payloads);
     }
 
 
-    public void batchSagas(String flowName, List<SagaPayload> payloads, List<ChaosRule> rules) {
+    public void batchSAGAs(String flowName, List<SagaPayload> payloads, List<ChaosRule> rules) {
         System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
-        super.batchSagas(flowName, payloads);
+        super.batchSAGAs(flowName, payloads);
     }
 
 
-    public void sagas(String flowName, SagaPayload payload, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void executeSAGAs(String flowName, SagaPayload payload, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
-        super.sagas(flowName, payload);
+        super.executeSAGAs(flowName, payload);
     }
 
 
-    public void saga(String flowName, SagaPayload payload, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void executeSAGA(String flowName, SagaPayload payload, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
-        super.saga(flowName, payload);
+        super.executeSAGA(flowName, payload);
     }
 
 
-    public void fsms(String flowName, FsmPayload payload, String event, Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void executeFSMs(String flowName, FsmPayload payload, String event, Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
-        super.fsms(flowName, payload, event);
+        super.executeFSMs(flowName, payload, event);
     }
 
 
-    public void fsm(String flowName, FsmPayload payload, String event, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void executeFSM(String flowName, FsmPayload payload, String event, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE,Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
-        super.fsm(flowName, payload, event);
+        super.executeFSM(flowName, payload, event);
     }
 
     @ConditionalOnClass({BaseService.class})

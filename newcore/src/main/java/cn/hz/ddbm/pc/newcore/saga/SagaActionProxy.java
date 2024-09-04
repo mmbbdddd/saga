@@ -1,22 +1,23 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
-import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
+import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
 
 
 public class SagaActionProxy implements SagaAction {
-    SagaAction sagaAction;
+    Class<? extends SagaAction> actionClass;
+    SagaAction        action;
 
-    public SagaActionProxy(SagaAction sagaAction) {
-        this.sagaAction = sagaAction;
+    public SagaActionProxy(Class<? extends SagaAction> actionClass) {
+        this.actionClass = actionClass;
     }
 
     public void execute(SagaContext<?> ctx) throws ActionException {
         try {
-            sagaAction.execute(ctx);
+            getOrInitAction().execute(ctx);
             ctx.setActionResult(ActionResult.success());
         } catch (Exception e) {
             ctx.setActionResult(ActionResult.fail(e.getMessage()));
@@ -28,7 +29,7 @@ public class SagaActionProxy implements SagaAction {
     public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
         try {
             ctx.setActionResult(ActionResult.success());
-            return sagaAction.executeQuery(ctx);
+            return getOrInitAction().executeQuery(ctx);
         } catch (NoSuchRecordException e) {
             ctx.setActionResult(ActionResult.fail(e.getClass().getSimpleName()));
             throw e;
@@ -41,7 +42,7 @@ public class SagaActionProxy implements SagaAction {
 
     public void rollback(SagaContext<?> ctx) throws ActionException {
         try {
-            sagaAction.rollback(ctx);
+            getOrInitAction().rollback(ctx);
             ctx.setActionResult(ActionResult.success());
         } catch (Exception e) {
             ctx.setActionResult(ActionResult.fail(e.getClass().getSimpleName()));
@@ -52,7 +53,7 @@ public class SagaActionProxy implements SagaAction {
     public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
         try {
             ctx.setActionResult(ActionResult.success());
-            return sagaAction.rollbackQuery(ctx);
+            return getOrInitAction().rollbackQuery(ctx);
         } catch (NoSuchRecordException e) {
             ctx.setActionResult(ActionResult.fail(e.getClass().getSimpleName()));
             throw e;
@@ -64,6 +65,15 @@ public class SagaActionProxy implements SagaAction {
 
     @Override
     public String code() {
-        return sagaAction.code();
+        return getOrInitAction().code();
+    }
+
+    private SagaAction getOrInitAction() {
+        if (null == action) {
+            synchronized (this) {
+                this.action = ProcesorService.getAction(actionClass);
+            }
+        }
+        return action;
     }
 }
