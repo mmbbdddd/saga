@@ -8,6 +8,7 @@ import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.support.ActionResult;
 import lombok.Data;
 
 import java.util.Objects;
@@ -83,6 +84,9 @@ class ForwardQuantum<S extends Enum<S>> {
             } catch (ActionException e) {
                 processor.plugin().error(lastState, e, ctx);
                 throw e;
+            } catch (Exception e) {
+                processor.plugin().error(lastState, e, ctx);
+                throw new ActionException(e);
             } finally {
                 processor.unLock(ctx);
                 processor.plugin()._finally(ctx);
@@ -124,6 +128,10 @@ class ForwardQuantum<S extends Enum<S>> {
                 ctx.setState(failover);
                 processor.plugin().error(lastState, e, ctx);
                 throw e;
+            } catch (Exception e) {
+                ctx.setState(failover);
+                processor.plugin().error(lastState, e, ctx);
+                throw new ActionException(e);
             } finally {
                 processor.plugin()._finally(ctx);
                 processor.metricsNode(ctx);

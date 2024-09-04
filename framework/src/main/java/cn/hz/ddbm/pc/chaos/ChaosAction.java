@@ -1,5 +1,6 @@
 package cn.hz.ddbm.pc.chaos;
 
+import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
@@ -8,47 +9,61 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
+
+import javax.annotation.Resource;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 业务逻辑混沌发生类。
  */
 public class ChaosAction implements SagaAction, FsmAction {
+    @Resource
+    ChaosHandlerImpl chaosHandler;
+
     @Override
     public String code() {
         return Coast.CHAOS_ACTION;
     }
 
     @Override
-    public void execute(FsmContext ctx) throws ActionException {
-
+    public void execute(FsmContext ctx) throws Exception {
+        chaosHandler.handle();
     }
 
     @Override
-    public Object executeQuery(FsmContext ctx) throws NoSuchRecordException, ActionException {
-//        return ProcesorService.chaosHandler().executeQuery(ctx);
+    public Object executeQuery(FsmContext ctx) throws Exception {
+        chaosHandler.handle();
         return new Object();
     }
 
 
     @Override
-    public void execute(SagaContext<?> ctx) throws ActionException {
-
+    public void execute(SagaContext<?> ctx) throws Exception {
+        chaosHandler.handle();
     }
 
     @Override
-    public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-//        return ProcesorService.chaosHandler().executeQuery(ctx);
-        return true;
+    public Boolean executeQuery(SagaContext<?> ctx) throws Exception {
+        chaosHandler.handle();
+        Set<Pair<Boolean, Double>> fsmQueryResult = new HashSet<>();
+        fsmQueryResult.add(Pair.of(true, 0.8));
+        fsmQueryResult.add(Pair.of(true, 0.2));
+        return RandomUitl.selectByWeight("SagaAction", fsmQueryResult);
     }
 
     @Override
-    public void rollback(SagaContext<?> ctx) throws ActionException {
-
+    public void rollback(SagaContext<?> ctx) throws Exception {
+        chaosHandler.handle();
     }
 
     @Override
-    public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-//        return ProcesorService.chaosHandler().rollbackQuery(ctx);
-        return true;
+    public Boolean rollbackQuery(SagaContext<?> ctx) throws Exception {
+        chaosHandler.handle();
+        Set<Pair<Boolean, Double>> fsmQueryResult = new HashSet<>();
+        fsmQueryResult.add(Pair.of(true, 0.8));
+        fsmQueryResult.add(Pair.of(true, 0.2));
+        return RandomUitl.selectByWeight("SagaAction", fsmQueryResult);
     }
 }

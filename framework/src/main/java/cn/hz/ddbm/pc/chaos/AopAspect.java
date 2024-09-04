@@ -24,87 +24,20 @@ public class AopAspect {
     @Resource
     ChaosHandlerImpl chaosHandler;
 
-    @Around(" execution(* cn.hz.ddbm.pc.newcore.saga.SagaAction.execute(..))")
-    public Object sagaExe(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
-        chaosHandler.handle();
-        return pjp.proceed();
-    }
-
-    @Around(" execution(* cn.hz.ddbm.pc.newcore.saga.SagaAction.executeQuery(..))")
-    public Object sagaExeQuery(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
-        chaosHandler.handle();
-        SagaContext ctx = (SagaContext) args[0];
-        return chaosHandler.rollbackQuery(ctx);
-    }
-
-    @Around(" execution(* cn.hz.ddbm.pc.newcore.saga.SagaAction.rollback(..))")
-    public Object sagaRollback(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
-        chaosHandler.handle();
-        return pjp.proceed();
-    }
-
-    @Around(" execution(* cn.hz.ddbm.pc.newcore.saga.SagaAction.rollbackQuery(..))")
-    public Object sagaRollbackQuery(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
-        chaosHandler.handle();
-        SagaContext ctx = (SagaContext) args[0];
-        return chaosHandler.rollbackQuery(ctx);
-    }
-
-    @Around(" execution(* cn.hz.ddbm.pc.newcore.fsm.FsmAction.execute(..))")
-    public Object fsmExecute(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
-        chaosHandler.handle();
-        return pjp.proceed();
-    }
-
-    @Around(" execution(* cn.hz.ddbm.pc.newcore.fsm.FsmAction.executeQuery(..))")
-    public Object fsmExecuteQuery(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
-        chaosHandler.handle();
-        FsmContext ctx = (FsmContext) args[0];
-        return chaosHandler.executeQuery(ctx);
-    }
-
-
     @Around("execution(* cn.hz.ddbm.pc.newcore.infra.Locker.*(..))")
     public Object locker(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
         chaosHandler.handle();
         return pjp.proceed();
     }
 
     @Around("execution(* cn.hz.ddbm.pc.newcore.infra.SessionManager.*(..))")
     public Object session(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
         chaosHandler.handle();
         return pjp.proceed();
     }
 
     @Around("execution(* cn.hz.ddbm.pc.newcore.infra.StatusManager.*(..))")
     public Object status(ProceedingJoinPoint pjp) throws Throwable {
-        Object   target = pjp.getTarget();
-        Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
-        Object[] args   = pjp.getArgs();
         chaosHandler.handle();
         return pjp.proceed();
     }

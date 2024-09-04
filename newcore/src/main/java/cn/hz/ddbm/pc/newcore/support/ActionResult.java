@@ -5,26 +5,26 @@ import lombok.Getter;
 @Getter
 public class ActionResult {
     Boolean success;
-    String  errorMessage;
+    String  message;
 
     public static ActionResult success() {
         return new ActionResult(true, null);
     }
 
-    public static ActionResult fail(String errorMessage) {
-        return new ActionResult(false, errorMessage);
+    public static ActionResult fail(String message) {
+        return new ActionResult(false, message);
     }
 
-    public ActionResult(Boolean success, String errorMessage) {
-        this.success      = success;
-        this.errorMessage = errorMessage;
+    public ActionResult(Boolean success, String message) {
+        this.success = success;
+        this.message = message;
     }
 
     @Override
     public String toString() {
         return "ActionResult{" +
                 "success=" + success +
-                ", errorMessage='" + errorMessage + '\'' +
+                ", errorMessage='" + message + '\'' +
                 '}';
     }
 }

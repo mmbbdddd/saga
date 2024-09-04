@@ -5,13 +5,14 @@ import cn.hutool.core.util.StrUtil;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosTargetType;
 import io.netty.util.internal.StringUtil;
 import lombok.Data;
+import org.springframework.util.ClassUtils;
 
 @Data
 public class ChaosRule {
     public static final ChaosRule DEFAULT = ChaosRule.defaultOf();
 
     private static ChaosRule defaultOf() {
-        return new ChaosRule(ChaosRuleType.RESULT,true,1.0);
+        return new ChaosRule(ChaosRuleType.RESULT, true, 1.0);
     }
 
     ChaosRuleType type;
@@ -25,19 +26,18 @@ public class ChaosRule {
     }
 
     public boolean isException() {
-        if (null != value && value.equals("Exception")) {
-            try {
-                Class type = Class.forName(value.toString());
-                return Throwable.class.isAssignableFrom(type);
-            } catch (ClassNotFoundException e) {
-                return false;
+        try {
+            if (null != value && Throwable.class.isAssignableFrom((Class<?>) value)) {
+                return true;
             }
+            return false;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     public void raiseException() throws Exception {
-        Class     type = Class.forName(value.toString());
+        Class     type = (Class) value;
         Exception e    = (Exception) type.newInstance();
         throw e;
     }

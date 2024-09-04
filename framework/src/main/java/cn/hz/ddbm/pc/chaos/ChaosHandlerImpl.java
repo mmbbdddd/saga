@@ -39,8 +39,6 @@ public class ChaosHandlerImpl implements ChaosHandler {
 
     public void setChaosRules(List<ChaosRule> rules) {
         if (null == rules || rules.isEmpty()) return;
-        this.errorRules  = new HashSet<>();
-        this.resultRules = new HashSet<>();
         this.errorRules  = rules.stream()
                 .filter(r -> r.getType().equals(ChaosRuleType.EXCEPTION))
                 .map(r -> Pair.of(r, r.getWeight()))
@@ -63,7 +61,6 @@ public class ChaosHandlerImpl implements ChaosHandler {
         }
     }
 
-
     /**
      * 模拟生成FsmRouter的结果
      */
@@ -71,38 +68,6 @@ public class ChaosHandlerImpl implements ChaosHandler {
     public <S extends Enum<S>> S handleRouter(FsmContext<S> ctx, FsmRouter<S> router) {
         Set<Pair<S, Double>> fsmQueryResult = router.getStateExpressions().values().stream().map(s -> Pair.of(s, Math.random())).collect(Collectors.toSet());
         return RandomUitl.selectByWeight("router", fsmQueryResult);
-    }
-
-    /**
-     * 模拟生成FsmAction.executeQuery的返回对象。
-     */
-    @Override
-    public Object executeQuery(FsmContext<?> ctx) {
-        return new Object();
-    }
-
-
-    /**
-     * 模拟生成SagaAction.executeQuery的返回对象。
-     */
-    @Override
-    public Boolean executeQuery(SagaContext<?> ctx) {
-        Set<Pair<Boolean, Double>> fsmQueryResult = new HashSet<>();
-        fsmQueryResult.add(Pair.of(true, 0.8));
-        fsmQueryResult.add(Pair.of(true, 0.2));
-        return RandomUitl.selectByWeight("SagaAction", fsmQueryResult);
-    }
-
-    /**
-     * 模拟生成SagaAction.rollbackQuery的返回对象。
-     */
-    @Override
-    public Boolean rollbackQuery(SagaContext<?> ctx) {
-        Set<Pair<Boolean, Double>> fsmQueryResult = new HashSet<>();
-        fsmQueryResult.add(Pair.of(true, 0.8));
-        fsmQueryResult.add(Pair.of(true, 0.2));
-        return RandomUitl.selectByWeight("SagaAction", fsmQueryResult);
-
     }
 
 
