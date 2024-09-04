@@ -28,7 +28,7 @@ public class FsmRouter<S extends Enum<S>> {
     public S router(FsmContext<S> ctx, Object queryResult) throws NoSuchRecordException, ProcessingException {
         String runMode = System.getProperty(Coast.RUN_MODE);
         if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
-            return ProcesorService.chaosHandler().handleRouter(ctx);
+            return ProcesorService.chaosHandler().handleRouter(ctx,this);
         } else {
             return stateExpressions.entrySet()
                     .stream()
@@ -47,5 +47,18 @@ public class FsmRouter<S extends Enum<S>> {
                     .findFirst()
                     .orElseThrow(() -> new RouterException(String.format("路由错误，匹配不到路由结果,%s,%s,%s", ctx.getFlow(), JSONUtil.toJsonStr(queryResult), JSONUtil.toJsonStr(stateExpressions))));
         }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        FsmRouter<?> fsmRouter = (FsmRouter<?>) object;
+        return Objects.equals(noRecordExpression, fsmRouter.noRecordExpression) && Objects.equals(prcessingExpression, fsmRouter.prcessingExpression) && Objects.equals(stateExpressions, fsmRouter.stateExpressions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(noRecordExpression, prcessingExpression, stateExpressions);
     }
 }

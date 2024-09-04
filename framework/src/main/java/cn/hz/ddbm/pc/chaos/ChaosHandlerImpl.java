@@ -2,12 +2,17 @@ package cn.hz.ddbm.pc.chaos;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.common.lang.Triple;
+import cn.hz.ddbm.pc.newcore.Action;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosTargetType;
 import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
 import cn.hz.ddbm.pc.newcore.infra.Locker;
 import cn.hz.ddbm.pc.newcore.infra.SessionManager;
 import cn.hz.ddbm.pc.newcore.infra.StatusManager;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
 import java.lang.reflect.Method;
@@ -17,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ChaosHandlerImpl {
+public class ChaosHandlerImpl implements ChaosHandler {
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> chaosRuleMap;
     Map<Pair<String, String>, Set<Pair<ChaosRule, Double>>> resultMap;
 
@@ -88,11 +93,36 @@ public class ChaosHandlerImpl {
         Set<Pair<ChaosRule, Double>> sagaResultRules = resultMap.get(Pair.of(clz.getSimpleName(), method.getName()));
         if (null != sagaResultRules) {
             ChaosRule rule = RandomUitl.selectByWeight(key, sagaResultRules);
-            return rule.getValue();
+            return rule.toValue();
         } else {
             return null;
         }
     }
 
 
+    @Override
+    public <S extends Enum<S>> S handleRouter(FsmContext<S> ctx, FsmRouter<S> router) {
+        Set<Pair<ChaosRule, Double>> fsmQueryResult = getOrBuildRouterRule(router);
+        return (S) RandomUitl.selectByWeight(router.toString(), fsmQueryResult).toValue();
+    }
+
+
+    @Override
+    public Object executeQuery(FsmContext<?> ctx) {
+        return null;
+    }
+
+    @Override
+    public Boolean executeQuery(SagaContext<?> ctx) {
+        return null;
+    }
+
+    @Override
+    public Boolean rollbackQuery(SagaContext<?> ctx) {
+        return null;
+    }
+
+    private <S extends Enum<S>> Set<Pair<ChaosRule, Double>> getOrBuildRouterRule(FsmRouter<S> router) {
+        return null;
+    }
 }

@@ -9,6 +9,14 @@ import org.aspectj.lang.reflect.MethodSignature;
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
 
+/**
+ * 向组件注入混沌
+ * 1，action
+ * 2，锁
+ * 3，会话
+ * 4，状态
+ * 5，事件溯源
+ */
 @Aspect
 public class AopAspect {
     @Resource
@@ -19,48 +27,53 @@ public class AopAspect {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.sagaAction,target, method, args);
+        chaosHandler.handle(ChaosTargetType.sagaAction, target, method, args);
         return pjp.proceed();
     }
+
     @Around(" execution(* cn.hz.ddbm.pc.newcore.saga.SagaAction.executeQuery(..))")
     public Object sagaExeQuery(ProceedingJoinPoint pjp) throws Throwable {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.sagaAction,target, method, args);
-        return chaosHandler.generateResult(ChaosTargetType.sagaAction,target, method, args);
+        chaosHandler.handle(ChaosTargetType.sagaAction, target, method, args);
+        return chaosHandler.generateResult(ChaosTargetType.sagaAction, target, method, args);
     }
+
     @Around(" execution(* cn.hz.ddbm.pc.newcore.saga.SagaAction.rollback(..))")
     public Object sagaRollback(ProceedingJoinPoint pjp) throws Throwable {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.sagaAction,target, method, args);
+        chaosHandler.handle(ChaosTargetType.sagaAction, target, method, args);
         return pjp.proceed();
     }
+
     @Around(" execution(* cn.hz.ddbm.pc.newcore.saga.SagaAction.rollbackQuery(..))")
     public Object sagaRollbackQuery(ProceedingJoinPoint pjp) throws Throwable {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.sagaAction,target, method, args);
-        return chaosHandler.generateResult(ChaosTargetType.sagaAction,target, method, args);
+        chaosHandler.handle(ChaosTargetType.sagaAction, target, method, args);
+        return chaosHandler.generateResult(ChaosTargetType.sagaAction, target, method, args);
     }
+
     @Around(" execution(* cn.hz.ddbm.pc.newcore.fsm.FsmAction.execute(..))")
     public Object fsmExecute(ProceedingJoinPoint pjp) throws Throwable {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.fsmAction,target, method, args);
+        chaosHandler.handle(ChaosTargetType.fsmAction, target, method, args);
         return pjp.proceed();
     }
+
     @Around(" execution(* cn.hz.ddbm.pc.newcore.fsm.FsmAction.executeQuery(..))")
     public Object fsmExecuteQuery(ProceedingJoinPoint pjp) throws Throwable {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.fsmAction,target, method, args);
-        return chaosHandler.generateResult(ChaosTargetType.fsmAction,target, method, args);
+        chaosHandler.handle(ChaosTargetType.fsmAction, target, method, args);
+        return chaosHandler.generateResult(ChaosTargetType.fsmAction, target, method, args);
     }
 
 
@@ -69,7 +82,7 @@ public class AopAspect {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.lock,target, method, args);
+        chaosHandler.handle(ChaosTargetType.lock, target, method, args);
         return pjp.proceed();
     }
 
@@ -78,7 +91,7 @@ public class AopAspect {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.session,target, method, args);
+        chaosHandler.handle(ChaosTargetType.session, target, method, args);
         return pjp.proceed();
     }
 
@@ -87,7 +100,7 @@ public class AopAspect {
         Object   target = pjp.getTarget();
         Method   method = ((MethodSignature) pjp.getSignature()).getMethod();
         Object[] args   = pjp.getArgs();
-        chaosHandler.handle(ChaosTargetType.status,target, method, args);
+        chaosHandler.handle(ChaosTargetType.status, target, method, args);
         return pjp.proceed();
     }
 }
