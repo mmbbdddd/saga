@@ -53,7 +53,7 @@ public class ChaosHandlerImpl implements ChaosHandler {
      * @throws Exception
      */
     public void handle() throws Exception {
-        if (null != errorRules) {
+        if (null != errorRules&& !resultRules.isEmpty()) {
             ChaosRule rule = RandomUitl.selectByWeight("error", errorRules);
             if (rule.isException()) {
                 rule.raiseException();
