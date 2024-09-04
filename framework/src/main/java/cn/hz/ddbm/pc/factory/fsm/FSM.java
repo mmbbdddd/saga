@@ -7,10 +7,10 @@ import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
 import lombok.Data;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public interface FSM<S extends Enum<S>> {
@@ -138,8 +138,8 @@ public interface FSM<S extends Enum<S>> {
             this.transitions = transitions;
         }
 
-        public State<S> onEventRouter(String event, Class<? extends FsmAction> action, Map<S,String> router) {
-            transitions.flow.router(from, event, action);
+        public State<S> onEvent(String event, Class<? extends FsmAction> action, FsmRouter<S> router) {
+            transitions.flow.onEvent(from, event, action);
             return this;
         }
 

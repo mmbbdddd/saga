@@ -30,7 +30,7 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     }
 
 
-    public FsmFlow<S> router(S from, String event, Class<? extends FsmAction> action) {
+    public FsmFlow<S> onEvent(S from, String event, Class<? extends FsmAction> action) {
         FsmWorker<S> sagaFsmWorker = new FsmWorker<>(from, action);
         this.transitionTable.put(Pair.of(from, FsmState.Offset.task), event, sagaFsmWorker);
         this.transitionTable.put(Pair.of(from, FsmState.Offset.task), Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);

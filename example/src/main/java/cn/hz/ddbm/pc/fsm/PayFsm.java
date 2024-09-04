@@ -2,13 +2,16 @@ package cn.hz.ddbm.pc.fsm;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.actions.fsm.FreezedAction;
-import cn.hz.ddbm.pc.actions.fsm.PayAction;
+import cn.hz.ddbm.pc.actions.fsm.CommitPayAction;
+import cn.hz.ddbm.pc.actions.fsm.PayRollbackAction;
 import cn.hz.ddbm.pc.actions.fsm.SendAction;
 import cn.hz.ddbm.pc.factory.fsm.FSM;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalToRouter;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteRouter;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 
 import static cn.hz.ddbm.pc.fsm.PayState.*;
 
@@ -59,13 +61,19 @@ public class PayFsm implements FSM<PayState> {
     @Override
     public void transitions(Transitions<PayState> transitions) {
         transitions.state(init)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, FreezedAction.class, new HashMap<>())
+                .onEvent(Coast.FSM.EVENT_DEFAULT, FreezedAction.class, new LocalToRouter<>(freezed))
                 .endState()
                 .state(freezed)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, SendAction.class, new HashMap<>())
+                .onEvent(Coast.FSM.EVENT_DEFAULT, SendAction.class, new RemoteRouter<>("result.code=='0005'", "result.code=='0004'", new HashMap<String, PayState>() {{
+                    put("result.code=='0000'", sendSuccess);
+                    put("result.code=='0001'", sendFail);
+                }}))
                 .endState()
-                .state(sended)
-                .onEventRouter(Coast.FSM.EVENT_DEFAULT, PayAction.class, new HashMap<>())
+                .state(sendSuccess)
+                .onEvent(Coast.FSM.EVENT_DEFAULT, CommitPayAction.class, new LocalToRouter<>(su))
+                .endState()
+                .state(sendFail)
+                .onEvent(Coast.FSM.EVENT_DEFAULT, PayRollbackAction.class, new LocalToRouter<>(fail))
                 .endState();
     }
 

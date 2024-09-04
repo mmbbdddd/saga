@@ -3,10 +3,10 @@ package cn.hz.ddbm.pc.fsm;
 public enum PayState {
     init,
     freezed,
-    sended,
+    sendSuccess,
+    sendFail,
     su,
     fail,
-    error,
 
 
 }

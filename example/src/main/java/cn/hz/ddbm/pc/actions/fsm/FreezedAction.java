@@ -22,10 +22,7 @@ public class FreezedAction implements FsmAction<PayState> {
     @Override
     public PayState executeQuery(FsmContext<PayState> ctx) throws NoSuchRecordException, ActionException {
 
-        return RandomUitl.selectByWeight("f3", Sets.set(
-                Pair.of(PayState.freezed, 0.8),
-                Pair.of(PayState.init, 0.1)
-        ));
+        return null;
     }
 
     @Override

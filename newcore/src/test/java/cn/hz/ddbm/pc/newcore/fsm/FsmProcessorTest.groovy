@@ -42,8 +42,8 @@ class FsmProcessorTest {
         PayFsmFlow() {
             super("pay", PayFsm.init, Sets.newHashSet(su, fail, error), Sets.newHashSet(pay, send))
             this.to(PayFsm.init, Coast.FSM.EVENT_DEFAULT, "nono", pay);
-            this.router(pay, Coast.FSM.EVENT_DEFAULT, "nono", send);
-            this.router(send, Coast.FSM.EVENT_DEFAULT, "nono", send_failover);
+            this.onEvent(pay, Coast.FSM.EVENT_DEFAULT, "nono", send);
+            this.onEvent(send, Coast.FSM.EVENT_DEFAULT, "nono", send_failover);
             this.profile(Profile.devOf())
         }
     }
