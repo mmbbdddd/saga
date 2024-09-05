@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Getter
 @Setter
 @Builder
 public class Profile {
@@ -59,5 +58,49 @@ public class Profile {
 
     public StateAttr getStateAttrs(State state) {
         return stateAttr.getOrDefault(state,StateAttr.defaultOf());
+    }
+
+    public String getNamespace() {
+        return namespace==null?"app":namespace;
+    }
+
+    public Integer getMaxLoopErrorTimes() {
+        return maxLoopErrorTimes==null?3:maxLoopErrorTimes;
+    }
+
+    public Integer getStatusTimeoutMicros() {
+        return statusTimeoutMicros==null?3000:statusTimeoutMicros;
+    }
+
+    public Integer getLockTimeoutMicros() {
+        return lockTimeoutMicros==null?3000:lockTimeoutMicros;
+    }
+
+    public Coast.StatusType getStatus() {
+        return status==null? Coast.StatusType.redis:status;
+    }
+
+    public Coast.SessionType getSession() {
+        return session==null? Coast.SessionType.redis:session;
+    }
+
+    public Coast.LockType getLock() {
+        return lock==null? Coast.LockType.redis:lock;
+    }
+
+    public Coast.StatisticsType getStatistics() {
+        return statistics==null? Coast.StatisticsType.redis:statistics;
+    }
+
+    public Coast.ScheduleType getSchedule() {
+        return schedule==null? Coast.ScheduleType.timer:schedule;
+    }
+
+    public List<Plugin> getPlugins() {
+        return plugins==null?new ArrayList<>():plugins;
+    }
+
+    public Map<State, StateAttr> getStateAttr() {
+        return stateAttr==null?new HashMap<>():stateAttr;
     }
 }

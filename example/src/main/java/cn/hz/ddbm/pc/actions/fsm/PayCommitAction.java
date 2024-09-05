@@ -1,6 +1,6 @@
 package cn.hz.ddbm.pc.actions.fsm;
 
-import cn.hz.ddbm.pc.fsm.PayState;
+import cn.hz.ddbm.pc.saga.PayState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmAction;

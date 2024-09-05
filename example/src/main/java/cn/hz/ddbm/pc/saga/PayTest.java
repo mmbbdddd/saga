@@ -1,10 +1,9 @@
-package cn.hz.ddbm.pc.fsm;
+package cn.hz.ddbm.pc.saga;
 
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.chaos.ChaosService;
 import cn.hz.ddbm.pc.chaos.config.ChaosConfiguration;
 import cn.hz.ddbm.pc.chaos.support.ChaosRule;
-import cn.hz.ddbm.pc.chaos.support.ChaosRuleType;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,8 +78,8 @@ public class PayTest {
         }
 
         @Bean
-        PayFsm test() {
-            return new PayFsm();
+        PaySaga test() {
+            return new PaySaga();
         }
 
         @Bean
