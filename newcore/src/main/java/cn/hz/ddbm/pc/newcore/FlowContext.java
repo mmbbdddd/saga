@@ -39,10 +39,6 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     }
 
 
-    public Integer getRetry(S state) {
-        return null;
-    }
-
 
     public void setState(S state) {
         if (getFlow().getEnds().contains(state)) {

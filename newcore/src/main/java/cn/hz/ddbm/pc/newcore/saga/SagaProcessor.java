@@ -100,7 +100,7 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
     @Override
     protected List<Plugin> getDefaultPlugins() {
         return new ArrayList<Plugin>() {{
-            add(new SagaDigestPlugin());
+//            add(new SagaDigestPlugin());
         }};
     }
 

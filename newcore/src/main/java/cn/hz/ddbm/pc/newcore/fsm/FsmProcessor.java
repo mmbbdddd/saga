@@ -108,7 +108,7 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
     @Override
     protected List<Plugin> getDefaultPlugins() {
         return new ArrayList<Plugin>() {{
-            add(new FsmDigestPlugin());
+//            add(new FsmDigestPlugin());
         }};
     }
 

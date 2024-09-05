@@ -102,7 +102,7 @@ class ForwardQuantum<S extends Enum<S>> {
                 } else if (!queryResult) {   //业务不成功
                     processor.unidempotent(ctx.getAction().code(), ctx);
                     //失败补偿策略:反复执行。直接失败
-                    Integer retryTimes       = ctx.getRetry(lastState);
+                    Integer retryTimes       = ctx.getFlow().getRetry(lastState);
                     Long    executeTimeState = processor.getExecuteTimes(ctx, lastState);
                     //超过重试次数，设置为失败，低于重试次数，设置为retry
                     if (executeTimeState > retryTimes) {
@@ -195,7 +195,7 @@ class BackoffQuantum<S extends Enum<S>> {
                 } else if (!queryResult) {   //业务不成功
                     processor.unidempotent(ctx.getAction().code(), ctx);
                     //失败补偿策略:反复执行。直接失败
-                    Integer retryTimes       = ctx.getRetry(lastState);
+                    Integer retryTimes       = ctx.getFlow().getRetry(lastState);
                     Long    executeTimeState = processor.getExecuteTimes(ctx, lastState);
                     //超过重试次数，设置为失败，低于重试次数，设置为retry
                     if (executeTimeState > retryTimes) {
