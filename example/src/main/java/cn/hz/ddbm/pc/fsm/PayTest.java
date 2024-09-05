@@ -5,8 +5,6 @@ import cn.hz.ddbm.pc.chaos.ChaosService;
 import cn.hz.ddbm.pc.chaos.config.ChaosConfiguration;
 import cn.hz.ddbm.pc.chaos.support.ChaosRule;
 import cn.hz.ddbm.pc.chaos.support.ChaosRuleType;
-import cn.hz.ddbm.pc.newcore.FlowStatus;
-import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +41,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.executeFSMs("test", PayState.init,  100, 10000,true, rules);
+            chaosService.fsm("test", PayState.init,  100, 20,true, rules);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +62,7 @@ public class PayTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.executeFSMs("test", PayState.init,   100, 1000, true,null);
+            chaosService.fsm("test", PayState.init,   100, 1000, true,null);
         } catch (Exception e) {
             e.printStackTrace();
         }

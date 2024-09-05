@@ -1,13 +1,8 @@
 package cn.hz.ddbm.pc.chaos;
 
 import cn.hutool.core.lang.Pair;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.chaos.support.ChaosAction;
 import cn.hz.ddbm.pc.chaos.support.ChaosHandlerImpl;
 import cn.hz.ddbm.pc.chaos.support.ChaosRule;
-import cn.hz.ddbm.pc.factory.fsm.BeanFsmFlowFactory;
-import cn.hz.ddbm.pc.factory.saga.BeanSagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.State;
@@ -18,24 +13,13 @@ import cn.hz.ddbm.pc.newcore.exception.PauseException;
 import cn.hz.ddbm.pc.newcore.exception.SessionException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
-import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
-import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
-import cn.hz.ddbm.pc.newcore.infra.StatisticsSupport;
-import cn.hz.ddbm.pc.newcore.infra.impl.JvmLocker;
-import cn.hz.ddbm.pc.newcore.infra.impl.JvmSessionManager;
-import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatisticsSupport;
-import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
-import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.support.BaseService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import java.io.Serializable;
 import java.util.*;
@@ -50,7 +34,7 @@ public class ChaosService extends BaseService {
     ChaosHandlerImpl chaosHandler;
 
 
-    public void executeSAGAs(String flowName, Enum initStatus,  Integer times, Integer timeout,Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void saga(String flowName, Enum initStatus, Integer times, Integer timeout, Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
         statisticsLines = Collections.synchronizedList(new ArrayList<>(times));
@@ -62,12 +46,12 @@ public class ChaosService extends BaseService {
                 Object result = null;
                 try {
                     SagaContext ctx = sagaProcessor.getContext(flowName, mockPayLoad);
-                    while (chaosIsContine(ctx)) {
+                    while (isContinue(ctx)) {
                         sagaProcessor.flowProcess(ctx);
                     }
                     result = ctx;
                 } catch (Throwable t) {
-                    Logs.error.error("", t);
+//                    Logs.error.error("", t);
                     result = t;
                 } finally {
                     cdl.countDown();
@@ -86,7 +70,7 @@ public class ChaosService extends BaseService {
     }
 
 
-    public void executeFSMs(String flowName, Enum initStatus,  Integer times, Integer timeout,Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void fsm(String flowName, Enum initStatus, Integer times, Integer timeout, Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
         statisticsLines = Collections.synchronizedList(new ArrayList<>(times));
@@ -98,12 +82,12 @@ public class ChaosService extends BaseService {
                 Object result = null;
                 try {
                     FsmContext ctx = fsmProcessor.getContext(flowName, mockPayLoad);
-                    while (chaosIsContine(ctx)) {
+                    while (isContinue(ctx)) {
                         fsmProcessor.flowProcess(ctx);
                     }
                     result = ctx;
                 } catch (Throwable t) {
-                    Logs.error.error("", t);
+//                    Logs.error.error("", t);
                     result = t;
                 } finally {
                     cdl.countDown();
@@ -121,7 +105,7 @@ public class ChaosService extends BaseService {
         printStatisticsReport();
     }
 
-    public boolean chaosIsContine(FlowContext ctx) {
+    public boolean isContinue(FlowContext ctx) {
 
         String     flowName = ctx.getFlow().getName();
         State      state    = ctx.getState();

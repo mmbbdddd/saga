@@ -31,6 +31,7 @@ public class ChaosAction implements SagaAction, FsmAction {
 
     @Override
     public Object executeQuery(FsmContext ctx) throws Exception {
+        Thread.sleep(100);
         chaosHandler.handle();
         return new Object();
     }

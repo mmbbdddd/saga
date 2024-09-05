@@ -141,11 +141,15 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
 
 
     public boolean isRetryable(Throwable e, FlowContext ctx) {
+        if(e instanceof ActionException){
+            return true;
+        }
         if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
             e = (Exception) ReflectUtil.getFieldValue(e, "raw");
         }
         Boolean isRetryException = false;
         isRetryException |= e instanceof IOException;
+        isRetryException |= e instanceof ActionException;
         return isRetryException;
     }
 

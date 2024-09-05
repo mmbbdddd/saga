@@ -37,7 +37,7 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
         return ctx;
     }
 
-    public void workerProcess(SagaContext  ctx) throws FlowEndException, InterruptedException, PauseException {
+    public void workerProcess(SagaContext ctx) throws FlowEndException, InterruptedException, PauseException {
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
         SagaFlow   flow       = (SagaFlow) ctx.getFlow();
@@ -68,20 +68,23 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
         } catch (Throwable e) {
             try {
                 if (isInterrupted(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                    Logs.error.error("中断异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                    flush(ctx);
+                } else if (isRetryable(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
+                    Logs.flow.warn("可重试异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     flush(ctx);
                 } else if (isPaused(e, ctx)) { //暂停异常，状态设置为暂停，等人工修复
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                    Logs.error.error("暂停异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     ctx.setStatus(FlowStatus.PAUSE);
                     flush(ctx);
                 } else if (isStoped(e, ctx)) {//流程结束或者取消
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                    Logs.flow.info("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     status = ctx.getFlow().getEnds().contains(ctx.getState()) ? FlowStatus.FINISH : ctx.getStatus();
                     ctx.setStatus(status);
                     flush(ctx);
                 } else {
                     //可重试异常
-                    Logs.error.error("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                    Logs.error.error("不可预料的异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     Integer loopErrorTimes = ctx.getLoopErrorTimes().incrementAndGet();
                     if (loopErrorTimes > ctx.getProfile().getMaxLoopErrorTimes()) {
                         throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), loopErrorTimes, ctx.getProfile()

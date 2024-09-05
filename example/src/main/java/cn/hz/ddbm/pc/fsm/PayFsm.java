@@ -12,6 +12,7 @@ import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalToRouter;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteRouter;
+import cn.hz.ddbm.pc.newcore.plugins.ErrorPlugin;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class PayFsm implements FSM<PayState> {
 
     @Override
     public List<Plugin> plugins(List<Plugin> plugins) {
-//        plugins.add(new DigestLogPluginMock());
+//        plugins.add(new ErrorPlugin());
 //        plugins.add(new PayAction());
 //        plugins.add(performancePlugin);
 //        plugins.add(new PayQueryAction());
