@@ -18,9 +18,9 @@ import java.util.List;
 
 public abstract class BaseService {
     @Resource
-    protected SagaProcessor<?> sagaProcessor;
+    protected SagaProcessor sagaProcessor;
     @Resource
-    protected FsmProcessor<?>  fsmProcessor;
+    protected FsmProcessor  fsmProcessor;
 
     protected void batchSAGAs(String flowName, List<SagaPayload> payloads) {
         for (SagaPayload payload : payloads) {
@@ -43,20 +43,23 @@ public abstract class BaseService {
     }
 
     protected void executeSAGAs(String flowName, SagaPayload payload) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        SagaContext ctx = sagaProcessor.workerProcess(flowName, payload);
+        SagaContext ctx = sagaProcessor.getContext(flowName, payload);
         sagaProcessor.flowProcess(ctx);
     }
 
     protected void executeSAGA(String flowName, SagaPayload payload) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        sagaProcessor.workerProcess(flowName, payload);
+        SagaContext ctx = sagaProcessor.getContext(flowName, payload);
+        sagaProcessor.workerProcess(ctx);
     }
 
     protected void executeFSMs(String flowName, FsmPayload payload, String event) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        FsmContext ctx = fsmProcessor.workerProcess(flowName, payload, event);
+        FsmContext ctx = fsmProcessor.getContext(flowName, payload);
+        fsmProcessor.workerProcess(event, ctx);
         fsmProcessor.flowProcess(ctx);
     }
 
     protected void executeFSM(String flowName, FsmPayload payload, String event) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        fsmProcessor.workerProcess(flowName, payload, event);
+        FsmContext ctx = fsmProcessor.getContext(flowName, payload);
+        fsmProcessor.workerProcess(event, ctx);
     }
 }

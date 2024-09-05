@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SagaProcessor<S extends Enum<S>> extends ProcesorService<SagaContext<S>> {
+public class SagaProcessor extends ProcesorService<SagaContext> {
 
 
     public void afterPropertiesSet() {
@@ -26,24 +27,23 @@ public class SagaProcessor<S extends Enum<S>> extends ProcesorService<SagaContex
         });
     }
 
-    public SagaContext<S> workerProcess(String flowName, SagaPayload<S> payload) throws FlowEndException, InterruptedException, PauseException, SessionException {
+    @Override
+    public SagaContext getContext(String flowName, Payload payload) throws SessionException {
         Assert.notNull(flowName, "flowName is null");
         Assert.notNull(payload, "payload is null");
-        SagaFlow<S>         flow    = (SagaFlow<S>) getFlow(flowName);
+        SagaFlow            flow    = (SagaFlow) getFlow(flowName);
         Map<String, Object> session = getSession(flowName, payload.getId());
-        SagaContext<S>      ctx     = new SagaContext<>(flow, payload, session);
-        workerProcess(ctx);
+        SagaContext         ctx     = new SagaContext<>(flow, payload, session);
         return ctx;
     }
 
-
-    public void workerProcess(SagaContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
+    public void workerProcess(SagaContext  ctx) throws FlowEndException, InterruptedException, PauseException {
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
-        SagaFlow<S>  flow       = ctx.getFlow();
-        FlowStatus   status     = ctx.getStatus();
-        SagaState<S> state      = ctx.getState();
-        Integer      stateRetry = flow.getRetry(state);
+        SagaFlow   flow       = (SagaFlow) ctx.getFlow();
+        FlowStatus status     = ctx.getStatus();
+        SagaState  state      = (SagaState) ctx.getState();
+        Integer    stateRetry = flow.getRetry(state);
         //状态不可执行
         if (FlowStatus.isEnd(status)) {
             throw new FlowEndException();
@@ -61,7 +61,7 @@ public class SagaProcessor<S extends Enum<S>> extends ProcesorService<SagaContex
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
         }
 
-        SagaWorker<S> worker = flow.getWorker(ctx.getState().getMaster());
+        SagaWorker worker = flow.getWorker(state.getMaster());
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);
@@ -103,4 +103,6 @@ public class SagaProcessor<S extends Enum<S>> extends ProcesorService<SagaContex
             add(new SagaDigestPlugin());
         }};
     }
+
+
 }

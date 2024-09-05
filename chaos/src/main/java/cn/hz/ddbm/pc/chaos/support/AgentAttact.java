@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.chaos;
+package cn.hz.ddbm.pc.chaos.support;
 
 /**
  * agent 注入

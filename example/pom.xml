@@ -80,6 +80,11 @@
             <version>${pc.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>cn.hz.ddbm.pc</groupId>
+            <artifactId>chaos</artifactId>
+            <version>${pc.version}</version>
+        </dependency>
 
     </dependencies>
 

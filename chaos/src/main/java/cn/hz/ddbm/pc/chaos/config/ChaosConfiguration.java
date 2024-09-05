@@ -1,7 +1,10 @@
-package cn.hz.ddbm.pc.chaos;
+package cn.hz.ddbm.pc.chaos.config;
 
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.ChaosService;
+import cn.hz.ddbm.pc.chaos.support.ChaosAction;
+import cn.hz.ddbm.pc.chaos.support.ChaosHandlerImpl;
+import cn.hz.ddbm.pc.factory.fsm.BeanFsmFlowFactory;
+import cn.hz.ddbm.pc.factory.saga.BeanSagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
 import cn.hz.ddbm.pc.newcore.infra.InfraUtils;
 import cn.hz.ddbm.pc.newcore.infra.StatisticsSupport;
@@ -19,8 +22,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @ConditionalOnClass({BaseService.class})
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-public class TestConfig {
+@EnableAspectJAutoProxy
+public class ChaosConfiguration {
+
+    @Bean
+    ChaosAction chaosAction() {
+        return new ChaosAction();
+    }
+
+    @Bean
+    BeanFsmFlowFactory fsmFlowFactory() {
+        return new BeanFsmFlowFactory();
+    }
+
+    @Bean
+    BeanSagaFlowFactory sagaFlowFactory() {
+        return new BeanSagaFlowFactory();
+    }
 
     @Bean
     ExecutorService actionExecutorService() {
@@ -37,10 +55,6 @@ public class TestConfig {
         return new SagaProcessor();
     }
 
-    @Bean
-    ChaosService chaosService() {
-        return new ChaosService();
-    }
 
     @Bean
     JvmStatusManager jvmStatusManager() {
@@ -78,6 +92,5 @@ public class TestConfig {
     StatisticsSupport statisticsSupport() {
         return new JvmStatisticsSupport();
     }
-
-
 }
+

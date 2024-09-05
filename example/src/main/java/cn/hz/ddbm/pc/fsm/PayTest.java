@@ -1,11 +1,11 @@
 package cn.hz.ddbm.pc.fsm;
 
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.ChaosService;
-import cn.hz.ddbm.pc.chaos.ChaosRule;
-import cn.hz.ddbm.pc.chaos.ChaosRuleType;
+import cn.hz.ddbm.pc.chaos.ChaosService;
+import cn.hz.ddbm.pc.chaos.config.ChaosConfiguration;
+import cn.hz.ddbm.pc.chaos.support.ChaosRule;
+import cn.hz.ddbm.pc.chaos.support.ChaosRuleType;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
-import cn.hz.ddbm.pc.newcore.chaos.ChaosTargetType;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ComponentScan("cn.hz.ddbm.pc.actions")
 @SpringBootTest
-@Import({PayTest.CC.class, ChaosService.ChaosConfiguration.class})
+@Import({PayTest.CC.class, ChaosConfiguration.class})
 @RunWith(SpringRunner.class)
 public class PayTest {
 
@@ -38,12 +38,12 @@ public class PayTest {
     @Test
     public void chaos() throws Exception {
         List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
-//            this.add(new ChaosRule(ChaosRuleType.EXCEPTION, RuntimeException.class, 0.2));
-//            this.add(new ChaosRule(ChaosRuleType.EXCEPTION, "true", 0.2));
+            this.add(new ChaosRule(ChaosRuleType.EXCEPTION, RuntimeException.class, 0.2));
+            this.add(new ChaosRule(ChaosRuleType.EXCEPTION, "true", 0.8));
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.executeFSMs("test", new FsmPayload(1, FlowStatus.INIT, PayState.init), null, true, rules);
+            chaosService.executeFSMs("test", FlowStatus.INIT,  100, 10000,true, rules);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +64,7 @@ public class PayTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.executeFSMs("test", new FsmPayload(1, FlowStatus.INIT, PayState.init), null, false, null);
+            chaosService.executeFSMs("test", FlowStatus.INIT,   100, 1000, true,null);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -72,6 +72,7 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         });
     }
 
+    public abstract C getContext(String flowName, Payload payload) throws SessionException;
 
     protected abstract List<Plugin> getDefaultPlugins();
 

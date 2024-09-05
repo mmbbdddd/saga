@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
@@ -21,21 +22,22 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
     public void afterPropertiesSet() {
         initParent();
 
-
         SpringUtil.getBeansOfType(FsmFlowFactory.class).forEach((key, flowFactory) -> {
             this.flows.putAll(flowFactory.getFlows());
         });
     }
 
-    public FsmContext<S> workerProcess(String flowName, FsmPayload<S> payload, String event) throws FlowEndException, InterruptedException, PauseException, SessionException {
+
+    @Override
+    public FsmContext<S> getContext(String flowName, Payload payload) throws SessionException {
         Assert.notNull(flowName, "flowName is null");
         Assert.notNull(payload, "payload is null");
         FsmFlow<S>          flow    = (FsmFlow<S>) getFlow(flowName);
         Map<String, Object> session = getSession(flowName, payload.getId());
         FsmContext<S>       ctx     = new FsmContext<>(flow, payload, session);
-        workerProcess(event, ctx);
         return ctx;
     }
+
 
     @Override
     public void workerProcess(FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
