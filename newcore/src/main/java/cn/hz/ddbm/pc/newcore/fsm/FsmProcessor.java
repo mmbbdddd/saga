@@ -56,7 +56,7 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
         if (FlowStatus.isEnd(status)) {
             throw new FlowEndException();
         }
-        if (FlowStatus.PAUSE.equals(status)) {
+        if (FlowStatus.isPause(status)) {
             throw new PauseException();
         }
         //工作流结束
@@ -75,18 +75,18 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
             worker.execute(ctx);
         } catch (Throwable e) {
             try {
-                if (isInterrupted(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
+                if (ExceptionUtils.isInterrupted(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
                     Logs.error.error("中断异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     flush(ctx);
-                } else if (isRetryable(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
+                } else if (ExceptionUtils.isRetryable(e, ctx)) { //中断异常，暂停执行，等下一次事件触发
                     Logs.flow.warn("可重试异常：{},{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e).getMessage());
                     flush(ctx);
-                } else if (isPaused(e, ctx)) { //暂停异常，状态设置为暂停，等人工修复
+                } else if (ExceptionUtils.isPaused(e, ctx)) { //暂停异常，状态设置为暂停，等人工修复
                     Logs.error.error("暂停异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     ctx.setStatus(FlowStatus.PAUSE);
                     flush(ctx);
-                } else if (isStoped(e, ctx)) {//流程结束或者取消
-                    Logs.flow.info("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
+                } else if (ExceptionUtils.isStoped(e, ctx)) {//流程结束或者取消
+                    Logs.flow.info("流程结束{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     status = ctx.getFlow().getEnds().contains(ctx.getState()) ? FlowStatus.FINISH : ctx.getStatus();
                     ctx.setStatus(status);
                     flush(ctx);

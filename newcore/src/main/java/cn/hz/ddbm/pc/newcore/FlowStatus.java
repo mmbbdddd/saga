@@ -25,6 +25,9 @@ public enum FlowStatus {
     public static Boolean isEnd(FlowStatus status) {
         return Objects.equals(Type.end, status.type);
     }
+    public static Boolean isPause(FlowStatus status) {
+        return Objects.equals(PAUSE, status);
+    }
 
     public enum Type {
         init, runnable, end

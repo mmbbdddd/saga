@@ -140,42 +140,6 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
     }
 
 
-    public boolean isRetryable(Throwable e, FlowContext ctx) {
-        if(e instanceof ActionException){
-            return true;
-        }
-        if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
-            e = (Exception) ReflectUtil.getFieldValue(e, "raw");
-        }
-        Boolean isRetryException = false;
-        isRetryException |= e instanceof IOException;
-        isRetryException |= e instanceof ActionException;
-        return isRetryException;
-    }
-
-    public boolean isInterrupted(Throwable e, FlowContext ctx) {
-        if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
-            e = (Exception) ReflectUtil.getFieldValue(e, "raw");
-        }
-        Boolean isInterruptedException = false;
-        isInterruptedException |= e instanceof LockException;
-        return isInterruptedException;
-    }
-
-    public boolean isPaused(Throwable e, FlowContext ctx) {
-        if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
-            e = (Exception) ReflectUtil.getFieldValue(e, "raw");
-        }
-        Boolean isPausedException = false;
-        isPausedException |= e instanceof IllegalArgumentException;
-        return isPausedException;
-    }
-
-    public boolean isStoped(Throwable e, FlowContext ctx) {
-        return e instanceof FlowEndException || FlowStatus.isEnd(ctx.getStatus());
-    }
-
-
     public void metricsNode(FlowContext ctx) {
         String            flowName = ctx.getFlow().getName();
         Serializable      id       = ctx.getId();

@@ -6,27 +6,29 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @Builder
 public class Profile {
-    String               namespace;
-    Integer              maxLoopErrorTimes   = 3;
-    Integer              statusTimeoutMicros = 3000;
-    Integer              lockTimeoutMicros   = 3000;
-    Coast.StatusType     status;
-    Coast.SessionType    session;
-    Coast.LockType       lock;
-    Coast.StatisticsType statistics;
-    Coast.ScheduleType   schedule;
-    List<Plugin>         plugins;
+    String                namespace;
+    Integer               maxLoopErrorTimes   = 3;
+    Integer               statusTimeoutMicros = 3000;
+    Integer               lockTimeoutMicros   = 3000;
+    Coast.StatusType      status;
+    Coast.SessionType     session;
+    Coast.LockType        lock;
+    Coast.StatisticsType  statistics;
+    Coast.ScheduleType    schedule;
+    List<Plugin>          plugins;
+    Map<State, StateAttr> stateAttr;
 
 
     public static Profile of() {
-        return new ProfileBuilder()
-                .namespace("default")
+        return new ProfileBuilder().namespace("default")
                 .maxLoopErrorTimes(2)
                 .statusTimeoutMicros(3000)
                 .lockTimeoutMicros(3000)
@@ -36,12 +38,12 @@ public class Profile {
                 .statistics(Coast.StatisticsType.redis)
                 .schedule(Coast.ScheduleType.timer)
                 .plugins(new ArrayList<>())
+                .stateAttr(new HashMap<>())
                 .build();
     }
 
     public static Profile devOf() {
-        return new ProfileBuilder()
-                .namespace("default")
+        return new ProfileBuilder().namespace("default")
                 .maxLoopErrorTimes(10)
                 .statusTimeoutMicros(3000)
                 .lockTimeoutMicros(3000)
@@ -51,6 +53,11 @@ public class Profile {
                 .statistics(Coast.StatisticsType.jvm)
                 .schedule(Coast.ScheduleType.timer)
                 .plugins(new ArrayList<>())
+                .stateAttr(new HashMap<>())
                 .build();
+    }
+
+    public StateAttr getStateAttrs(State state) {
+        return stateAttr.getOrDefault(state,StateAttr.defaultOf());
     }
 }
