@@ -19,7 +19,7 @@ public enum FlowStatus {
     }
 
     public static Boolean isRunnable(FlowStatus status) {
-        return Objects.equals(Type.runnable, status.type);
+        return !Objects.equals(Type.end, status.type);
     }
 
     public static Boolean isEnd(FlowStatus status) {

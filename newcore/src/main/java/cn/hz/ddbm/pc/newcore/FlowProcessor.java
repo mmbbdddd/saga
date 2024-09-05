@@ -4,6 +4,7 @@ import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.PauseException;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 
 public interface FlowProcessor<C extends FlowContext> {
 
@@ -38,10 +39,10 @@ public interface FlowProcessor<C extends FlowContext> {
             } catch (PauseException e) {
                 throw e;
             } catch (FlowEndException e) {
-                throw e;
+                return;
             } catch (Exception e) {
-                e.printStackTrace();
-
+                Logs.error.error("未预料到的异常",e);
+                return;
             }
         }
         //

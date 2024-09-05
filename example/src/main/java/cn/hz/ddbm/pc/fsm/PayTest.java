@@ -43,7 +43,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.executeFSMs("test", FlowStatus.INIT,  100, 10000,true, rules);
+            chaosService.executeFSMs("test", PayState.init,  100, 10000,true, rules);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +64,7 @@ public class PayTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.executeFSMs("test", FlowStatus.INIT,   100, 1000, true,null);
+            chaosService.executeFSMs("test", PayState.init,   100, 1000, true,null);
         } catch (Exception e) {
             e.printStackTrace();
         }
