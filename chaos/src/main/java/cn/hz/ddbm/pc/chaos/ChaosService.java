@@ -13,23 +13,30 @@ import cn.hz.ddbm.pc.newcore.exception.PauseException;
 import cn.hz.ddbm.pc.newcore.exception.SessionException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
+import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
+import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
-import cn.hz.ddbm.pc.support.BaseService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 
-public class ChaosService extends BaseService {
+public class ChaosService {
     ExecutorService      threadPool = Executors.newFixedThreadPool(20);
     List<StatisticsLine> statisticsLines;
+
+    @Resource
+    protected SagaProcessor sagaProcessor;
+    @Resource
+    protected FsmProcessor  fsmProcessor;
     @Autowired
     ChaosHandlerImpl chaosHandler;
 
@@ -130,7 +137,7 @@ public class ChaosService extends BaseService {
                 .collect(Collectors.groupingBy(t -> t.result.value));
         Logs.flow.info("混沌测试报告：\\n");
         groups.forEach((key, list) -> {
-            Logs.flow.info("{},\t\t\t\t\t\t\t\t{}", key,   list.size());
+            Logs.flow.info("{},\t\t\t\t\t\t\t\t{}", key, list.size());
         });
 
         statisticsLines.clear();
@@ -192,7 +199,7 @@ class StatisticsResult {
 
     public StatisticsResult(Throwable t) {
         this.isResult = false;
-        this.value    = t.getClass().getSimpleName()+":"+t.getMessage();
+        this.value    = t.getClass().getSimpleName() + ":" + t.getMessage();
     }
 
     public StatisticsResult(FlowContext<?, ?, ?> ctx) {
