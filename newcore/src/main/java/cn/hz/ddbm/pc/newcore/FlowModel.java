@@ -33,7 +33,7 @@ public abstract class FlowModel<S extends State> {
     }
 
     public Integer getRetry(S state) {
-        return profile.getStateAttrs(state).getRetry();
+        return getProfile().getStateAttrs(state).getRetry();
     }
 
     public boolean isEnd(S state) {
@@ -47,8 +47,7 @@ public abstract class FlowModel<S extends State> {
     }
 
     public Profile getProfile() {
-        Assert.notNull(profile, "profile is null");
-        return profile;
+        return profile==null?Profile.of():profile;
     }
 
     public Boolean isRightState(S stateCode) {

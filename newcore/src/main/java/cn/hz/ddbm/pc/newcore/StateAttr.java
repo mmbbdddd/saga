@@ -5,7 +5,10 @@ import lombok.Data;
 @Data
 public class StateAttr {
     Integer retry;
+
     public static StateAttr defaultOf() {
-        return null;
+        StateAttr def = new StateAttr();
+        def.setRetry(10);
+        return def;
     }
 }

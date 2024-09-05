@@ -19,7 +19,7 @@ public class ExceptionUtils {
     }
 
 
-    public static boolean isRetryable(Throwable e, FlowContext ctx) {
+    public static boolean isRetryable(Throwable e) {
         if (e instanceof ActionException) {
             return true;
         }
@@ -32,7 +32,7 @@ public class ExceptionUtils {
         return isRetryException;
     }
 
-    public static boolean isInterrupted(Throwable e, FlowContext ctx) {
+    public static boolean isInterrupted(Throwable e) {
         if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
             e = (Exception) ReflectUtil.getFieldValue(e, "raw");
         }
@@ -41,7 +41,7 @@ public class ExceptionUtils {
         return isInterruptedException;
     }
 
-    public static boolean isPaused(Throwable e, FlowContext ctx) {
+    public static boolean isPaused(Throwable e) {
         if (ReflectUtil.getFieldValue(e, "raw") != null && ReflectUtil.getFieldValue(e, "raw") instanceof Exception) {
             e = (Exception) ReflectUtil.getFieldValue(e, "raw");
         }
@@ -50,8 +50,8 @@ public class ExceptionUtils {
         return isPausedException;
     }
 
-    public static boolean isStoped(Throwable e, FlowContext ctx) {
-        return e instanceof FlowEndException || FlowStatus.isEnd(ctx.getStatus());
+    public static boolean isStoped(Throwable e) {
+        return e instanceof FlowEndException ;
     }
 
 }
