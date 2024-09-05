@@ -126,11 +126,11 @@ public class ChaosService extends BaseService {
     }
 
     private void printStatisticsReport() {
-        Map<Pair<String, String>, List<StatisticsLine>> groups = statisticsLines.stream()
-                .collect(Collectors.groupingBy(t -> Pair.of(t.result.type, t.result.value)));
+        Map<String, List<StatisticsLine>> groups = statisticsLines.stream()
+                .collect(Collectors.groupingBy(t -> t.result.value));
         Logs.flow.info("混沌测试报告：\\n");
-        groups.forEach((triple, list) -> {
-            Logs.flow.info("{},{},{}", triple.getKey(), triple.getValue(), list.size());
+        groups.forEach((key, list) -> {
+            Logs.flow.info("{},\t\t\t\t\t\t\t\t{}", key,   list.size());
         });
 
         statisticsLines.clear();
@@ -169,56 +169,56 @@ class MockSagaPayload<S extends Enum<S>> implements SagaPayload<S> {
 }
 
 class StatisticsLine {
-    Serializable index;
-    Object       requestInfo;
-    TypeValue    result;
+    Serializable     index;
+    Object           requestInfo;
+    StatisticsResult result;
 
     public StatisticsLine(Serializable i, Object o, Object result) {
         this.index       = i;
         this.requestInfo = o;
         if (result instanceof Throwable) {
-            this.result = new TypeValue((Throwable) result);
+            this.result = new StatisticsResult((Throwable) result);
         } else if (result instanceof FlowContext) {
-            this.result = new TypeValue((FlowContext<?, ?, ?>) result);
+            this.result = new StatisticsResult((FlowContext<?, ?, ?>) result);
         } else {
             this.result = null;
         }
     }
 }
 
-class TypeValue {
-    String type;
-    String value;
+class StatisticsResult {
+    Boolean isResult;
+    String  value;
 
-    public TypeValue(Throwable t) {
-        this.type  = t.getClass().getSimpleName();
-        this.value = t.getMessage();
+    public StatisticsResult(Throwable t) {
+        this.isResult = false;
+        this.value    = t.getClass().getSimpleName()+":"+t.getMessage();
     }
 
-    public TypeValue(FlowContext<?, ?, ?> ctx) {
-        this.type  = ctx.getClass().getSimpleName();
-        this.value = ctx.getState().code().toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TypeValue typeValue = (TypeValue) o;
-        return Objects.equals(type, typeValue.type) && Objects.equals(value, typeValue.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, value);
+    public StatisticsResult(FlowContext<?, ?, ?> ctx) {
+        this.isResult = true;
+        this.value    = ctx.getState().code().toString();
     }
 
     @Override
     public String toString() {
-        return "TypeValue{" +
-                "type='" + type + '\'' +
+        return "{" +
+                "isResult=" + isResult +
                 ", value='" + value + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        StatisticsResult that = (StatisticsResult) object;
+        return Objects.equals(isResult, that.isResult) && Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isResult, value);
     }
 }
 
