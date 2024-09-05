@@ -79,7 +79,7 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
                     Logs.error.error("中断异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     flush(ctx);
                 } else if (ExceptionUtils.isRetryable(e)) { //中断异常，暂停执行，等下一次事件触发
-                    Logs.flow.warn("可重试异常：{},{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e).getMessage());
+                    Logs.flow.warn("可重试异常：{},{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     flush(ctx);
                 } else if (ExceptionUtils.isPaused(e)) { //暂停异常，状态设置为暂停，等人工修复
                     Logs.error.error("暂停异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));

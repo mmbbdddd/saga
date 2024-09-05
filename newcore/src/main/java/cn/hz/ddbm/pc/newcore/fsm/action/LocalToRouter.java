@@ -2,7 +2,7 @@ package cn.hz.ddbm.pc.newcore.fsm.action;
 
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.ProcessingException;
+import cn.hz.ddbm.pc.newcore.exception.ProcessingException;
 
 import java.util.HashMap;
 

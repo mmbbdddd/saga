@@ -1,28 +1,78 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
 import cn.hutool.core.lang.Assert;
-import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
-import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalToRouter;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteRouter;
 import lombok.Data;
 
 import java.util.Objects;
 
 @Data
-public class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
+public abstract class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
+    public static <S extends Enum<S>> FsmWorker<S> of(S from, Class<? extends FsmAction> action, FsmRouter<S> router) {
+        if (router instanceof LocalToRouter) {
+            return new ToWorker<>(from, action, (LocalToRouter<S>) router);
+        } else {
+            return new SagaWorker<>(from, action, (RemoteRouter<S>) router);
+        }
+    }
+
+    public abstract void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException;
+}
+
+class ToWorker<S extends Enum<S>> extends FsmWorker<S> {
     FsmState<S>       from;
     FsmActionProxy<S> action;
-    FsmRouter<S>      router;
+    LocalToRouter<S>  router;
 
-    public FsmWorker(S from, Class<? extends FsmAction> actionClass, FsmRouter<S> router) {
-        this.from   = new FsmState<>(from, FsmState.Offset.task);
-        this.action = new FsmActionProxy(actionClass);
+    public ToWorker(S from, Class<? extends FsmAction> action, LocalToRouter<S> router) {
+        this.from   = FsmState.of(from);
+        this.action = new FsmActionProxy<>(action);
         this.router = router;
     }
 
-    @Override
+    public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException {
+        FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
+        ctx.setAction(action);
+        //如果任务可执行
+        FsmState.Offset offset = ctx.getState().offset;
+
+        if (Objects.equals(offset, FsmState.Offset.task)) {
+            processor.plugin().pre(ctx);
+            //todo jdbc transition
+            //执行业务
+            try {
+                action.execute(ctx);
+                S nextState = router.router(ctx, null);
+                ctx.setState(FsmState.of(nextState));
+                processor.plugin().post(from, ctx);
+            } catch (ActionException e) {
+                processor.plugin().error(from, e, ctx);
+                throw e;
+            } finally {
+                //end transition
+                processor.plugin()._finally(ctx);
+                processor.metricsNode(ctx);
+            }
+        }
+    }
+
+}
+
+class SagaWorker<S extends Enum<S>> extends FsmWorker<S> {
+    FsmState<S>       from;
+    FsmActionProxy<S> action;
+    RemoteRouter<S>   router;
+
+    public SagaWorker(S from, Class<? extends FsmAction> action, RemoteRouter<S> router) {
+        this.from   = FsmState.of(from);
+        this.action = new FsmActionProxy<>(action);
+        this.router = router;
+    }
+
     public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
         ctx.setAction(action);
@@ -83,5 +133,4 @@ public class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
             }
         }
     }
-
 }

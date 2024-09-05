@@ -10,10 +10,10 @@ import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 
 public class FsmActionProxy<S extends Enum<S>> implements FsmAction<S> {
-    Class<FsmAction> actionClass;
+    Class<? extends FsmAction> actionClass;
     FsmAction<S>     action;
 
-    public FsmActionProxy(Class<FsmAction> actionClass) {
+    public FsmActionProxy(Class<? extends FsmAction> actionClass) {
         this.actionClass = actionClass;
     }
 

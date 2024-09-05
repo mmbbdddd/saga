@@ -32,7 +32,7 @@ public class PayFsm implements FSM<PayState> {
 
     @Override
     public List<Plugin> plugins(List<Plugin> plugins) {
-//        plugins.add(new ErrorPlugin());
+        plugins.add(new ErrorPlugin());
 //        plugins.add(new PayAction());
 //        plugins.add(performancePlugin);
 //        plugins.add(new PayQueryAction());
