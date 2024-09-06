@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.newcore.fsm.action;
+package cn.hz.ddbm.pc.newcore.fsm.router;
 
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
 

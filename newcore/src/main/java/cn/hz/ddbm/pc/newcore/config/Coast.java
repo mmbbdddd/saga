@@ -1,14 +1,15 @@
 package cn.hz.ddbm.pc.newcore.config;
 
 public class Coast {
-    public static final String NONE_FSM_ACTION         = "noneFsmAction";
-    public static final String NONE_SAGA_ACTION        = "noneSagaAction";
-    public static final String CHAOS_ACTION            = "chaosAction";
-    public static final String PLUGIN_EXECUTOR_SERVICE = "pluginExecutorService";
-    public static final String ACTION_EXECUTOR_SERVICE = "actionExecutorService";
-    public static final String RUN_MODE    = "run_mode";
-    public static final String RUN_MODE_CHAOS = "chaos";
-    public static final String RUN_MODE_STABLE = "stable";
+    public static final String  NONE_FSM_ACTION         = "noneFsmAction";
+    public static final String  NONE_SAGA_ACTION        = "noneSagaAction";
+    public static final String  CHAOS_ACTION            = "chaosAction";
+    public static final String  PLUGIN_EXECUTOR_SERVICE = "pluginExecutorService";
+    public static final String  ACTION_EXECUTOR_SERVICE = "actionExecutorService";
+    public static final String  RUN_MODE                = "run_mode";
+    public static final String  RUN_MODE_CHAOS          = "chaos";
+    public static final String  RUN_MODE_STABLE         = "stable";
+    public static final Integer DEFAULT_RETRYTIME       = 1;
 
     public static class STATISTICS {
         public final static String EXECUTE_TIMES = "execute_times";
