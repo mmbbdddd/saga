@@ -1,9 +1,14 @@
 package cn.hz.ddbm.pc.chaos.support;
 
 import cn.hutool.core.lang.Pair;
+import cn.hutool.core.util.ReflectUtil;
+import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosRuleType;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionProxy;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
@@ -56,16 +61,15 @@ public class ChaosHandlerImpl implements ChaosHandler {
      * 模拟生成FsmRouter的结果
      */
     @Override
-    public <S extends Enum<S>> S fsmRouter(FsmContext<S> ctx, FsmRouter<S> router) {
-        Set<Pair<S, Double>> fsmQueryResult = router.getStateExpressions()
-                .values().stream().map(s -> Pair.of(s, Math.random())).collect(Collectors.toSet());
-        String routerKey = String.format("%s_%s",ctx.getState().getState(),ctx.getAction().code());
-        return RandomUitl.selectByWeight(routerKey, fsmQueryResult);
+    public Enum fsmRouter(FsmContext ctx, FsmRouter router) {
+        Class                   actionClass    = (Class) ReflectUtil.getFieldValue(ctx.getAction(), "actionClass");
+        Set<Pair<Enum, Double>> fsmQueryResult = ctx.getFlow().getProfile().getChaos().getFsmRouterRules(actionClass);
+        return RandomUitl.selectByWeight(actionClass.getSimpleName(), fsmQueryResult);
     }
 
 
     public Boolean sagaRouter(SagaContext ctx) {
-        Set<Pair<Boolean,Double>> results = ctx.getFlow().getProfile().getChaos().getSagaRouterRules();
-        return RandomUitl.selectByWeight("SAGA_ROUTER",results);
+        Set<Pair<Boolean, Double>> results = ctx.getFlow().getProfile().getChaos().getSagaRouterRules();
+        return RandomUitl.selectByWeight("SAGA_ROUTER", results);
     }
 }

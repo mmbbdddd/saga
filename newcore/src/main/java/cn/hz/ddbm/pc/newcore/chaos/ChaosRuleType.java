@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.chaos.support;
+package cn.hz.ddbm.pc.newcore.chaos;
 
 public enum ChaosRuleType {
     EXCEPTION,RESULT

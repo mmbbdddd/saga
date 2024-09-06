@@ -30,7 +30,7 @@ public class FsmRouter<S extends Enum<S>> {
     public S router(FsmContext<S> ctx, Object actionResult) throws NoSuchRecordException, ProcessingException {
         String runMode = System.getProperty(Coast.RUN_MODE);
         if (Objects.equals(runMode,Coast.RUN_MODE_CHAOS)) {
-            return ProcesorService.chaosHandler().fsmRouter(ctx,this);
+            return (S)ProcesorService.chaosHandler().fsmRouter(ctx,this);
         } else {
             for(Map.Entry<String,S> entry:stateExpressions.entrySet()){
                 String expression = entry.getKey();

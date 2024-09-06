@@ -1,13 +1,13 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Setter
 @Builder
@@ -110,8 +110,26 @@ public class Profile {
         return chaos == null ? new ChaosConfig() : chaos;
     }
 
-    @Data
+    @Setter
     public static class ChaosConfig {
-        Set<Pair<Boolean, Double>> sagaRouterRules;
+        Set<Pair<Boolean, Double>>  sagaRouterRules;
+        Map<Class, List<ChaosRule>> chaosRules;
+
+        public Set<Pair<Enum, Double>> getFsmRouterRules(Class actionClass) {
+            return getChaosRules().containsKey(actionClass) ?
+                    getChaosRules().get(actionClass).stream()
+                            .map(ChaosRule::toFsmRouterResult).collect(Collectors.toSet())
+                    : ChaosRule.defaultFsmRouterResults(actionClass);
+        }
+
+
+        public Set<Pair<Boolean, Double>> getSagaRouterRules() {
+            return sagaRouterRules == null ? ChaosRule.defaultSagaResults() : sagaRouterRules;
+        }
+
+        private Map<Class, List<ChaosRule>> getChaosRules() {
+            return chaosRules == null ? new HashMap<>() : chaosRules;
+        }
+
     }
 }
