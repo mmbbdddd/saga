@@ -62,9 +62,8 @@ public class ChaosHandlerImpl implements ChaosHandler {
      */
     @Override
     public Enum fsmRouter(FsmContext ctx, FsmRouter router) {
-        Class                   actionClass    = (Class) ReflectUtil.getFieldValue(ctx.getAction(), "actionClass");
-        Set<Pair<Enum, Double>> fsmQueryResult = ctx.getFlow().getProfile().getChaos().getFsmRouterRules(actionClass);
-        return RandomUitl.selectByWeight(actionClass.getSimpleName(), fsmQueryResult);
+        Class actionClass = (Class) ReflectUtil.getFieldValue(ctx.getAction(), "actionClass");
+        return (Enum) RandomUitl.selectByWeight(actionClass.getSimpleName(), router.weights());
     }
 
 

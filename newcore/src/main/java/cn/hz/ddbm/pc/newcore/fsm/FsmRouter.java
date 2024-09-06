@@ -1,8 +1,11 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
 
+import cn.hutool.core.lang.Pair;
+import cn.hutool.extra.template.engine.freemarker.FreemarkerTemplate;
 import cn.hutool.json.JSONUtil;
 import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.newcore.chaos.FsmChaosRouter;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.exception.ProcessingException;
@@ -11,11 +14,9 @@ import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.utils.ExpressionEngineUtils;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
-public class FsmRouter<S extends Enum<S>> {
+public class FsmRouter<S extends Enum<S>> implements FsmChaosRouter<S> {
     String noRecordExpression;
     String prcessingExpression;
     @Getter
@@ -60,5 +61,18 @@ public class FsmRouter<S extends Enum<S>> {
     @Override
     public int hashCode() {
         return Objects.hash(noRecordExpression, prcessingExpression, stateExpressions);
+    }
+
+    @Override
+    public Set<Pair<S,Double>> weights() {
+        Set<Pair<S,Double>> weights = new HashSet<>();
+        stateExpressions.forEach((expr,s)->{
+            try {
+                weights.add(Pair.of(s, Double.valueOf(expr)));
+            }catch (Exception e){
+                weights.add(Pair.of(s, 1.0));
+            }
+        });
+        return weights;
     }
 }

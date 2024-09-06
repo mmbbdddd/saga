@@ -2,9 +2,13 @@ package cn.hz.ddbm.pc.newcore.chaos;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
+import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,21 +22,30 @@ public class ChaosRule {
     Double        weight;
 
     private static List<ChaosRule> defaultRules() {
-        return null;
+        ArrayList<ChaosRule> rules = new ArrayList<>();
+        rules.add(new ChaosRule(ChaosRuleType.RESULT, RemoteSagaAction.class, true, 1.0));
+        rules.add(new ChaosRule(ChaosRuleType.RESULT, RemoteSagaAction.class, false, 1.0));
+
+        return rules;
     }
 
     public static Set<Pair<Enum, Double>> defaultFsmRouterResults(Class actionClass) {
-        Map<Class, List<ChaosRule>> ruleMaps = defaultRules().stream().collect(Collectors.groupingBy(
-                ChaosRule::getTarget
-        ));
+        Map<Class, List<ChaosRule>> ruleMaps = defaultRules()
+                .stream()
+                .filter(f -> f.type.equals(ChaosRuleType.RESULT))
+                .collect(Collectors.groupingBy(
+                        ChaosRule::getTarget
+                ));
         return ruleMaps.get(actionClass).stream().map(ChaosRule::toFsmRouterResult).collect(Collectors.toSet());
     }
 
 
     public static Set<Pair<Boolean, Double>> defaultSagaResults() {
-        Map<Class, List<ChaosRule>> ruleMaps = defaultRules().stream().collect(Collectors.groupingBy(
-                ChaosRule::getTarget
-        ));
+        Map<Class, List<ChaosRule>> ruleMaps = defaultRules().stream()
+                .filter(f -> f.type.equals(ChaosRuleType.RESULT))
+                .collect(Collectors.groupingBy(
+                        ChaosRule::getTarget
+                ));
         return ruleMaps.get(RemoteSagaAction.class).stream().map(ChaosRule::toSagaActionResult).collect(Collectors.toSet());
     }
 
