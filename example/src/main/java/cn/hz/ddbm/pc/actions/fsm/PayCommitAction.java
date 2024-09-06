@@ -3,14 +3,14 @@ package cn.hz.ddbm.pc.actions.fsm;
 import cn.hz.ddbm.pc.saga.PayState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
 @Component
-public class PayCommitAction implements FsmAction<PayState> {
+public class PayCommitAction implements RemoteFsmAction<PayState> {
     @Override
     public String code() {
         return "commitPayAction";

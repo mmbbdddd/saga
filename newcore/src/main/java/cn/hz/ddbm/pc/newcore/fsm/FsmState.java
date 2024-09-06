@@ -2,7 +2,9 @@ package cn.hz.ddbm.pc.newcore.fsm;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.State;
+import lombok.Getter;
 
+@Getter
 public class FsmState<S extends Enum<S>> extends State<Pair<S, FsmState.Offset>> {
     S      state;
     Offset offset;

@@ -1,15 +1,13 @@
 package cn.hz.ddbm.pc.newcore.fsm.action;
 
 import cn.hz.ddbm.pc.newcore.Action;
-import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 
 /**
  * Fsm业务逻辑
  * @param <S>  主状态
  */
-public interface FsmAction<S extends Enum<S>> extends Action {
+public interface RemoteFsmAction<S extends Enum<S>> extends Action {
 
     /**
      * 执行业务逻辑

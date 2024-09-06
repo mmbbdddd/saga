@@ -3,9 +3,9 @@ package cn.hz.ddbm.pc.newcore.test;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 
-public class NoneFsmAction<S extends Enum<S>> implements FsmAction<S>  {
+public class NoneFsmAction<S extends Enum<S>> implements RemoteFsmAction<S> {
 
 
     @Override

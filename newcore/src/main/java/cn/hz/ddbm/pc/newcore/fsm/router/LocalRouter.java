@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.fsm.router;
 
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,8 +11,10 @@ import java.util.Map;
  * @param <S>
  */
 public class LocalRouter<S extends Enum<S>> extends FsmRouter<S> {
-    public LocalRouter(Map<String, S> stateExpression) {
-        super( "false","false",stateExpression);
+    public LocalRouter(S to) {
+        super("false", "false", new HashMap<String, S>() {{
+            this.put("true", to);
+        }});
     }
 
 }

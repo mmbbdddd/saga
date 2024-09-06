@@ -1,16 +1,18 @@
 package cn.hz.ddbm.pc.newcore.fsm.action;
 
+import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 
 /**
  * 本地action
  * @param <S>
  */
-public interface LocalFsmAction<S extends Enum<S>> extends FsmAction<S> {
+public interface LocalFsmAction<S extends Enum<S>> extends Action {
 
-
-    @Override
-    default Object executeQuery(FsmContext<S> ctx) throws Exception {
-        return null;
-    }
+    /**
+     * 执行业务逻辑
+     * @param ctx
+     * @throws Exception
+     */
+    void execute(FsmContext<S> ctx) throws Exception;
 }

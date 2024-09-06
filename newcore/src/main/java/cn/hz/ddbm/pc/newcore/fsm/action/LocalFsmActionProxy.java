@@ -1,19 +1,19 @@
-package cn.hz.ddbm.pc.newcore.fsm;
+package cn.hz.ddbm.pc.newcore.fsm.action;
 
 
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 
 /**
  *
  * @param <S>
  */
-public class FsmActionProxy<S extends Enum<S>> implements FsmAction<S> {
-    Class<? extends FsmAction> actionClass;
-    FsmAction<S>     action;
+public class LocalFsmActionProxy<S extends Enum<S>> implements LocalFsmAction<S> {
+    Class<? extends LocalFsmAction> actionClass;
+    LocalFsmAction<S>               action;
 
-    public FsmActionProxy(Class<? extends FsmAction> actionClass) {
+    public LocalFsmActionProxy(Class<? extends LocalFsmAction> actionClass) {
         this.actionClass = actionClass;
     }
 
@@ -24,7 +24,7 @@ public class FsmActionProxy<S extends Enum<S>> implements FsmAction<S> {
     }
 
 
-    private FsmAction<S> getOrInitAction() {
+    private LocalFsmAction<S> getOrInitAction() {
         if (null == action) {
             synchronized (this) {
                 this.action = ProcesorService.getAction(actionClass);
@@ -37,15 +37,6 @@ public class FsmActionProxy<S extends Enum<S>> implements FsmAction<S> {
     public void execute(FsmContext<S> ctx) throws ActionException {
         try {
             getOrInitAction().execute(ctx);
-        } catch (Exception e) {
-            throw new ActionException(e);
-        }
-    }
-
-    @Override
-    public Object executeQuery(FsmContext<S> ctx) throws ActionException {
-        try {
-            return getOrInitAction().executeQuery(ctx);
         } catch (Exception e) {
             throw new ActionException(e);
         }

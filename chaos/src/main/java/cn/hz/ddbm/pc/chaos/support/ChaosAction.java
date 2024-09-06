@@ -2,7 +2,7 @@ package cn.hz.ddbm.pc.chaos.support;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * 业务逻辑混沌发生类。
  */
-public class ChaosAction implements RemoteSagaAction, FsmAction {
+public class ChaosAction implements RemoteSagaAction, RemoteFsmAction {
     @Resource
     ChaosHandlerImpl chaosHandler;
 

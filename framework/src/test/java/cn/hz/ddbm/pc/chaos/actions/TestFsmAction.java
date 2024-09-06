@@ -3,11 +3,11 @@ package cn.hz.ddbm.pc.chaos.actions;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TestFsmAction implements FsmAction {
+public class TestFsmAction implements RemoteFsmAction {
 
     @Override
     public void execute(FsmContext ctx) throws ActionException {
