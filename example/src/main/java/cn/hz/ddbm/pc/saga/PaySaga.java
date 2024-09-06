@@ -31,11 +31,11 @@ public class PaySaga implements SAGA<PayState> {
 
     @Override
     public List<Plugin> plugins() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public Profile profile() {
-        return null;
+        return Profile.of();
     }
 }
