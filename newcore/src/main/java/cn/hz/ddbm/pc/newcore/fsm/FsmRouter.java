@@ -27,7 +27,7 @@ public class FsmRouter<S extends Enum<S>> {
         this.stateExpressions    = stateExpressions;
     }
 
-    public S router(FsmContext<S> ctx, Object queryResult) throws NoSuchRecordException, ProcessingException {
+    public S router(FsmContext<S> ctx, Object actionResult) throws NoSuchRecordException, ProcessingException {
         String runMode = System.getProperty(Coast.RUN_MODE);
         if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
             return ProcesorService.chaosHandler().handleRouter(ctx,this);
@@ -38,7 +38,7 @@ public class FsmRouter<S extends Enum<S>> {
                         try {
                             String              expression    = entry.getKey();
                             Map<String, Object> routerContext = new HashMap<>();
-                            routerContext.put("result", queryResult);
+                            routerContext.put("result", actionResult);
                             return ExpressionEngineUtils.eval(expression, routerContext, Boolean.class);
                         } catch (Exception e) {
                             Logs.error.error("路由错误", e);
@@ -47,7 +47,7 @@ public class FsmRouter<S extends Enum<S>> {
                     })
                     .map(Map.Entry::getValue)
                     .findFirst()
-                    .orElseThrow(() -> new RouterException(String.format("路由错误，匹配不到路由结果,%s,%s,%s", ctx.getFlow(), JSONUtil.toJsonStr(queryResult), JSONUtil.toJsonStr(stateExpressions))));
+                    .orElseThrow(() -> new RouterException(String.format("路由错误，匹配不到路由结果,%s,%s,%s", ctx.getFlow(), JSONUtil.toJsonStr(actionResult), JSONUtil.toJsonStr(stateExpressions))));
         }
     }
 

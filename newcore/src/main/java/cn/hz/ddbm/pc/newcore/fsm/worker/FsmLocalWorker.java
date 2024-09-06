@@ -9,13 +9,14 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionProxy;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
+import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
 
 import java.util.Objects;
 
 public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
     FsmState<S>        from;
     LocalFsmActionProxy<S> action;
-    LocalRouter<S>         router;
+    LocalRouter<S>       router;
 
     public FsmLocalWorker(S from, Class<? extends LocalFsmAction> action, LocalRouter<S> router) {
         this.from   = FsmState.of(from);
@@ -34,8 +35,11 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
             //todo jdbc transition
             //执行业务
             try {
-                action.execute(ctx);
-                S nextState = router.router(ctx, null);
+                Object result = action.execute(ctx);
+                S nextState = router.router(ctx, result);
+                if (!ctx.getFlow().isRightState(FsmState.of(nextState))) {
+                    throw new IllegalArgumentException("ActionResult[" + result + "] not a right state code");
+                }
                 ctx.setState(FsmState.of(nextState));
                 processor.plugin().post(from, ctx);
             } catch (ActionException e) {

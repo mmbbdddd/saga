@@ -2,11 +2,12 @@ package cn.hz.ddbm.pc.fsm;
 
 public enum IdCardState {
     init,
-    freezed,
-    sendSuccess,
-    sendFail,
+    presend,
+    auditing,
     su,
     fail,
+    no_such_order,
+    lost_date,
 
 
 }

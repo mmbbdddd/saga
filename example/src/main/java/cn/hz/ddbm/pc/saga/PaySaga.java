@@ -8,16 +8,17 @@ import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 import cn.hz.ddbm.pc.saga.actions.SagaFreezeAction;
 import cn.hz.ddbm.pc.saga.actions.SagaPayAction;
 import cn.hz.ddbm.pc.saga.actions.SagaSendAction;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Component
 public class PaySaga implements SAGA<PayState> {
 
     @Override
     public String flowId() {
-        return "sagaTest";
+        return "test";
     }
 
     @Override

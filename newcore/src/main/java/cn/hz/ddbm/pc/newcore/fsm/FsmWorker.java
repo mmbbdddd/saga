@@ -1,20 +1,16 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
-import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
-import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionProxy;
-import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmActionProxy;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
+import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
 import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 import cn.hz.ddbm.pc.newcore.fsm.worker.FsmLocalWorker;
 import cn.hz.ddbm.pc.newcore.fsm.worker.FsmRemoteWorker;
 import lombok.Data;
-
-import java.util.Objects;
 
 @Data
 public abstract class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {

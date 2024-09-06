@@ -34,9 +34,9 @@ public class LocalFsmActionProxy<S extends Enum<S>> implements LocalFsmAction<S>
     }
 
     @Override
-    public void execute(FsmContext<S> ctx) throws ActionException {
+    public Object execute(FsmContext<S> ctx) throws ActionException {
         try {
-            getOrInitAction().execute(ctx);
+           return getOrInitAction().execute(ctx);
         } catch (Exception e) {
             throw new ActionException(e);
         }

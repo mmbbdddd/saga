@@ -56,13 +56,13 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
             }
         } else if (Objects.equals(offset, FsmState.Offset.failover)) {
             try {
-                Object queryResult = action.executeQuery(ctx);
-                Assert.notNull(queryResult, "queryResult is null");
-                S nextState = router.router(ctx, queryResult);
+                Object actionResult = action.executeQuery(ctx);
+                Assert.notNull(actionResult, "queryResult is null");
+                S nextState = router.router(ctx, actionResult);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态
                 //业务有返回
                 if (!ctx.getFlow().isRightState(FsmState.of(nextState))) {
-                    throw new IllegalArgumentException("queryResult[" + queryResult + "] not a right state code");
+                    throw new IllegalArgumentException("ActionResult[" + actionResult + "] not a right state code");
                 }
                 ctx.setState(FsmState.of(nextState));
                 processor.plugin().post(lastSate, ctx);

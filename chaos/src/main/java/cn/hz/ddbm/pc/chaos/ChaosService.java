@@ -94,7 +94,7 @@ public class ChaosService {
                     }
                     result = ctx;
                 } catch (Throwable t) {
-//                    Logs.error.error("", t);
+                    Logs.error.error("", t);
                     result = t;
                 } finally {
                     cdl.countDown();

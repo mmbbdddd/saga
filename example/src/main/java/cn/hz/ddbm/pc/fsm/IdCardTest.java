@@ -39,10 +39,7 @@ public class IdCardTest {
 
     @Test
     public void chaos() throws Exception {
-        List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
-//            this.add(new ChaosRule(ChaosRuleType.EXCEPTION, RuntimeException.class, 0.2));
-//            this.add(new ChaosRule(ChaosRuleType.EXCEPTION, "true", 0.8));
-        }};
+
         try {
             //执行100此，查看流程中断概率
             chaosService.fsm("test", IdCardState.init,  100, 20,true, rules);
