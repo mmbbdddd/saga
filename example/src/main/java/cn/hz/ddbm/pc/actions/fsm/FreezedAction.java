@@ -5,7 +5,7 @@ import cn.hz.ddbm.pc.saga.PayTest;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

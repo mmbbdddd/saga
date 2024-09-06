@@ -3,7 +3,7 @@ package cn.hz.ddbm.pc.actions.fsm;
 import cn.hz.ddbm.pc.saga.PayState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import org.springframework.stereotype.Component;
 

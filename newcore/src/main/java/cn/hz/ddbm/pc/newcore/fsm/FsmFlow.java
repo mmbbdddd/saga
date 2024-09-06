@@ -6,7 +6,8 @@ import cn.hutool.core.map.multi.Table;
 import cn.hz.ddbm.pc.newcore.FlowModel;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
-import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionAdapter;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
 import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 
@@ -33,7 +34,7 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     }
 
 
-    public FsmFlow<S> local(S from, String event, Class<? extends LocalFsmAction> action, LocalToRouter<S> router) {
+    public FsmFlow<S> local(S from, String event, Class<? extends LocalFsmActionAdapter> action, LocalToRouter<S> router) {
         FsmWorker<S> sagaFsmWorker = FsmWorker.local(from,action,router);
         this.transitionTable.put(Pair.of(from, FsmState.Offset.task), event, sagaFsmWorker);
         this.transitionTable.put(Pair.of(from, FsmState.Offset.task), Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);

@@ -4,7 +4,8 @@ import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
-import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionAdapter;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
 import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.util.Objects;
 
 @Data
 public abstract class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
-    public static <S extends Enum<S>> FsmWorker<S> local(S from, Class<? extends LocalFsmAction> action, LocalToRouter<S> router) {
+    public static <S extends Enum<S>> FsmWorker<S> local(S from, Class<? extends LocalFsmActionAdapter> action, LocalToRouter<S> router) {
 
         return new ToWorker<>(from, action, router);
 
@@ -31,7 +32,7 @@ class ToWorker<S extends Enum<S>> extends FsmWorker<S> {
     FsmActionProxy<S> action;
     LocalToRouter<S>  router;
 
-    public ToWorker(S from, Class<? extends LocalFsmAction> action, LocalToRouter<S> router) {
+    public ToWorker(S from, Class<? extends LocalFsmActionAdapter> action, LocalToRouter<S> router) {
         this.from   = FsmState.of(from);
         this.action = new FsmActionProxy<>(action);
         this.router = router;

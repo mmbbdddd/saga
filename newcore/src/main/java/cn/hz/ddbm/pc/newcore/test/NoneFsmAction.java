@@ -3,7 +3,7 @@ package cn.hz.ddbm.pc.newcore.test;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
 
 public class NoneFsmAction<S extends Enum<S>> implements FsmAction<S>  {
 
