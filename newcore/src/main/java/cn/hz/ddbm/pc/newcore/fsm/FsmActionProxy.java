@@ -9,6 +9,10 @@ import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 
+/**
+ *
+ * @param <S>
+ */
 public class FsmActionProxy<S extends Enum<S>> implements FsmAction<S> {
     Class<? extends FsmAction> actionClass;
     FsmAction<S>     action;

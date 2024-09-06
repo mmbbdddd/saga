@@ -8,6 +8,9 @@ import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
+import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 import lombok.Data;
 
 import java.util.*;
@@ -138,8 +141,12 @@ public interface FSM<S extends Enum<S>> {
             this.transitions = transitions;
         }
 
-        public State<S> onEvent(String event, Class<? extends FsmAction> action, FsmRouter<S> router) {
-            transitions.flow.onEvent(from, event, action,router);
+        public State<S> local(String event, Class<? extends LocalFsmAction> action, LocalToRouter<S> router) {
+            transitions.flow.local(from, event, action,router);
+            return this;
+        }
+        public State<S> remote(String event, Class<? extends FsmAction> action, RemoteRouter<S> router) {
+            transitions.flow.remote(from, event, action,router);
             return this;
         }
 

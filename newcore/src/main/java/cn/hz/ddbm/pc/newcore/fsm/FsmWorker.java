@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
 import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 import lombok.Data;
@@ -12,12 +13,14 @@ import java.util.Objects;
 
 @Data
 public abstract class FsmWorker<S extends Enum<S>> extends Worker<FsmContext<S>> {
-    public static <S extends Enum<S>> FsmWorker<S> of(S from, Class<? extends FsmAction> action, FsmRouter<S> router) {
-        if (router instanceof LocalToRouter) {
-            return new ToWorker<>(from, action, (LocalToRouter<S>) router);
-        } else {
-            return new SagaWorker<>(from, action, (RemoteRouter<S>) router);
-        }
+    public static <S extends Enum<S>> FsmWorker<S> local(S from, Class<? extends LocalFsmAction> action, LocalToRouter<S> router) {
+
+        return new ToWorker<>(from, action, router);
+
+    }
+
+    public static <S extends Enum<S>> FsmWorker<S> remote(S from, Class<? extends FsmAction> action, RemoteRouter<S> router) {
+        return new SagaWorker<>(from, action, router);
     }
 
     public abstract void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException;
@@ -28,7 +31,7 @@ class ToWorker<S extends Enum<S>> extends FsmWorker<S> {
     FsmActionProxy<S> action;
     LocalToRouter<S>  router;
 
-    public ToWorker(S from, Class<? extends FsmAction> action, LocalToRouter<S> router) {
+    public ToWorker(S from, Class<? extends LocalFsmAction> action, LocalToRouter<S> router) {
         this.from   = FsmState.of(from);
         this.action = new FsmActionProxy<>(action);
         this.router = router;

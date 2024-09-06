@@ -6,6 +6,9 @@ import cn.hutool.core.map.multi.Table;
 import cn.hz.ddbm.pc.newcore.FlowModel;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
+import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,8 +33,15 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     }
 
 
-    public FsmFlow<S> onEvent(S from, String event, Class<? extends FsmAction> action, FsmRouter<S> router) {
-        FsmWorker<S> sagaFsmWorker = FsmWorker.of(from,action,router);
+    public FsmFlow<S> local(S from, String event, Class<? extends LocalFsmAction> action, LocalToRouter<S> router) {
+        FsmWorker<S> sagaFsmWorker = FsmWorker.local(from,action,router);
+        this.transitionTable.put(Pair.of(from, FsmState.Offset.task), event, sagaFsmWorker);
+        this.transitionTable.put(Pair.of(from, FsmState.Offset.task), Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);
+        this.transitionTable.put(Pair.of(from, FsmState.Offset.failover), Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);
+        return this;
+    }
+    public FsmFlow<S> remote(S from, String event, Class<? extends FsmAction> action, RemoteRouter<S> router) {
+        FsmWorker<S> sagaFsmWorker = FsmWorker.remote(from,action,router);
         this.transitionTable.put(Pair.of(from, FsmState.Offset.task), event, sagaFsmWorker);
         this.transitionTable.put(Pair.of(from, FsmState.Offset.task), Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);
         this.transitionTable.put(Pair.of(from, FsmState.Offset.failover), Coast.FSM.EVENT_DEFAULT, sagaFsmWorker);
