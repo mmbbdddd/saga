@@ -57,8 +57,10 @@ public class ChaosHandlerImpl implements ChaosHandler {
      */
     @Override
     public <S extends Enum<S>> S handleRouter(FsmContext<S> ctx, FsmRouter<S> router) {
-        Set<Pair<S, Double>> fsmQueryResult = router.getStateExpressions().values().stream().map(s -> Pair.of(s, Math.random())).collect(Collectors.toSet());
-        return RandomUitl.selectByWeight("router", fsmQueryResult);
+        Set<Pair<S, Double>> fsmQueryResult = router.getStateExpressions()
+                .values().stream().map(s -> Pair.of(s, Math.random())).collect(Collectors.toSet());
+        String routerKey = String.format("%s_%s",ctx.getState().getState(),ctx.getAction().code());
+        return RandomUitl.selectByWeight(routerKey, fsmQueryResult);
     }
 
 
