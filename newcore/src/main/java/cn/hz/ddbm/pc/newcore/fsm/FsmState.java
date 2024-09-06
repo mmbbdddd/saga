@@ -24,7 +24,13 @@ public class FsmState<S extends Enum<S>> extends State<Pair<S, FsmState.Offset>>
         return this.code;
     }
 
+    @Override
+    public String toString() {
+        return  state + "."+offset ;
+    }
+
     public enum Offset {
         task, failover
     }
+
 }

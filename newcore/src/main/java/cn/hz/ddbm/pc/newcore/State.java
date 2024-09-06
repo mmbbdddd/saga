@@ -25,4 +25,9 @@ public abstract class State<S extends Serializable> {
     public int hashCode() {
         return Objects.hash(code);
     }
+
+    @Override
+    public String toString() {
+        return code().toString();
+    }
 }
