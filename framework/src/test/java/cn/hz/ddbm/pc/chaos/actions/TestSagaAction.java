@@ -14,22 +14,22 @@ public class TestSagaAction implements RemoteSagaAction {
     }
 
     @Override
-    public void execute(SagaContext<?> ctx) throws ActionException {
-        System.out.println("tttt");
+    public void execute(SagaContext ctx) throws Exception {
+
     }
 
     @Override
-    public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
+    public Boolean executeQuery(SagaContext ctx) throws Exception {
         return null;
     }
 
     @Override
-    public void rollback(SagaContext<?> ctx) throws ActionException {
+    public void rollback(SagaContext ctx) throws Exception {
 
     }
 
     @Override
-    public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
+    public Boolean rollbackQuery(SagaContext ctx) throws Exception {
         return null;
     }
 }

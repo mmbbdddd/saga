@@ -1,8 +1,9 @@
 package cn.hz.ddbm.pc.chaos.config;
 
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.chaos.support.ChaosAction;
 import cn.hz.ddbm.pc.chaos.support.ChaosHandlerImpl;
+import cn.hz.ddbm.pc.chaos.support.LocalChaosAction;
+import cn.hz.ddbm.pc.chaos.support.RemoteChaosAction;
 import cn.hz.ddbm.pc.factory.fsm.BeanFsmFlowFactory;
 import cn.hz.ddbm.pc.factory.saga.BeanSagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
@@ -24,8 +25,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class ChaosConfiguration {
 
     @Bean
-    ChaosAction chaosAction() {
-        return new ChaosAction();
+    RemoteChaosAction remoteChaosAction() {
+        return new RemoteChaosAction();
+    }
+    @Bean
+    LocalChaosAction localChaosAction() {
+        return new LocalChaosAction();
     }
 
     @Bean

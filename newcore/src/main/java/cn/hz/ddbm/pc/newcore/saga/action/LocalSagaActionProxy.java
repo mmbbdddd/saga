@@ -15,7 +15,7 @@ public class LocalSagaActionProxy implements LocalSagaAction {
         this.actionClass = actionClass;
     }
 
-    public void execute(SagaContext<?> ctx) throws ActionException {
+    public void execute(SagaContext ctx) throws ActionException {
         try {
             getOrInitAction().execute(ctx);
             ctx.setActionResult(ActionResult.success());
@@ -26,7 +26,7 @@ public class LocalSagaActionProxy implements LocalSagaAction {
     }
 
     @Override
-    public void rollback(SagaContext<?> ctx) {
+    public void rollback(SagaContext ctx) {
 
     }
 

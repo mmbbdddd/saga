@@ -10,22 +10,22 @@ public class SagaSendAction implements RemoteSagaAction {
     }
 
     @Override
-    public void execute(SagaContext<?> ctx) throws Exception {
+    public void execute(SagaContext ctx) throws Exception {
 
     }
 
     @Override
-    public Boolean executeQuery(SagaContext<?> ctx) throws Exception {
+    public Boolean executeQuery(SagaContext ctx) throws Exception {
         return null;
     }
 
     @Override
-    public void rollback(SagaContext<?> ctx) throws Exception {
+    public void rollback(SagaContext ctx) throws Exception {
 
     }
 
     @Override
-    public Boolean rollbackQuery(SagaContext<?> ctx) throws Exception {
+    public Boolean rollbackQuery(SagaContext ctx) throws Exception {
         return null;
     }
 }

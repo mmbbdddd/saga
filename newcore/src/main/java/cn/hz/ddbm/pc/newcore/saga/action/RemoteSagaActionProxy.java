@@ -15,7 +15,7 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
         this.actionClass = actionClass;
     }
 
-    public void execute(SagaContext<?> ctx) throws ActionException {
+    public void execute(SagaContext ctx) throws ActionException {
         try {
             getOrInitAction().execute(ctx);
             ctx.setActionResult(ActionResult.success());
@@ -26,7 +26,7 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
     }
 
 
-    public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
+    public Boolean executeQuery(SagaContext ctx) throws NoSuchRecordException, ActionException {
         try {
             ctx.setActionResult(ActionResult.success());
             return getOrInitAction().executeQuery(ctx);
@@ -40,7 +40,7 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
     }
 
 
-    public void rollback(SagaContext<?> ctx) throws ActionException {
+    public void rollback(SagaContext ctx) throws ActionException {
         try {
             getOrInitAction().rollback(ctx);
             ctx.setActionResult(ActionResult.success());
@@ -50,7 +50,7 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
         }
     }
 
-    public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
+    public Boolean rollbackQuery(SagaContext ctx) throws NoSuchRecordException, ActionException {
         try {
             ctx.setActionResult(ActionResult.success());
             return getOrInitAction().rollbackQuery(ctx);

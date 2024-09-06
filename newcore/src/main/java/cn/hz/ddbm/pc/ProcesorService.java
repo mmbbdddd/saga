@@ -1,12 +1,12 @@
 package cn.hz.ddbm.pc;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.infra.*;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmLocker;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmSessionManager;
@@ -16,7 +16,6 @@ import cn.hz.ddbm.pc.newcore.infra.proxy.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -159,7 +158,12 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         Assert.notNull(action, "action is null");
         String runMode = System.getProperty(Coast.RUN_MODE);
         if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
-            return SpringUtil.getBean(Coast.CHAOS_ACTION);
+            if(LocalFsmAction.class.isAssignableFrom(action)){
+                return SpringUtil.getBean(Coast.LOCAL_CHAOS_ACTION);
+            }else {
+                return SpringUtil.getBean(Coast.REMOTE_CHAOS_ACTION);
+            }
+
         } else {
             return SpringUtil.getBean(action);
         }

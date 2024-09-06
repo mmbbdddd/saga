@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.actions.fsm;
+package cn.hz.ddbm.pc.fsm.actions;
 
 import cn.hz.ddbm.pc.saga.PayState;
 import cn.hz.ddbm.pc.saga.PayTest;

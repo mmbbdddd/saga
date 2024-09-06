@@ -14,22 +14,22 @@ public class NoneSagaAction implements RemoteSagaAction {
     }
 
     @Override
-    public void execute(SagaContext<?> ctx) throws ActionException {
+    public void execute(SagaContext ctx) throws Exception {
 
     }
 
     @Override
-    public Boolean executeQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return true;
+    public Boolean executeQuery(SagaContext ctx) throws Exception {
+        return null;
     }
 
     @Override
-    public void rollback(SagaContext<?> ctx) throws ActionException {
+    public void rollback(SagaContext ctx) throws Exception {
 
     }
 
     @Override
-    public Boolean rollbackQuery(SagaContext<?> ctx) throws NoSuchRecordException, ActionException {
-        return true;
+    public Boolean rollbackQuery(SagaContext ctx) throws Exception {
+        return null;
     }
 }

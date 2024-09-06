@@ -1,4 +1,4 @@
-package cn.hz.ddbm.pc.actions.fsm;
+package cn.hz.ddbm.pc.fsm.actions;
 
 import cn.hz.ddbm.pc.saga.PayState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
@@ -10,7 +10,12 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 
 @Component
-public class PayRollbackAction implements RemoteFsmAction<PayState> {
+public class PayCommitAction implements RemoteFsmAction<PayState> {
+    @Override
+    public String code() {
+        return "commitPayAction";
+    }
+
     @Override
     public void execute(FsmContext<PayState> ctx) throws ActionException {
 
@@ -21,10 +26,5 @@ public class PayRollbackAction implements RemoteFsmAction<PayState> {
         return new HashMap<String, Object>() {{
             put("code", "0000");
         }};
-    }
-
-    @Override
-    public String code() {
-        return "payRollbackAction";
     }
 }
