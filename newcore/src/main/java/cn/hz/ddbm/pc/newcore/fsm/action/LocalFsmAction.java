@@ -2,7 +2,11 @@ package cn.hz.ddbm.pc.newcore.fsm.action;
 
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 
-public interface LocalFsmActionAdapter<S extends Enum<S>> extends FsmAction<S> {
+/**
+ * 本地action
+ * @param <S>
+ */
+public interface LocalFsmAction<S extends Enum<S>> extends FsmAction<S> {
 
 
     @Override

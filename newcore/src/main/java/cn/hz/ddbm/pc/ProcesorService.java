@@ -126,16 +126,16 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         statusManagerMap.get(ctx.getProfile().getStatus()).flush(ctx);
     }
 
-    public void idempotent(String action, FlowContext ctx) throws IdempotentException {
+    public void idempotent( FlowContext ctx) throws IdempotentException {
         String namespace = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        String key       = String.format("%s:%s", namespace, action);
+        String key       = String.format("%s:%s", namespace, ctx.getAction().code());
         statusManagerMap.get(ctx.getProfile().getStatus()).idempotent(key);
     }
 
 
-    public void unidempotent(String action, FlowContext ctx) throws IdempotentException {
+    public void unidempotent( FlowContext ctx) throws IdempotentException {
         String namespace = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        String key       = String.format("%s:%s", namespace, action);
+        String key       = String.format("%s:%s", namespace, ctx.getAction().code());
         statusManagerMap.get(ctx.getProfile().getStatus()).unidempotent(key);
     }
 

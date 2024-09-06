@@ -1,16 +1,17 @@
-package cn.hz.ddbm.pc.newcore.saga;
+package cn.hz.ddbm.pc.newcore.saga.action;
 
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
 
 
-public class SagaActionProxy implements SagaAction {
-    Class<? extends SagaAction> actionClass;
-    SagaAction        action;
+public class RemoteSagaActionProxy implements RemoteSagaAction {
+    Class<? extends RemoteSagaAction> actionClass;
+    RemoteSagaAction                  action;
 
-    public SagaActionProxy(Class<? extends SagaAction> actionClass) {
+    public RemoteSagaActionProxy(Class<? extends RemoteSagaAction> actionClass) {
         this.actionClass = actionClass;
     }
 
@@ -67,7 +68,7 @@ public class SagaActionProxy implements SagaAction {
         return getOrInitAction().code();
     }
 
-    private SagaAction getOrInitAction() {
+    private RemoteSagaAction getOrInitAction() {
         if (null == action) {
             synchronized (this) {
                 this.action = ProcesorService.getAction(actionClass);

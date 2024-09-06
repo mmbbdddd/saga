@@ -4,7 +4,7 @@ import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.factory.saga.SAGA;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
-import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class IdCardFsm implements SAGA<IdCardState> {
     }
 
     @Override
-    public List<Pair<IdCardState, Class<? extends SagaAction>>> pipeline() {
+    public List<Pair<IdCardState, Class<? extends RemoteSagaAction>>> pipeline() {
         return null;
     }
 

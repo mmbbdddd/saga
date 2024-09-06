@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.saga
 
 import cn.hutool.core.lang.Pair
+import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaActionProxy
 import spock.lang.Specification
 
 import static org.mockito.ArgumentMatchers.any
@@ -10,9 +11,9 @@ class SagaFlowTest<TestEnum> extends Specification {
 
     def setup() {
         sagaFlow = new SagaFlow("flow", [
-                Pair.of(S.a, SagaActionProxy.class),
-                Pair.of(S.b, SagaActionProxy.class),
-                Pair.of(S.c, SagaActionProxy.class)
+                Pair.of(S.a, RemoteSagaActionProxy.class),
+                Pair.of(S.b, RemoteSagaActionProxy.class),
+                Pair.of(S.c, RemoteSagaActionProxy.class)
         ] as List);
 
     }

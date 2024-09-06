@@ -4,7 +4,7 @@ import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.action.FsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * 业务逻辑混沌发生类。
  */
-public class ChaosAction implements SagaAction, FsmAction {
+public class ChaosAction implements RemoteSagaAction, FsmAction {
     @Resource
     ChaosHandlerImpl chaosHandler;
 

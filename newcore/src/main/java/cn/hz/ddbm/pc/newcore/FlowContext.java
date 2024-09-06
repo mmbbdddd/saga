@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
 import lombok.Data;
 
@@ -12,18 +13,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 public class FlowContext<F extends FlowModel<S>, S extends State, W extends Worker<?>> {
-    final     Serializable         id;
-    final     F                    flow;
-    final     Map<String, Object>  session;
-    final     Payload<S>           payload;
-    final     Profile              profile;
-    final     AtomicInteger        loopErrorTimes;
-    transient FlowStatus           status;
-    transient S                    state;
-    transient W               worker;
-    transient ProcesorService processor;
-    transient Action          action;
-    transient ActionResult         actionResult;
+    final     Serializable        id;
+    final     F                   flow;
+    final     Map<String, Object> session;
+    final     Payload<S>          payload;
+    final     Profile             profile;
+    final     AtomicInteger       loopErrorTimes;
+    transient FlowStatus          status;
+    transient S                   state;
+    transient W                   worker;
+    transient ProcesorService     processor;
+    transient Action              action;
+    transient ActionResult        actionResult;
 
     public FlowContext(F flow, Payload<S> payload, Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
@@ -39,12 +40,12 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     }
 
 
-
-    public void setState(S state) {
-        if (getFlow().getEnds().contains(state)) {
+    public void setState(S nextState) {
+        if (getFlow().getEnds().contains(nextState)) {
             this.setStatus(FlowStatus.FINISH);
         }
-        this.state = state;
+        Logs.digest.info("{}==>{}", state, nextState);
+        this.state = nextState;
     }
 
     public void syncpayload() {

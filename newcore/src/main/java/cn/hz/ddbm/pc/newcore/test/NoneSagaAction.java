@@ -2,10 +2,10 @@ package cn.hz.ddbm.pc.newcore.test;
 
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 
-public class NoneSagaAction implements SagaAction {
+public class NoneSagaAction implements RemoteSagaAction {
 
 
     @Override

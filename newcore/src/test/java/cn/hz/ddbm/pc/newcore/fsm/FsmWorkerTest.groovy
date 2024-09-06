@@ -9,11 +9,11 @@ class FsmWorkerTest extends Specification {
     @Unroll
     def "of where router=#router and action=#action and from=#from then expect: #expectedResult"() {
         expect:
-        ((SagaWorker)FsmWorker.of(from, action, router)).from.state == expectedResult
+        ((SagaWorker) FsmWorker.remote(from, action, router)).from.state == expectedResult
 
         where:
-        router                                                                                   | action               | from || expectedResult
-        new RemoteRouter<S>("noRecordExpression", "prcessingExpression", ["stateExpressions": S.a]) | FsmActionProxy.class | S.a || S.a
+        router                                                                                      | action               | from || expectedResult
+        new RemoteRouter<S>("noRecordExpression", "prcessingExpression", ["stateExpressions": S.a]) | FsmActionProxy.class | S.a  || S.a
     }
 
     enum S {
