@@ -56,7 +56,7 @@ public class ChaosHandlerImpl implements ChaosHandler {
      * 模拟生成FsmRouter的结果
      */
     @Override
-    public <S extends Enum<S>> S handleRouter(FsmContext<S> ctx, FsmRouter<S> router) {
+    public <S extends Enum<S>> S fsmRouter(FsmContext<S> ctx, FsmRouter<S> router) {
         Set<Pair<S, Double>> fsmQueryResult = router.getStateExpressions()
                 .values().stream().map(s -> Pair.of(s, Math.random())).collect(Collectors.toSet());
         String routerKey = String.format("%s_%s",ctx.getState().getState(),ctx.getAction().code());
@@ -64,11 +64,8 @@ public class ChaosHandlerImpl implements ChaosHandler {
     }
 
 
-    public Object getActionResult(FsmContext ctx) {
-        return null;
-    }
-
-    public Boolean getActionResult(SagaContext ctx) {
-        return null;
+    public Boolean sagaRouter(SagaContext ctx) {
+        Set<Pair<Boolean,Double>> results = ctx.getFlow().getProfile().getChaos().getSagaRouterRules();
+        return RandomUitl.selectByWeight("SAGA_ROUTER",results);
     }
 }

@@ -27,6 +27,7 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
     public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
         ctx.setAction(action);
+        ctx.setRouter(router);
         //如果任务可执行
         FsmState.Offset offset = ctx.getState().getOffset();
 

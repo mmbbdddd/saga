@@ -20,7 +20,7 @@ public class LocalChaosAction implements LocalFsmAction, LocalSagaAction {
 
     @Override
     public Object execute(FsmContext ctx) throws Exception {
-        return chaosHandler.getActionResult(ctx);
+        return null;
     }
 
 

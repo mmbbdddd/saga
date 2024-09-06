@@ -23,7 +23,7 @@ public class RemoteChaosAction implements RemoteSagaAction, RemoteFsmAction {
 
     @Override
     public Object executeQuery(FsmContext ctx) throws Exception {
-        return chaosHandler.getActionResult(ctx);
+        return null;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class RemoteChaosAction implements RemoteSagaAction, RemoteFsmAction {
 
     @Override
     public Boolean executeQuery(SagaContext ctx) throws Exception {
-        return chaosHandler.getActionResult(ctx);
+        return chaosHandler.sagaRouter(ctx);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class RemoteChaosAction implements RemoteSagaAction, RemoteFsmAction {
 
     @Override
     public Boolean rollbackQuery(SagaContext ctx) throws Exception {
-        return chaosHandler.getActionResult(ctx);
+        return chaosHandler.sagaRouter(ctx);
     }
 
 
