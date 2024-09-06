@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
+import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
 import java.util.*;
@@ -43,7 +44,7 @@ public class ChaosHandlerImpl implements ChaosHandler {
      * @throws Exception
      */
     public void handle() throws Exception {
-        if (null != errorRules&& !errorRules.isEmpty()) {
+        if (null != errorRules && !errorRules.isEmpty()) {
             ChaosRule rule = RandomUitl.selectByWeight("error", errorRules);
             if (rule.isException()) {
                 rule.raiseException();
@@ -61,4 +62,11 @@ public class ChaosHandlerImpl implements ChaosHandler {
     }
 
 
+    public Object getActionResult(FsmContext ctx) {
+        return null;
+    }
+
+    public Boolean getActionResult(SagaContext ctx) {
+        return null;
+    }
 }

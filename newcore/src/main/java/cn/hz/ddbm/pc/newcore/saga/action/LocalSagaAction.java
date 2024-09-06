@@ -8,4 +8,5 @@ public interface LocalSagaAction<S extends Enum<S>> extends Action {
 
     void rollback(SagaContext<S> ctx)throws Exception;
 
+
 }

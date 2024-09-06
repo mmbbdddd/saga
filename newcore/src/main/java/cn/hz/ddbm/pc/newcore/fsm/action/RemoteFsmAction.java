@@ -24,4 +24,5 @@ public interface RemoteFsmAction<S extends Enum<S>> extends Action {
      */
     Object executeQuery(FsmContext<S> ctx) throws Exception;
 
+
 }

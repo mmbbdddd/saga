@@ -15,4 +15,5 @@ public interface LocalFsmAction<S extends Enum<S>> extends Action {
      * @throws Exception
      */
     Object execute(FsmContext<S> ctx) throws Exception;
+
 }

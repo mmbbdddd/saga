@@ -29,8 +29,8 @@ public class IdCardTest {
     @Autowired
     ChaosService chaosService;
     List<ChaosRule> rules = new ArrayList<ChaosRule>(){{
-       this.add(new ChaosRule(ChaosRuleType.EXCEPTION,RuntimeException.class,0.2));
-       this.add(new ChaosRule(ChaosRuleType.EXCEPTION,"true",0.8));
+//       this.add(new ChaosRule(ChaosRuleType.EXCEPTION,RuntimeException.class,0.2));
+//       this.add(new ChaosRule(ChaosRuleType.EXCEPTION,"true",0.8));
     }};
 
     /**

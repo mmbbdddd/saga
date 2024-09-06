@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.fsm;
 
 
 import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
@@ -29,26 +30,24 @@ public class FsmRouter<S extends Enum<S>> {
 
     public S router(FsmContext<S> ctx, Object actionResult) throws NoSuchRecordException, ProcessingException {
         String runMode = System.getProperty(Coast.RUN_MODE);
-        if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
+        if (Objects.equals(runMode,Coast.RUN_MODE_CHAOS)) {
             return ProcesorService.chaosHandler().handleRouter(ctx,this);
         } else {
-            return stateExpressions.entrySet()
-                    .stream()
-                    .filter(entry -> {
-                        try {
-                            String              expression    = entry.getKey();
-                            Map<String, Object> routerContext = new HashMap<>();
-                            routerContext.put("result", actionResult);
-                            return ExpressionEngineUtils.eval(expression, routerContext, Boolean.class);
-                        } catch (Exception e) {
-                            Logs.error.error("路由错误", e);
-                            return false;
-                        }
-                    })
-                    .map(Map.Entry::getValue)
-                    .findFirst()
-                    .orElseThrow(() -> new RouterException(String.format("路由错误，匹配不到路由结果,%s,%s,%s", ctx.getFlow(), JSONUtil.toJsonStr(actionResult), JSONUtil.toJsonStr(stateExpressions))));
-        }
+            for(Map.Entry<String,S> entry:stateExpressions.entrySet()){
+                String expression = entry.getKey();
+                S state = entry.getValue();
+                Map<String, Object> routerContext = new HashMap<>();
+                routerContext.put("result", actionResult);
+                try {
+                    if (ExpressionEngineUtils.eval(expression, routerContext, Boolean.class)) {
+                        return state;
+                    }
+                }catch (Exception e){
+                    Logs.error.error("",e);
+                }
+            }
+            throw new RouterException(String.format("无路由结果,%s,%s,%s", ctx.getFlow(), JSONUtil.toJsonStr(actionResult), JSONUtil.toJsonStr(stateExpressions)));
+         }
     }
 
     @Override

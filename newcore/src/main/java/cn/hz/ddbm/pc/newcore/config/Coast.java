@@ -10,7 +10,7 @@ public class Coast {
     public static final String  RUN_MODE                = "run_mode";
     public static final String  RUN_MODE_CHAOS          = "chaos";
     public static final String  RUN_MODE_STABLE         = "stable";
-    public static final Integer DEFAULT_RETRYTIME       = 1;
+    public static final Integer DEFAULT_RETRYTIME       = 10;
 
     public static class STATISTICS {
         public final static String EXECUTE_TIMES = "execute_times";

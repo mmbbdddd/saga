@@ -1,11 +1,16 @@
 package cn.hz.ddbm.pc.chaos.support;
 
+import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 
+import javax.annotation.Resource;
+
 public class RemoteChaosAction implements RemoteSagaAction, RemoteFsmAction {
+    @Resource
+    ChaosHandlerImpl chaosHandler;
     @Override
     public String code() {
         return "remoteChaosAction";
@@ -18,7 +23,7 @@ public class RemoteChaosAction implements RemoteSagaAction, RemoteFsmAction {
 
     @Override
     public Object executeQuery(FsmContext ctx) throws Exception {
-        return null;
+        return chaosHandler.getActionResult(ctx);
     }
 
     @Override
@@ -28,7 +33,7 @@ public class RemoteChaosAction implements RemoteSagaAction, RemoteFsmAction {
 
     @Override
     public Boolean executeQuery(SagaContext ctx) throws Exception {
-        return null;
+        return chaosHandler.getActionResult(ctx);
     }
 
     @Override
@@ -38,6 +43,8 @@ public class RemoteChaosAction implements RemoteSagaAction, RemoteFsmAction {
 
     @Override
     public Boolean rollbackQuery(SagaContext ctx) throws Exception {
-        return null;
+        return chaosHandler.getActionResult(ctx);
     }
+
+
 }
