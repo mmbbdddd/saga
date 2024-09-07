@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum OffsetState {
-    init, task, failover, retry, end, manual, pause, cancel;
+    init, task, failover, retry, su,fail, manual, pause, cancel;
 
     public static Set<OffsetState> runnables() {
         Set<OffsetState> sets = new HashSet<>();
@@ -16,7 +16,8 @@ public enum OffsetState {
 
     public static Set<OffsetState> ends() {
         Set<OffsetState> sets = new HashSet<>();
-        sets.add(end);
+        sets.add(su);
+        sets.add(fail);
         sets.add(cancel);
         return sets;
     }

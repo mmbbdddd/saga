@@ -78,6 +78,7 @@ public class RemoteForward<S extends Enum<S>> {
                     if (executeTimeState > retryTimes) {
                         //失败处理机制：前向转后向，后向转人工
                         if (null == rollback) {
+                            ctx.getState().offset(OffsetState.fail);
                             throw new FlowEndException();
                         } else {
                             ctx.setState(rollback);
@@ -88,6 +89,7 @@ public class RemoteForward<S extends Enum<S>> {
                     }
                 } else {
                     if (null == su) {
+                        ctx.getState().offset(OffsetState.su);
                         throw new FlowEndException();
                     } else {
                         ctx.setState(su);
@@ -95,7 +97,6 @@ public class RemoteForward<S extends Enum<S>> {
                 }
                 processor.plugin().post(lastState, ctx);
             } catch (FlowEndException e) {
-                ctx.setState(task);
                 processor.plugin().error(lastState, e, ctx);
                 throw e;
             } catch (NoSuchRecordException e) {

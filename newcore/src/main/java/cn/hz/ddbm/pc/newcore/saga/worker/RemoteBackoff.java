@@ -82,6 +82,7 @@ public class RemoteBackoff<S extends Enum<S>> {
                     }
                 } else {
                     if (null == pre) {
+                        ctx.getState().offset(OffsetState.fail);
                         throw new FlowEndException();
                     } else {
                         ctx.setState(pre);
@@ -95,7 +96,6 @@ public class RemoteBackoff<S extends Enum<S>> {
                 throw e;
             } catch (FlowEndException e) {
                 processor.unidempotent(ctx);
-                ctx.setState(rollback);
                 processor.plugin().error(lastState, e, ctx);
                 throw e;
             } catch (Exception e) {

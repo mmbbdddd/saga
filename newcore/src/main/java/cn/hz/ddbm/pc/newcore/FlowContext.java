@@ -37,7 +37,7 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
 
 
     public void setState(S nextState) {
-//        Logs.digest.info("{}==>{}", state, nextState);
+        Logs.digest.info("{}==>{}", state, nextState);
         this.state = nextState;
     }
 

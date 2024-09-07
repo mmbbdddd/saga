@@ -76,9 +76,9 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
         Assert.notNull(tasks, "tasks is null");
         Set<SagaState<S>> ends = new HashSet<>();
         //初始化，并且状态是fail。为结束节点
-        ends.add(new SagaState<>(tasks.get(0), OffsetState.end, SagaState.Direction.backoff));
+        ends.add(new SagaState<>(tasks.get(0), OffsetState.fail, SagaState.Direction.backoff));
         //最后一个节点，状态为成功，为结束节点
-        ends.add(new SagaState<>(tasks.get(tasks.size() - 1), OffsetState.end, SagaState.Direction.forward));
+        ends.add(new SagaState<>(tasks.get(tasks.size() - 1), OffsetState.su, SagaState.Direction.forward));
         return ends;
     }
 
