@@ -19,7 +19,7 @@ public class FsmState<S extends Enum<S>> extends State<S, FsmFlow<S>> {
     }
 
     @Override
-    public Pair<S, OffsetState> stateCode() {
+    public Pair<S, OffsetState> code() {
         return Pair.of(state, offset);
     }
 

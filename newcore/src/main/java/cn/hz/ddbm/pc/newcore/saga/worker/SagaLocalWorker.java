@@ -4,6 +4,7 @@ import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
+import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
 import cn.hz.ddbm.pc.newcore.log.Logs;
@@ -14,7 +15,6 @@ import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaActionProxy;
 
 public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
-    SagaState<S>         state;
     SagaState<S>         pre;
     SagaState<S>         next;
     SagaState<S>         rollback;
@@ -46,7 +46,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
                 action.execute(ctx);
                 Logs.flow.debug(">>>>状态变迁{}", ctx.getState().getState());
                 if (null == next) {
-                    ctx.getState().offset(OffsetState.end);
+                    throw new FlowEndException();
                 } else {
                     ctx.setState(next);
                 }
@@ -64,7 +64,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
                 processor.idempotent(ctx);
                 action.execute(ctx);
                 if (null == pre) {
-                    ctx.getState().offset(OffsetState.end);
+                    throw new FlowEndException();
                 } else {
                     Logs.flow.debug("<<<<状态变迁{}>>>>{}", ctx.getState().getState(), pre);
                     ctx.setState(pre);

@@ -34,7 +34,7 @@ public class RemoteForward<S extends Enum<S>> {
 
     }
 
-    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
+    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException, FlowEndException, NoSuchRecordException {
         ProcesorService  processor    = ctx.getProcessor();
         SagaState<S>     lastState    = ctx.getState().cloneSelf();
         RemoteSagaAction sagaAction   = (RemoteSagaAction) ctx.getAction();
@@ -94,10 +94,14 @@ public class RemoteForward<S extends Enum<S>> {
                     }
                 }
                 processor.plugin().post(lastState, ctx);
-            } catch (NoSuchRecordException e) {
-                processor.unidempotent(ctx);
+            } catch (FlowEndException e) {
                 ctx.setState(task);
                 processor.plugin().error(lastState, e, ctx);
+                throw e;
+            } catch (NoSuchRecordException e) {
+                ctx.setState(task);
+                processor.plugin().error(lastState, e, ctx);
+                throw e;
             } catch (ActionException e) {
                 ctx.setState(failover);
                 processor.plugin().error(lastState, e, ctx);

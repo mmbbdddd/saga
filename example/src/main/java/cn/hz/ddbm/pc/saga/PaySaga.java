@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.factory.saga.SAGA;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
+import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
 import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 import cn.hz.ddbm.pc.saga.actions.SagaFreezeAction;
 import cn.hz.ddbm.pc.saga.actions.SagaPayAction;
@@ -32,11 +33,13 @@ public class PaySaga implements SAGA<PayState> {
 
     @Override
     public List<Plugin> plugins() {
-        return new ArrayList<>();
+        return new ArrayList<Plugin>(){{
+            add(new SagaDigestPlugin());
+        }};
     }
 
     @Override
     public Profile profile() {
-        return Profile.of();
+        return Profile.chaosOf();
     }
 }

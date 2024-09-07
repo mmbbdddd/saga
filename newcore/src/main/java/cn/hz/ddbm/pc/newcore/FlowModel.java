@@ -46,7 +46,7 @@ public abstract class FlowModel<S extends State> {
     public Profile getProfile() {
         String runMode = System.getProperty(Coast.RUN_MODE);
         if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
-            return Profile.chaosOf();
+            return profile == null ? Profile.chaosOf() : profile;
         } else {
             return profile == null ? Profile.of() : profile;
         }

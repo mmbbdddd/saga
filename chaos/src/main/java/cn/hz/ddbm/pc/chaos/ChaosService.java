@@ -19,6 +19,7 @@ import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
 import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
+import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,7 +60,7 @@ public class ChaosService {
                     }
                     result = ctx;
                 } catch (Throwable t) {
-                    Logs.error.error("", t);
+                    Logs.error.error("{}", ExceptionUtils.unwrap(t));
                     result = t;
                 } finally {
                     cdl.countDown();
@@ -210,7 +211,7 @@ class StatisticsResult {
 
     public StatisticsResult(FlowContext<?, ?, ?> ctx) {
         this.isResult = true;
-        this.value    = ctx.getState().stateCode().toString();
+        this.value    = ctx.getState().code().toString();
     }
 
     @Override

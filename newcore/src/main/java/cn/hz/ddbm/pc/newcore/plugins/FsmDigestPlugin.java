@@ -26,9 +26,9 @@ public class FsmDigestPlugin<S extends Enum<S>> extends Plugin<FsmFlow<S>, FsmSt
     public void postAction(FsmState<S> preState, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) {
         String          flow   = ctx.getFlow().getName();
         Serializable         id     = ctx.getId();
-        Pair<S, OffsetState> from   = preState.stateCode();
+        Pair<S, OffsetState> from   = preState.code();
         String               action = ctx.getAction().code();
-        Pair<S, OffsetState> target = ctx.getState().stateCode();
+        Pair<S, OffsetState> target = ctx.getState().code();
 
         Logs.digest.info("{},{},{}.{}==>{}", flow, id, from, action, target);
     }

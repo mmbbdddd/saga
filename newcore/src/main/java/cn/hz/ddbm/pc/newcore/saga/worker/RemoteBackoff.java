@@ -35,7 +35,7 @@ public class RemoteBackoff<S extends Enum<S>> {
         this.manual           = new SagaState<>(current, OffsetState.task, SagaState.Direction.backoff);
     }
 
-    public void execute(SagaContext<S> ctx) throws IdempotentException, LockException {
+    public void execute(SagaContext<S> ctx) throws IdempotentException, LockException, FlowEndException, NoSuchRecordException {
         ProcesorService  processor    = ctx.getProcessor();
         SagaState<S>     lastState    = ctx.getState().cloneSelf();
         RemoteSagaAction sagaAction   = (RemoteSagaAction) ctx.getAction();
@@ -92,6 +92,12 @@ public class RemoteBackoff<S extends Enum<S>> {
                 processor.unidempotent(ctx);
                 ctx.setState(rollback);
                 processor.plugin().error(lastState, e, ctx);
+                throw e;
+            } catch (FlowEndException e) {
+                processor.unidempotent(ctx);
+                ctx.setState(rollback);
+                processor.plugin().error(lastState, e, ctx);
+                throw e;
             } catch (Exception e) {
                 ctx.setState(rollbackFailover);
                 processor.plugin().error(lastState, e, ctx);

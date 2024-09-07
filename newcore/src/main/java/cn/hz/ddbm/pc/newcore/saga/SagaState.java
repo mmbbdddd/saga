@@ -15,12 +15,14 @@ import java.util.Objects;
 @Getter
 public class SagaState<M extends Enum<M>> extends State<M, SagaFlow<M>> {
     @Setter
-    Direction   direction;
+    Direction direction;
+
     public SagaState(M master, OffsetState offset, Direction direction) {
-        this.state    = master;
+        this.state     = master;
         this.offset    = offset;
         this.direction = direction;
     }
+
     private static <M extends Enum<M>> String buildCode(M master, OffsetState offset, Direction direction) {
         if (direction.isForward()) {
             return String.format(">>>>%s:%s", master.name(), offset.name());
@@ -30,15 +32,14 @@ public class SagaState<M extends Enum<M>> extends State<M, SagaFlow<M>> {
     }
 
     @Override
-    public Triple<M, OffsetState, Direction> stateCode() {
-        return Triple.of(state, offset, direction);
+    public String code() {
+        return buildCode(this.state,this.offset,this.direction);
     }
 
     @Override
     public boolean isEnd(SagaFlow<M> flow) {
         return flow.isEnd(this);
     }
-
 
 
     public SagaState<M> cloneSelf() {

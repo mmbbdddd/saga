@@ -1,8 +1,6 @@
 package cn.hz.ddbm.pc.newcore.saga.worker;
 
-import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
-import cn.hz.ddbm.pc.newcore.exception.LockException;
+import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
@@ -21,7 +19,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
     }
 
 
-    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
+    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException, FlowEndException, NoSuchRecordException {
         ctx.setAction(action);
         if (ctx.getState().getDirection().isForward()) {
             forward.execute(ctx);

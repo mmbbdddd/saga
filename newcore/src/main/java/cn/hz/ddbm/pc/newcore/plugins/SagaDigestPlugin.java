@@ -21,17 +21,14 @@ public class SagaDigestPlugin extends Plugin {
 
     @Override
     public void postAction(State lastNode, FlowContext ctx) {
-        Boolean forward   = ((SagaState) ctx.getState()).getDirection().isForward();
-        String  directStr = forward ? ">>>>" + Math.random() : "<<<<" + Math.random();
 
         String       flow         = ctx.getFlow().getName();
         Serializable id           = ctx.getId();
-        Serializable from         = lastNode.stateCode();
+        Serializable from         = lastNode.code();
         String       action       = ctx.getAction().code();
-        Object       actionResult = ctx.getActionResult();
-        Serializable targetStatus = ctx.getState().stateCode();
+        Serializable targetStatus = ctx.getState().code();
 
-        Logs.digest.info("{},{},{}, {},{},{},{}==>{}", directStr, flow, id, from, action, actionResult, from, targetStatus);
+        Logs.digest.info(" {},{}, {},{},{}",  flow, id, from, action,   targetStatus);
 
     }
 

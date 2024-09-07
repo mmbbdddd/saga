@@ -3,10 +3,7 @@ package cn.hz.ddbm.pc.newcore.saga;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Worker;
-import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
-import cn.hz.ddbm.pc.newcore.exception.LockException;
-import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaActionProxy;
@@ -39,7 +36,7 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S
 
 
     @Override
-    public abstract void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException;
+    public abstract void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException, FlowEndException, NoSuchRecordException;
 
 
 }

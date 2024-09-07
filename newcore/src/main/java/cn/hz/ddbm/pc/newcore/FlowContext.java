@@ -17,7 +17,6 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     final     F                   flow;
     final     Map<String, Object> session;
     final     Payload<S, F>       payload;
-    final     Profile             profile;
     final     AtomicInteger       loopErrorTimes;
     transient S                   state;
     transient W                   worker;
@@ -31,7 +30,6 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
         this.id             = payload.getId();
         this.flow           = flow;
         this.payload        = payload;
-        this.profile        = flow.getProfile();
         this.session        = session == null ? new HashMap<>() : session;
         this.state          = payload.getState();
         this.loopErrorTimes = new AtomicInteger(0);
@@ -45,5 +43,9 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
 
     public void syncpayload() {
         payload.setState(state);
+    }
+
+    public Profile getProfile() {
+        return flow.getProfile();
     }
 }
