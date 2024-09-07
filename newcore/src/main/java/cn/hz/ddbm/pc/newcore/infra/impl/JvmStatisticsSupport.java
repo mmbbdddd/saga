@@ -26,13 +26,13 @@ public class JvmStatisticsSupport implements StatisticsSupport {
 
     @Override
     public void increment(String flowName, Serializable flowId, State node, String variable) {
-        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.code(), variable);
+        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.stateCode(), variable);
         cache.computeIfAbsent(realKey, s -> new AtomicLong(0)).incrementAndGet();
     }
 
     @Override
     public Long get(String flowName, Serializable flowId, State node, String variable) {
-        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.code(), variable);
+        String realKey = String.format("%s:%s:%s:%s", flowName, flowId, node.stateCode(), variable);
         return cache.computeIfAbsent(realKey, s -> new AtomicLong(0)).get();
     }
 }

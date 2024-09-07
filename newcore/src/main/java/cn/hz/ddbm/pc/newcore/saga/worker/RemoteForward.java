@@ -26,13 +26,13 @@ public class RemoteForward<S extends Enum<S>> {
     SagaState<S> rollback;
 
     public RemoteForward(S pre, S current, S next) {
-        this.task     = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.task, SagaState.Direction.forward);
-        this.failover = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.failover, SagaState.Direction.forward);
+        this.task     = new SagaState<>(current, SagaState.Offset.task, SagaState.Direction.forward);
+        this.failover = new SagaState<>(current, SagaState.Offset.failover, SagaState.Direction.forward);
 //        到下一个节点
-        this.su = null == next ? null : new SagaState<>(FlowStatus.RUNNABLE, next, SagaState.Offset.task, SagaState.Direction.forward);
+        this.su = null == next ? null : new SagaState<>(next, SagaState.Offset.task, SagaState.Direction.forward);
 //        到前一个节点
-        this.rollback = null == pre ? null : new SagaState<>(FlowStatus.RUNNABLE, pre, SagaState.Offset.task, SagaState.Direction.backoff);
-        this.retry    = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.task, SagaState.Direction.forward);
+        this.rollback = null == pre ? null : new SagaState<>(pre, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.retry    = new SagaState<>(current, SagaState.Offset.retry, SagaState.Direction.forward);
 
     }
 
@@ -79,9 +79,9 @@ public class RemoteForward<S extends Enum<S>> {
                     //超过重试次数，设置为失败，低于重试次数，设置为retry
                     if (executeTimeState > retryTimes) {
                         //失败处理机制：前向转后向，后向转人工
-                        if(null == rollback){
+                        if (null == rollback) {
                             ctx.getState().setStatus(FlowStatus.FINISH);
-                        }else {
+                        } else {
                             ctx.setState(rollback);
                         }
                     } else {
@@ -89,9 +89,9 @@ public class RemoteForward<S extends Enum<S>> {
                         ctx.setState(retry);
                     }
                 } else {
-                    if(null == su){
-                        ctx.getState().status(FlowStatus.FINISH);
-                    }else {
+                    if (null == su) {
+                        ctx.getState().setStatus(FlowStatus.FINISH);
+                    } else {
                         ctx.setState(su);
                     }
                 }

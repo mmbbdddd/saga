@@ -26,11 +26,11 @@ public class RemoteBackoff<S extends Enum<S>> {
 
 
     public RemoteBackoff(S pre, S current) {
-        this.rollback         = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.task, SagaState.Direction.backoff);
-        this.rollbackFailover = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.failover, SagaState.Direction.backoff);
-        this.retry            = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.retry, SagaState.Direction.backoff);
-        this.pre              = null == pre ? null : new SagaState<>(FlowStatus.RUNNABLE, pre, SagaState.Offset.task, SagaState.Direction.backoff);
-        this.manual           = new SagaState<>(FlowStatus.MANUAL, current, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.rollback         = new SagaState<>(current, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.rollbackFailover = new SagaState<>(current, SagaState.Offset.failover, SagaState.Direction.backoff);
+        this.retry            = new SagaState<>(current, SagaState.Offset.retry, SagaState.Direction.backoff);
+        this.pre              = null == pre ? null : new SagaState<>(pre, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.manual           = new SagaState<>(current, SagaState.Offset.task, SagaState.Direction.backoff);
     }
 
     public void execute(SagaContext<S> ctx) throws IdempotentException, LockException {
@@ -79,9 +79,9 @@ public class RemoteBackoff<S extends Enum<S>> {
                         ctx.setState(retry);
                     }
                 } else {
-                    if(null == pre){
+                    if (null == pre) {
                         ctx.getState().setStatus(FlowStatus.FINISH);
-                    }else {
+                    } else {
                         ctx.setState(pre);
                     }
                 }

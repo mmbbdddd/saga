@@ -3,12 +3,8 @@ package cn.hz.ddbm.pc.newcore.saga;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Payload;
 
-public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>> {
+public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>, SagaFlow<S>> {
 
-
-    FlowStatus getStatus();
-
-    void setStatus(FlowStatus status);
 
     S getSagaState();
 
@@ -25,15 +21,18 @@ public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>> {
 
     @Override
     default SagaState<S> getState() {
-        return new SagaState<>(this.getStatus(),this.getSagaState(), getOffset(), getDirection());
+        return new SagaState<>(this.getSagaState(), getOffset(), getDirection());
     }
 
     @Override
     default void setState(SagaState<S> state) {
-        setStatus(state.getStatus());
         setSagaState(state.getMaster());
         setOffset(state.getOffset());
         setDirection(state.getDirection());
     }
 
+    @Override
+    default FlowStatus getStatus(SagaFlow<S> flow) {
+        return null;
+    }
 }

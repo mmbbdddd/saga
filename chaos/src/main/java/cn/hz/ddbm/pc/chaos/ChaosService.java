@@ -118,7 +118,7 @@ public class ChaosService {
 
         String flowName = ctx.getFlow().getName();
         State  state    = ctx.getState();
-        if (state.isEnd() || state.isPause()) {
+        if (state.isEnd(ctx.getFlow()) || state.isPause(ctx.getFlow())) {
             Logs.flow.debug("流程不可运行：{},{},{} ", flowName, ctx.getId(), state);
             return false;
         }
@@ -212,7 +212,7 @@ class StatisticsResult {
 
     public StatisticsResult(FlowContext<?, ?, ?> ctx) {
         this.isResult = true;
-        this.value    = ctx.getState().code().toString();
+        this.value    = ctx.getState().stateCode().toString();
     }
 
     @Override

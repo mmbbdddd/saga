@@ -7,41 +7,32 @@ import java.io.Serializable;
 import java.util.Objects;
 
 
-public abstract class State<S extends Serializable> {
-    @Getter
-    @Setter
-    protected FlowStatus status;
+public abstract class State<S extends Serializable, F extends FlowModel> {
 
-    public State(FlowStatus status) {
-        this.status = status;
-    }
+    public abstract S stateCode();
 
-    public abstract S code();
+    public abstract boolean isEnd(F flow);
 
-    public boolean isEnd() {
-        return FlowStatus.isEnd(status);
-    }
+    public abstract boolean isPause(F flow);
 
-    public boolean isPause() {
-        return FlowStatus.isPause(status);
-    }
+    public abstract void setStatus(FlowStatus flowStatus);
 
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         State state = (State) object;
-        return Objects.equals(this.code(), state.code());
+        return Objects.equals(this.stateCode(), state.stateCode());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code());
+        return Objects.hash(stateCode());
     }
 
     @Override
     public String toString() {
-        return code().toString();
+        return stateCode().toString();
     }
 
 

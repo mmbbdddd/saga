@@ -11,7 +11,6 @@ import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import java.util.ArrayList;
@@ -52,10 +51,10 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
         FsmState<S> state      = ctx.getState();
         Integer     stateRetry = flow.getRetry(state);
         //状态不可执行
-        if (state.isEnd()) {
+        if (state.isEnd(flow)) {
             throw new FlowEndException();
         }
-        if (state.isPause()) {
+        if (state.isPause(flow)) {
             throw new PauseException();
         }
         //工作流结束
@@ -65,7 +64,7 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
         //工作流结束
         Long stateExecuteTimes = getExecuteTimes(ctx, state);
         if (stateExecuteTimes > stateRetry) {
-            throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), stateExecuteTimes, stateRetry));
+            throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.stateCode(), stateExecuteTimes, stateRetry));
         }
         FsmWorker worker = null;
         worker = flow.getWorker(ctx.getState(), event);
@@ -92,7 +91,7 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
                     Logs.error.error("不可预料的异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     Integer loopErrorTimes = ctx.getLoopErrorTimes().incrementAndGet();
                     if (loopErrorTimes > ctx.getProfile().getMaxLoopErrorTimes()) {
-                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), loopErrorTimes, ctx.getProfile()
+                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.stateCode(), loopErrorTimes, ctx.getProfile()
                                 .getMaxLoopErrorTimes()));
                     }
                     flush(ctx);

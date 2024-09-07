@@ -10,7 +10,6 @@ import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import java.util.ArrayList;
@@ -44,10 +43,10 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
         SagaState state      = (SagaState) ctx.getState();
         Integer   stateRetry = flow.getRetry(state);
         //状态不可执行
-        if (state.isEnd()) {
+        if (state.isEnd(flow)) {
             throw new FlowEndException();
         }
-        if (state.isPause()) {
+        if (state.isPause(flow)) {
             throw new PauseException();
         }
         //工作流结束
@@ -57,7 +56,7 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
         //工作流结束
         Long stateExecuteTimes = getExecuteTimes(ctx, state);
         if (stateExecuteTimes > stateRetry) {
-            throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
+            throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.stateCode(), stateExecuteTimes, stateRetry));
         }
 
         SagaWorker worker = flow.getWorker(state.getMaster());
@@ -84,7 +83,7 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
                     Logs.error.error("不可预料的异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
                     Integer loopErrorTimes = ctx.getLoopErrorTimes().incrementAndGet();
                     if (loopErrorTimes > ctx.getProfile().getMaxLoopErrorTimes()) {
-                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), loopErrorTimes, ctx.getProfile()
+                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.stateCode(), loopErrorTimes, ctx.getProfile()
                                 .getMaxLoopErrorTimes()));
                     }
                     flush(ctx);

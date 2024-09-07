@@ -35,9 +35,7 @@ public abstract class FlowModel<S extends State> {
         return getProfile().getStateAttrs(state).getRetry();
     }
 
-    public boolean isEnd(S state) {
-        return ends.contains(state);
-    }
+    public abstract boolean isEnd(S state);
 
     Profile profile;
 

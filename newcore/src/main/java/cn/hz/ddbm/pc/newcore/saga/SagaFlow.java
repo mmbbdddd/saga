@@ -63,9 +63,7 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
     }
 
 
-    public boolean isEnd(SagaState<?> state) {
-        return getEnds().contains(state);
-    }
+
 
     public SagaWorker<S> getWorker(S state) throws FlowEndException {
         return pipeline.get(state);
@@ -74,26 +72,26 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
 
     private static <S extends Enum<S>> SagaState<S> buildInit(List<S> tasks) {
         Assert.notNull(tasks, "tasks is null");
-        return new SagaState<>(FlowStatus.INIT,tasks.get(0), SagaState.Offset.task, SagaState.Direction.forward);
+        return new SagaState<>( tasks.get(0), SagaState.Offset.task, SagaState.Direction.forward);
     }
 
     private static <S extends Enum<S>> Set<SagaState<S>> buildEnds(List<S> tasks) {
         Assert.notNull(tasks, "tasks is null");
         Set<SagaState<S>> ends = new HashSet<>();
         //初始化，并且状态是fail。为结束节点
-        ends.add(new SagaState<>(FlowStatus.FINISH,tasks.get(0), SagaState.Offset.fail, SagaState.Direction.backoff));
+        ends.add(new SagaState<>( tasks.get(0), SagaState.Offset.fail, SagaState.Direction.backoff));
         //最后一个节点，状态为成功，为结束节点
-        ends.add(new SagaState<>(FlowStatus.FINISH,tasks.get(tasks.size() - 1), SagaState.Offset.su, SagaState.Direction.forward));
+        ends.add(new SagaState<>( tasks.get(tasks.size() - 1), SagaState.Offset.su, SagaState.Direction.forward));
         return ends;
     }
 
     private static <S extends Enum<S>> Set<SagaState<S>> buildTasks(List<S> tasks) {
         List<SagaState<S>> forwards = tasks.stream()
-                .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(FlowStatus.RUNNABLE,state, offset, SagaState.Direction.forward)).collect(Collectors.toList()))
+                .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(state, offset, SagaState.Direction.forward)).collect(Collectors.toList()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         List<SagaState<S>> backoff = tasks.stream()
-                .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(FlowStatus.RUNNABLE,state, offset, SagaState.Direction.backoff)).collect(Collectors.toList()))
+                .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(state, offset, SagaState.Direction.backoff)).collect(Collectors.toList()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         List<SagaState<S>> all = new ArrayList<>();
@@ -104,4 +102,8 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
         return new HashSet<>(all);
     }
 
+    @Override
+    public boolean isEnd(SagaState<S> state) {
+        return false;
+    }
 }

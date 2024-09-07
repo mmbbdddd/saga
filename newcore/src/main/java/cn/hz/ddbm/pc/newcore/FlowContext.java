@@ -16,7 +16,7 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     final     Serializable        id;
     final     F                   flow;
     final     Map<String, Object> session;
-    final     Payload<S>          payload;
+    final     Payload<S, F>       payload;
     final     Profile             profile;
     final     AtomicInteger       loopErrorTimes;
     transient S                   state;
@@ -25,7 +25,7 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     transient Action              action;
     transient ActionResult        actionResult;
 
-    public FlowContext(F flow, Payload<S> payload, Map<String, Object> session) {
+    public FlowContext(F flow, Payload<S,F> payload, Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
         Assert.notNull(payload, "payload is null");
         this.id             = payload.getId();

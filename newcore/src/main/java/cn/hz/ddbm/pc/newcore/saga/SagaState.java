@@ -13,12 +13,12 @@ import java.util.Objects;
  * @param <M> 主状态，
  */
 @Getter
-public class SagaState<M extends Enum<M>> extends State<Tetrad<FlowStatus, M, SagaState.Offset, SagaState.Direction>> {
-    M          master;
+public class SagaState<M extends Enum<M>> extends State<Triple<M, SagaState.Offset, SagaState.Direction>, SagaFlow<M>> {
+    M master;
     @Setter
-    Offset     offset;
+    Offset    offset;
     @Setter
-    Direction  direction;
+    Direction direction;
 
     private static <M extends Enum<M>> String buildCode(M master, Offset offset, Direction direction) {
         if (direction.isForward()) {
@@ -28,8 +28,7 @@ public class SagaState<M extends Enum<M>> extends State<Tetrad<FlowStatus, M, Sa
         }
     }
 
-    public SagaState(FlowStatus status, M master, Offset offset, Direction direction) {
-        super(status);
+    public SagaState(M master, Offset offset, Direction direction) {
         this.master    = master;
         this.offset    = offset;
         this.direction = direction;
@@ -37,21 +36,36 @@ public class SagaState<M extends Enum<M>> extends State<Tetrad<FlowStatus, M, Sa
 
 
     @Override
-    public Tetrad<FlowStatus, M, SagaState.Offset, Direction> code() {
-        return Tetrad.of(status,master,offset,direction);
+    public Triple<M, SagaState.Offset, Direction> stateCode() {
+        return Triple.of(master, offset, direction);
+    }
+
+    @Override
+    public boolean isEnd(SagaFlow<M> flow) {
+        return false;
+    }
+
+    @Override
+    public boolean isPause(SagaFlow<M> flow) {
+        return false;
+    }
+
+    @Override
+    public void setStatus(FlowStatus flowStatus) {
+
     }
 
 
     public SagaState<M> cloneSelf() {
-        return new SagaState<>(this.status, this.getMaster(), this.offset, this.direction);
+        return new SagaState<>(  this.getMaster(), this.offset, this.direction);
     }
 
     public SagaState<M> offSet(Offset offset) {
         this.offset = offset;
         return this;
     }
+
     public SagaState<M> status(FlowStatus status) {
-        this.status = status;
         return this;
     }
 

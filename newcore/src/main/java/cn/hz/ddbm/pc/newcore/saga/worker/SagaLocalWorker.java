@@ -23,10 +23,10 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     public SagaLocalWorker(int index, S pre, S current, S next, Class action) {
         super(index, current);
-        this.pre      = new SagaState<>(FlowStatus.RUNNABLE, pre, SagaState.Offset.task, SagaState.Direction.backoff);
-        this.next     = new SagaState<>(FlowStatus.RUNNABLE, next, SagaState.Offset.task, SagaState.Direction.forward);
-        this.rollback = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.task, SagaState.Direction.backoff);
-        this.manual   = new SagaState<>(FlowStatus.MANUAL, current, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.pre      = new SagaState<>(pre, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.next     = new SagaState<>(next, SagaState.Offset.task, SagaState.Direction.forward);
+        this.rollback = new SagaState<>(current, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.manual   = new SagaState<>(current, SagaState.Offset.task, SagaState.Direction.backoff);
         this.action   = new LocalSagaActionProxy(action);
     }
 

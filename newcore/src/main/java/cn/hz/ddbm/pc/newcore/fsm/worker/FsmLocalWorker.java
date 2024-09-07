@@ -38,9 +38,7 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
             try {
                 Object result = action.execute(ctx);
                 S nextState = router.router(ctx, result);
-                if (!ctx.getFlow().isRightState(FsmState.of(nextState))) {
-                    throw new IllegalArgumentException("ActionResult[" + result + "] not a right state code");
-                }
+
                 ctx.setState(FsmState.of(nextState));
                 processor.plugin().post(from, ctx);
             } catch (ActionException e) {

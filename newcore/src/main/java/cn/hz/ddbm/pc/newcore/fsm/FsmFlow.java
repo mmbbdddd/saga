@@ -19,10 +19,10 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     Table<S, String, FsmWorker<S>> transitionTable;
 
     public FsmFlow(String name, S init, Set<S> ends, Set<S> tasks) {
-        super(name, new FsmState<>(FlowStatus.INIT, init, FsmState.Offset.task), ends.stream()
-                .map(e -> new FsmState<>(FlowStatus.FINISH, e, FsmState.Offset.task))
+        super(name, new FsmState<>(init, FsmState.Offset.task), ends.stream()
+                .map(e -> new FsmState<>(e, FsmState.Offset.task))
                 .collect(Collectors.toSet()), tasks.stream()
-                .map(e -> new FsmState<>(FlowStatus.RUNNABLE, e, FsmState.Offset.task))
+                .map(e -> new FsmState<>( e, FsmState.Offset.task))
                 .collect(Collectors.toSet()));
         this.transitionTable = new RowKeyTable<>();
     }
@@ -49,4 +49,8 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     }
 
 
+    @Override
+    public boolean isEnd(FsmState<S> state) {
+        return false;
+    }
 }

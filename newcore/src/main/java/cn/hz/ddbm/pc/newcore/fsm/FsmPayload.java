@@ -7,32 +7,32 @@ import lombok.Data;
 import java.io.Serializable;
 
 
-public interface FsmPayload<S extends Enum<S>> extends Payload<FsmState<S>> {
+public interface FsmPayload<S extends Enum<S>> extends Payload<FsmState<S>, FsmFlow<S>> {
 
 
-      Serializable getId() ;
+    Serializable getId();
 
-      void setId(Serializable id);
+    void setId(Serializable id);
 
-      FlowStatus getStatus() ;
+    S getFsmState();
 
-      void setStatus(FlowStatus status) ;
+    void setFsmState(S fsmState);
 
-      S getFsmState() ;
+    FsmState.Offset getOffset();
 
-      void setFsmState(S fsmState) ;
-
-      FsmState.Offset getOffset() ;
-
-      void setOffset(FsmState.Offset offset) ;
+    void setOffset(FsmState.Offset offset);
 
     default FsmState<S> getState() {
-        return new FsmState<>(getStatus(), getFsmState(), getOffset());
+        return new FsmState<>(getFsmState(), getOffset());
     }
 
     default void setState(FsmState<S> state) {
-        setStatus(state.getStatus());
         setFsmState(state.getState());
         setOffset(state.getOffset());
+    }
+
+    @Override
+    default FlowStatus getStatus(FsmFlow<S> flow) {
+        return null;
     }
 }

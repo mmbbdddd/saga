@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class SagaContext<S extends Enum<S>> extends FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> {
 
-    public SagaContext(SagaFlow<S> flow, Payload<SagaState<S>> payload, Map<String, Object> session) {
+    public SagaContext(SagaFlow<S> flow, Payload<SagaState<S>,SagaFlow<S>> payload, Map<String, Object> session) {
         super(flow, payload, session);
     }
 
