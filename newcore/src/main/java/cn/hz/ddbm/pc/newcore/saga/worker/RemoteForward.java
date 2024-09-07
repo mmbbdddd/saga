@@ -97,9 +97,10 @@ public class RemoteForward<S extends Enum<S>> {
                 }
                 processor.plugin().post(lastState, ctx);
             } catch (FlowEndException e) {
-                processor.plugin().error(lastState, e, ctx);
+                processor.plugin().post(lastState, ctx);
                 throw e;
             } catch (NoSuchRecordException e) {
+                processor.unidempotent(ctx);
                 ctx.setState(task);
                 processor.plugin().error(lastState, e, ctx);
                 throw e;

@@ -95,8 +95,7 @@ public class RemoteBackoff<S extends Enum<S>> {
                 processor.plugin().error(lastState, e, ctx);
                 throw e;
             } catch (FlowEndException e) {
-                processor.unidempotent(ctx);
-                processor.plugin().error(lastState, e, ctx);
+                processor.plugin().post(lastState, ctx);
                 throw e;
             } catch (Exception e) {
                 ctx.setState(rollbackFailover);
