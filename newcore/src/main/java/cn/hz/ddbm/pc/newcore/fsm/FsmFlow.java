@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
-
     Table<S, String, FsmWorker<S>> transitionTable;
 
     public FsmFlow(String name, S init, Set<S> ends, Set<S> tasks) {
@@ -50,6 +49,7 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
 
     @Override
     public boolean isEnd(FsmState<S> state) {
-        return false;
+        return getEnds().contains(state);
     }
+
 }

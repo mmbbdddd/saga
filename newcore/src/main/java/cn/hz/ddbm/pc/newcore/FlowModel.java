@@ -21,9 +21,9 @@ public abstract class FlowModel<S extends State> {
         Assert.notNull(init, "init is null");
         Assert.notNull(ends, "ends is null");
         Assert.notNull(tasks, "tasks is null");
-        this.name            = name;
-        this.init            = init;
-        this.ends            = ends;
+        this.name      = name;
+        this.init      = init;
+        this.ends      = ends;
         this.tasks     = tasks;
         this.allStates = new HashSet<>();
         this.allStates.add(init);
@@ -45,9 +45,9 @@ public abstract class FlowModel<S extends State> {
 
     public Profile getProfile() {
         String runMode = System.getProperty(Coast.RUN_MODE);
-        if(Objects.equals(runMode,Coast.RUN_MODE_CHAOS)){
+        if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
             return Profile.chaosOf();
-        }else {
+        } else {
             return profile == null ? Profile.of() : profile;
         }
     }

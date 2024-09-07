@@ -24,9 +24,9 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     public SagaLocalWorker(int index, S pre, S current, S next, Class action) {
         super(index, current);
-        this.pre      = new SagaState<>(pre, OffsetState.task, SagaState.Direction.backoff);
-        this.next     = new SagaState<>(next, OffsetState.task, SagaState.Direction.forward);
+        this.next     = null == next ? null : new SagaState<>(next, OffsetState.task, SagaState.Direction.forward);
         this.rollback = new SagaState<>(current, OffsetState.task, SagaState.Direction.backoff);
+        this.pre      = null == pre ? null : new SagaState<>(pre, OffsetState.task, SagaState.Direction.backoff);
         this.manual   = new SagaState<>(current, OffsetState.manual, SagaState.Direction.backoff);
         this.action   = new LocalSagaActionProxy(action);
     }
@@ -41,10 +41,18 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
                 Logs.flow.debug(">>>>重试次数超限,状态变化{}>>>>{}", ctx.getState(), rollback);
                 ctx.setState(rollback);
             }
-            processor.idempotent(ctx);
-            action.execute(ctx);
-            Logs.flow.debug(">>>>状态变迁{}", ctx.getState().getMaster());
-            ctx.setState(next);
+            try {
+                processor.idempotent(ctx);
+                action.execute(ctx);
+                Logs.flow.debug(">>>>状态变迁{}", ctx.getState().getState());
+                if (null == next) {
+                    ctx.getState().offset(OffsetState.end);
+                } else {
+                    ctx.setState(next);
+                }
+            } catch (Exception e) {
+                processor.unidempotent(ctx);
+            }
         } else {
             Integer retryTimes       = ctx.getFlow().getRetry(ctx.getState());
             Long    executeTimeState = processor.getExecuteTimes(ctx, ctx.getState());
@@ -52,10 +60,18 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
                 Logs.flow.debug("<<<<重试次数超限，状态变化{}>>>>{}", ctx.getState(), manual);
                 ctx.setState(manual);
             }
-            processor.idempotent(ctx);
-            action.execute(ctx);
-            Logs.flow.debug("<<<<状态变迁{}>>>>{}", ctx.getState().getMaster(), pre);
-            ctx.setState(pre);
+            try {
+                processor.idempotent(ctx);
+                action.execute(ctx);
+                if (null == pre) {
+                    ctx.getState().offset(OffsetState.end);
+                } else {
+                    Logs.flow.debug("<<<<状态变迁{}>>>>{}", ctx.getState().getState(), pre);
+                    ctx.setState(pre);
+                }
+            } catch (Exception e) {
+                processor.unidempotent(ctx);
+            }
         }
     }
 }

@@ -118,7 +118,7 @@ public class ChaosService {
 
         String flowName = ctx.getFlow().getName();
         State  state    = ctx.getState();
-        if (state.isEnd(ctx.getFlow()) || state.isPause(ctx.getFlow())) {
+        if (state.isEnd(ctx.getFlow()) || state.isPause()) {
             Logs.flow.debug("流程不可运行：{},{},{} ", flowName, ctx.getId(), state);
             return false;
         }

@@ -3,10 +3,7 @@ package cn.hz.ddbm.pc.newcore.saga.worker;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.OffsetState;
-import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
-import cn.hz.ddbm.pc.newcore.exception.LockException;
-import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
@@ -81,7 +78,7 @@ public class RemoteForward<S extends Enum<S>> {
                     if (executeTimeState > retryTimes) {
                         //失败处理机制：前向转后向，后向转人工
                         if (null == rollback) {
-                            ctx.getState().setStatus(FlowStatus.FINISH);
+                            throw new FlowEndException();
                         } else {
                             ctx.setState(rollback);
                         }
@@ -91,7 +88,7 @@ public class RemoteForward<S extends Enum<S>> {
                     }
                 } else {
                     if (null == su) {
-                        ctx.getState().setStatus(FlowStatus.FINISH);
+                        throw new FlowEndException();
                     } else {
                         ctx.setState(su);
                     }

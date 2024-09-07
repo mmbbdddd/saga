@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
@@ -46,7 +47,7 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
         if (state.isEnd(flow)) {
             throw new FlowEndException();
         }
-        if (state.isPause(flow)) {
+        if (state.isPause()) {
             throw new PauseException();
         }
         //工作流结束
@@ -59,7 +60,7 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.stateCode(), stateExecuteTimes, stateRetry));
         }
 
-        SagaWorker worker = flow.getWorker(state.getMaster());
+        SagaWorker worker = flow.getWorker(state.getState());
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);
@@ -73,7 +74,7 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
                     flush(ctx);
                 } else if (ExceptionUtils.isPaused(e)) { //暂停异常，状态设置为暂停，等人工修复
                     Logs.error.error("暂停异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    ctx.getState().setStatus(FlowStatus.PAUSE);
+                    ((SagaState<?>) ctx.getState()).offset(OffsetState.pause);
                     flush(ctx);
                 } else if (ExceptionUtils.isStoped(e)) {//流程结束或者取消
                     Logs.flow.info("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));

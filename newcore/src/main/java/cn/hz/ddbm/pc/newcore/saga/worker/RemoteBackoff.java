@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.newcore.saga.worker;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.OffsetState;
+import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
@@ -81,7 +82,7 @@ public class RemoteBackoff<S extends Enum<S>> {
                     }
                 } else {
                     if (null == pre) {
-                        ctx.getState().setStatus(FlowStatus.FINISH);
+                        throw new FlowEndException();
                     } else {
                         ctx.setState(pre);
                     }

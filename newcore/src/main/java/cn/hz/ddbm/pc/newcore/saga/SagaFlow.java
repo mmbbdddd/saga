@@ -9,6 +9,7 @@ import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
@@ -43,7 +44,6 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
                 SagaWorker<S> worker = SagaWorker.remote(i, getPre(tasks, i), getCurrent(tasks, i), getNext(tasks, i), action);
                 pipeline.put(worker.getState(), worker);
             }
-
         }
     }
 
@@ -105,6 +105,10 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
 
     @Override
     public boolean isEnd(SagaState<S> state) {
-        return false;
+        return getEnds().contains(state);
     }
+
+
+
+
 }

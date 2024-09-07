@@ -19,8 +19,9 @@ import java.util.Objects;
 
 @Getter
 public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S>> {
-    Integer index;
-    S       state;
+    Integer     index;
+    S           state;
+    SagaFlow<S> pipeline;
 
     public SagaWorker(Integer index, S state) {
         this.index = index;
@@ -39,6 +40,7 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S
 
     @Override
     public abstract void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException;
+
 
 }
 

@@ -13,13 +13,14 @@ import java.util.Objects;
  * @param <M> 主状态，
  */
 @Getter
-public class SagaState<M extends Enum<M>> extends State<Triple<M, OffsetState, SagaState.Direction>, SagaFlow<M>> {
-    M master;
-    @Setter
-    OffsetState offset;
+public class SagaState<M extends Enum<M>> extends State<M, SagaFlow<M>> {
     @Setter
     Direction   direction;
-
+    public SagaState(M master, OffsetState offset, Direction direction) {
+        this.state    = master;
+        this.offset    = offset;
+        this.direction = direction;
+    }
     private static <M extends Enum<M>> String buildCode(M master, OffsetState offset, Direction direction) {
         if (direction.isForward()) {
             return String.format(">>>>%s:%s", master.name(), offset.name());
@@ -28,52 +29,34 @@ public class SagaState<M extends Enum<M>> extends State<Triple<M, OffsetState, S
         }
     }
 
-    public SagaState(M master, OffsetState offset, Direction direction) {
-        this.master    = master;
-        this.offset    = offset;
-        this.direction = direction;
-    }
-
-
     @Override
     public Triple<M, OffsetState, Direction> stateCode() {
-        return Triple.of(master, offset, direction);
+        return Triple.of(state, offset, direction);
     }
 
     @Override
     public boolean isEnd(SagaFlow<M> flow) {
-        return false;
+        return flow.isEnd(this);
     }
 
-    @Override
-    public boolean isPause(SagaFlow<M> flow) {
-        return false;
-    }
-
-    @Override
-    public void setStatus(FlowStatus flowStatus) {
-
-    }
 
 
     public SagaState<M> cloneSelf() {
-        return new SagaState<>(  this.getMaster(), this.offset, this.direction);
+        return new SagaState<>(this.getState(), this.offset, this.direction);
     }
 
-    public SagaState<M> offSet(OffsetState offset) {
+
+    @Override
+    public SagaState<M> offset(OffsetState offset) {
         this.offset = offset;
         return this;
     }
 
-    public SagaState<M> status(FlowStatus status) {
-        return this;
-    }
 
     public SagaState<M> direction(Direction direction) {
         this.direction = direction;
         return this;
     }
-
 
 
     public enum Direction {
@@ -92,16 +75,18 @@ public class SagaState<M extends Enum<M>> extends State<Triple<M, OffsetState, S
         if (object == null || getClass() != object.getClass()) return false;
         if (!super.equals(object)) return false;
         SagaState<?> state1 = (SagaState<?>) object;
-        return Objects.equals(master, state1.master) && offset == state1.offset && Objects.equals(direction, state1.direction);
+        return Objects.equals(state, state1.state) && offset == state1.offset && Objects.equals(direction, state1.direction);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), master, offset, direction);
+        return Objects.hash(super.hashCode(), state, offset, direction);
     }
 
     @Override
     public String toString() {
-        return buildCode(this.master, this.offset, this.direction);
+        return buildCode(this.state, this.offset, this.direction);
     }
+
+
 }

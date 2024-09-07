@@ -27,7 +27,7 @@ public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>, Sa
 
     @Override
     default void setState(SagaState<S> state) {
-        setSagaState(state.getMaster());
+        setSagaState(state.getState());
         setOffset(state.getOffset());
         setDirection(state.getDirection());
     }

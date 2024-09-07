@@ -7,9 +7,7 @@ import cn.hz.ddbm.pc.newcore.State;
 import lombok.Getter;
 
 @Getter
-public class FsmState<S extends Enum<S>> extends State<Pair<S, OffsetState>, FsmFlow<S>> {
-    S           state;
-    OffsetState offset;
+public class FsmState<S extends Enum<S>> extends State<S, FsmFlow<S>> {
 
     public FsmState(S state, OffsetState offset) {
         this.state  = state;
@@ -27,18 +25,7 @@ public class FsmState<S extends Enum<S>> extends State<Pair<S, OffsetState>, Fsm
 
     @Override
     public boolean isEnd(FsmFlow<S> flow) {
-
-        return false;
-    }
-
-    @Override
-    public boolean isPause(FsmFlow<S> flow) {
-        return false;
-    }
-
-    @Override
-    public void setStatus(FlowStatus flowStatus) {
-
+        return flow.isEnd(this);
     }
 
 

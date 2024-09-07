@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.config.Coast;
@@ -54,7 +55,7 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
         if (state.isEnd(flow)) {
             throw new FlowEndException();
         }
-        if (state.isPause(flow)) {
+        if (state.isPause()) {
             throw new PauseException();
         }
         //工作流结束
@@ -81,7 +82,7 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
                     flush(ctx);
                 } else if (ExceptionUtils.isPaused(e)) { //暂停异常，状态设置为暂停，等人工修复
                     Logs.error.error("暂停异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    ctx.getState().setStatus(FlowStatus.PAUSE);
+                    ctx.getState().offset(OffsetState.pause);
                     flush(ctx);
                 } else if (ExceptionUtils.isStoped(e)) {//流程结束或者取消
                     Logs.flow.info("流程结束{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
