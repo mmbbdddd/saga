@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc.chaos;
 
-import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.chaos.support.ChaosHandlerImpl;
+import cn.hz.ddbm.pc.chaos.support.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.State;
@@ -38,13 +37,14 @@ public class ChaosService {
     @Resource
     protected FsmProcessor  fsmProcessor;
     @Autowired
-    ChaosHandlerImpl chaosHandler;
+    ChaosHandler chaosHandler;
 
 
-    public void saga(String flowName, Enum initStatus, Integer times, Integer timeout, Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void saga(String flowName, Enum initStatus, Integer retry, Integer times, Integer timeout, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
         chaosHandler.setChaosRules(rules);
-        statisticsLines = Collections.synchronizedList(new ArrayList<>(times));
+        Coast.DEFAULT_RETRYTIME = retry;
+        statisticsLines         = Collections.synchronizedList(new ArrayList<>(times));
         CountDownLatch cdl = new CountDownLatch(times);
         for (int i = 0; i < times; i++) {
             MockSagaPayload mockPayLoad = new MockSagaPayload(i, initStatus);
@@ -77,8 +77,9 @@ public class ChaosService {
     }
 
 
-    public void fsm(String flowName, Enum initStatus, Integer times, Integer timeout, Boolean mockBean, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void fsm(String flowName, Enum initStatus, Integer retry, Integer times, Integer timeout, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
+        Coast.DEFAULT_RETRYTIME = retry;
         chaosHandler.setChaosRules(rules);
         statisticsLines = Collections.synchronizedList(new ArrayList<>(times));
         CountDownLatch cdl = new CountDownLatch(times);
@@ -137,7 +138,7 @@ public class ChaosService {
                 .collect(Collectors.groupingBy(t -> t.result.value));
         Logs.flow.info("混沌测试报告：\\n");
         groups.forEach((key, list) -> {
-            Logs.flow.info("{},\t\t\t\t\t\t\t\t{}", key, list.size());
+            Logs.flow.info("{},\t{}", key, list.size());
         });
 
         statisticsLines.clear();

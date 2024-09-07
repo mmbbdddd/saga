@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.chaos.config;
 
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.chaos.support.ChaosHandlerImpl;
+import cn.hz.ddbm.pc.chaos.support.ChaosHandler;
 import cn.hz.ddbm.pc.chaos.support.LocalChaosAction;
 import cn.hz.ddbm.pc.chaos.support.RemoteChaosAction;
 import cn.hz.ddbm.pc.factory.fsm.BeanFsmFlowFactory;
@@ -70,8 +70,8 @@ public class ChaosConfiguration {
     }
 
     @Bean
-    ChaosHandlerImpl chaosHandler() {
-        return new ChaosHandlerImpl();
+    ChaosHandler chaosHandler() {
+        return new ChaosHandler();
     }
 
 

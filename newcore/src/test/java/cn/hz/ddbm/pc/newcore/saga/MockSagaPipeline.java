@@ -16,7 +16,7 @@ public class MockSagaPipeline {
                 Pair.of(PayStateMachine.send, PayCommitAction.class)
         ));
 
-        flow.setProfile(Profile.devOf());
+        flow.setProfile(Profile.chaosOf());
 
         return flow;
     }

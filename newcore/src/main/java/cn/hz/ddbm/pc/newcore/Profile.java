@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Setter;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Setter
 @Builder
@@ -42,7 +41,7 @@ public class Profile {
                 .build();
     }
 
-    public static Profile devOf() {
+    public static Profile chaosOf() {
         return new ProfileBuilder().namespace("default")
                 .maxLoopErrorTimes(10)
                 .statusTimeoutMicros(3000)
@@ -113,10 +112,6 @@ public class Profile {
     @Setter
     public static class ChaosConfig {
         Set<Pair<Boolean, Double>>  sagaRouterRules;
-
-
-
-
         public Set<Pair<Boolean, Double>> getSagaRouterRules() {
             return sagaRouterRules == null ? ChaosRule.defaultSagaResults() : sagaRouterRules;
         }

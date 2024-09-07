@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 @Aspect
 public class AopAspect {
     @Resource
-    ChaosHandlerImpl chaosHandler;
+    ChaosHandler chaosHandler;
 
     @Around("execution(* cn.hz.ddbm.pc.newcore.infra.Locker.*(..))")
     public Object locker(ProceedingJoinPoint pjp) throws Throwable {

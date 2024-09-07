@@ -1,6 +1,5 @@
 package cn.hz.ddbm.pc.chaos.support;
 
-import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
@@ -10,7 +9,7 @@ import javax.annotation.Resource;
 
 public class RemoteChaosAction implements RemoteSagaAction, RemoteFsmAction {
     @Resource
-    ChaosHandlerImpl chaosHandler;
+    ChaosHandler chaosHandler;
     @Override
     public String code() {
         return "remoteChaosAction";

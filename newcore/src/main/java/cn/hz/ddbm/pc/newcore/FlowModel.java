@@ -2,10 +2,12 @@ package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import lombok.Data;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,7 +49,12 @@ public abstract class FlowModel<S extends State> {
     }
 
     public Profile getProfile() {
-        return profile==null?Profile.of():profile;
+        String runMode = System.getProperty(Coast.RUN_MODE);
+        if(Objects.equals(runMode,Coast.RUN_MODE_CHAOS)){
+            return Profile.chaosOf();
+        }else {
+            return profile == null ? Profile.of() : profile;
+        }
     }
 
     public Boolean isRightState(S stateCode) {

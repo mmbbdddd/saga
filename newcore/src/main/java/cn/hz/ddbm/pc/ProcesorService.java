@@ -3,7 +3,6 @@ package cn.hz.ddbm.pc;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
-import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
@@ -46,10 +45,6 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         this.statusManagerMap.put(Coast.StatusType.jvm, new JvmStatusManager());
 //        this.scheduleMangerMap.put(Coast.ScheduleType.timer, new TimerScheduleManager());
         this.lockerMap.put(Coast.LockType.jvm, new JvmLocker());
-    }
-
-    public static ChaosHandler chaosHandler() {
-        return SpringUtil.getBean(ChaosHandler.class);
     }
 
 

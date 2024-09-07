@@ -1,5 +1,7 @@
 package cn.hz.ddbm.pc.fsm;
 
+import cn.hutool.core.map.multi.RowKeyTable;
+import cn.hutool.db.meta.Table;
 import cn.hz.ddbm.pc.factory.fsm.FSM;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
@@ -61,25 +63,25 @@ public class IdCardFsm implements FSM<IdCardState> {
                 .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.auditing))
                 .endState()
                 .state(IdCardState.auditing)
-                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalRouter<>(new HashMap<String, IdCardState>() {{
-                    put("result.code == '0000'", IdCardState.su);
-                    put("result.code == '0001'", IdCardState.fail);
-                    put("result.code == '0002'", IdCardState.no_such_order);
-                    put("result.code == '0003'", IdCardState.lost_date);
+                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalRouter<>(new RowKeyTable<String, IdCardState, Double>() {{
+                    put("result.code == '0000'", IdCardState.su, 1.0);
+                    put("result.code == '0001'", IdCardState.fail, 0.1);
+                    put("result.code == '0002'", IdCardState.no_such_order, 0.1);
+                    put("result.code == '0003'", IdCardState.lost_date, 0.1);
                 }}))
                 .endState()
                 .state(IdCardState.no_such_order)
-                .local(Coast.FSM.EVENT_DEFAULT,LocalFsmAction.class,new LocalToRouter<>(IdCardState.presend))
+                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.presend))
                 .endState()
                 .state(IdCardState.lost_date)
-                .local(Coast.FSM.EVENT_DEFAULT,LocalFsmAction.class,new LocalToRouter<>(IdCardState.init))
+                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.init))
                 .endState()
         ;
     }
 
     @Override
     public Profile profile() {
-        return Profile.devOf();
+        return Profile.chaosOf();
     }
 
     @Override

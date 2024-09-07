@@ -1,14 +1,8 @@
 package cn.hz.ddbm.pc.chaos.support;
 
 import cn.hutool.core.lang.Pair;
-import cn.hutool.core.util.ReflectUtil;
-import cn.hz.ddbm.pc.newcore.Action;
-import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRuleType;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
-import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
-import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionProxy;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
@@ -24,17 +18,19 @@ import java.util.stream.Collectors;
  * action：ChaosTargetType值。
  * type
  */
-public class ChaosHandlerImpl implements ChaosHandler {
+public class ChaosHandler {
     Set<Pair<ChaosRule, Double>> errorRules;
     Set<Pair<ChaosRule, Double>> resultRules;
 
-    public ChaosHandlerImpl() {
+    public ChaosHandler() {
         this.errorRules  = new HashSet<>();
         this.resultRules = new HashSet<>();
     }
 
     public void setChaosRules(List<ChaosRule> rules) {
-        if (null == rules || rules.isEmpty()) return;
+        if (null == rules) {
+            rules = new ArrayList<>();
+        }
         this.errorRules  = rules.stream()
                 .filter(r -> r.getType().equals(ChaosRuleType.EXCEPTION))
                 .map(r -> Pair.of(r, r.getWeight()))
@@ -57,14 +53,7 @@ public class ChaosHandlerImpl implements ChaosHandler {
         }
     }
 
-    /**
-     * 模拟生成FsmRouter的结果
-     */
-    @Override
-    public Enum fsmRouter(FsmContext ctx, FsmRouter router) {
-        Class actionClass = (Class) ReflectUtil.getFieldValue(ctx.getAction(), "actionClass");
-        return (Enum) RandomUitl.selectByWeight(actionClass.getSimpleName(), router.weights());
-    }
+
 
 
     public Boolean sagaRouter(SagaContext ctx) {

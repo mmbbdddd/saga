@@ -44,7 +44,7 @@ class FsmProcessorTest {
             this.to(PayFsm.init, Coast.FSM.EVENT_DEFAULT, "nono", pay);
             this.onEvent(pay, Coast.FSM.EVENT_DEFAULT, "nono", send);
             this.onEvent(send, Coast.FSM.EVENT_DEFAULT, "nono", send_failover);
-            this.profile(Profile.devOf())
+            this.profile(Profile.chaosOf())
         }
     }
 
