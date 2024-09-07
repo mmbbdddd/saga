@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.Payload;
 
 public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>, SagaFlow<S>> {
@@ -10,10 +11,10 @@ public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>, Sa
 
     void setSagaState(S sagaState);
 
-    SagaState.Offset getOffset();
+    OffsetState getOffset();
 
 
-    void setOffset(SagaState.Offset offset);
+    void setOffset(OffsetState offset);
 
     SagaState.Direction getDirection();
 

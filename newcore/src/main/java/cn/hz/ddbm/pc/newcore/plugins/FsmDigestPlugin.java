@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.plugins;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
@@ -23,11 +24,11 @@ public class FsmDigestPlugin<S extends Enum<S>> extends Plugin<FsmFlow<S>, FsmSt
 
     @Override
     public void postAction(FsmState<S> preState, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) {
-        String                   flow   = ctx.getFlow().getName();
-        Serializable             id     = ctx.getId();
-        Pair<S, FsmState.Offset> from   = preState.stateCode();
-        String                   action = ctx.getAction().code();
-        Pair<S, FsmState.Offset> target = ctx.getState().stateCode();
+        String          flow   = ctx.getFlow().getName();
+        Serializable         id     = ctx.getId();
+        Pair<S, OffsetState> from   = preState.stateCode();
+        String               action = ctx.getAction().code();
+        Pair<S, OffsetState> target = ctx.getState().stateCode();
 
         Logs.digest.info("{},{},{}.{}==>{}", flow, id, from, action, target);
     }

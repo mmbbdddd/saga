@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.saga.worker;
 
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
@@ -26,13 +27,13 @@ public class RemoteForward<S extends Enum<S>> {
     SagaState<S> rollback;
 
     public RemoteForward(S pre, S current, S next) {
-        this.task     = new SagaState<>(current, SagaState.Offset.task, SagaState.Direction.forward);
-        this.failover = new SagaState<>(current, SagaState.Offset.failover, SagaState.Direction.forward);
+        this.task     = new SagaState<>(current, OffsetState.task, SagaState.Direction.forward);
+        this.failover = new SagaState<>(current, OffsetState.failover, SagaState.Direction.forward);
 //        到下一个节点
-        this.su = null == next ? null : new SagaState<>(next, SagaState.Offset.task, SagaState.Direction.forward);
+        this.su = null == next ? null : new SagaState<>(next, OffsetState.task, SagaState.Direction.forward);
 //        到前一个节点
-        this.rollback = null == pre ? null : new SagaState<>(pre, SagaState.Offset.task, SagaState.Direction.backoff);
-        this.retry    = new SagaState<>(current, SagaState.Offset.retry, SagaState.Direction.forward);
+        this.rollback = null == pre ? null : new SagaState<>(pre, OffsetState.task, SagaState.Direction.backoff);
+        this.retry    = new SagaState<>(current, OffsetState.retry, SagaState.Direction.forward);
 
     }
 
@@ -40,9 +41,9 @@ public class RemoteForward<S extends Enum<S>> {
         ProcesorService  processor    = ctx.getProcessor();
         SagaState<S>     lastState    = ctx.getState().cloneSelf();
         RemoteSagaAction sagaAction   = (RemoteSagaAction) ctx.getAction();
-        SagaState.Offset currentState = lastState.getOffset();
+        OffsetState      currentState = lastState.getOffset();
         //如果任务可执行
-        if (Objects.equals(currentState, SagaState.Offset.task) || Objects.equals(currentState, SagaState.Offset.retry)) {
+        if (Objects.equals(currentState, OffsetState.task) || Objects.equals(currentState, OffsetState.retry)) {
             //冥等
             processor.idempotent(ctx);
             processor.plugin().pre(ctx);
@@ -64,7 +65,7 @@ public class RemoteForward<S extends Enum<S>> {
                 processor.plugin()._finally(ctx);
                 processor.metricsNode(ctx);
             }
-        } else if (Objects.equals(currentState, SagaState.Offset.failover)) {
+        } else if (Objects.equals(currentState, OffsetState.failover)) {
             try {
                 Boolean queryResult = sagaAction.executeQuery(ctx);
                 //如果业务未发送成功，取消冥等，设置为任务可执行状态

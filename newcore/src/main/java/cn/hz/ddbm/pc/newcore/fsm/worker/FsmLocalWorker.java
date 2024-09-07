@@ -1,5 +1,6 @@
 package cn.hz.ddbm.pc.newcore.fsm.worker;
 
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
@@ -9,7 +10,6 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionProxy;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
 
 import java.util.Objects;
 
@@ -29,9 +29,9 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
         ctx.setAction(action);
         ctx.setRouter(router);
         //如果任务可执行
-        FsmState.Offset offset = ctx.getState().getOffset();
+        OffsetState offset = ctx.getState().getOffset();
 
-        if (Objects.equals(offset, FsmState.Offset.task)) {
+        if (Objects.equals(offset, OffsetState.task)) {
             processor.plugin().pre(ctx);
             //todo jdbc transition
             //执行业务

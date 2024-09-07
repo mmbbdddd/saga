@@ -1,8 +1,8 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
-import cn.hz.ddbm.pc.common.lang.Tetrad;
 import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.State;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,14 +13,14 @@ import java.util.Objects;
  * @param <M> 主状态，
  */
 @Getter
-public class SagaState<M extends Enum<M>> extends State<Triple<M, SagaState.Offset, SagaState.Direction>, SagaFlow<M>> {
+public class SagaState<M extends Enum<M>> extends State<Triple<M, OffsetState, SagaState.Direction>, SagaFlow<M>> {
     M master;
     @Setter
-    Offset    offset;
+    OffsetState offset;
     @Setter
-    Direction direction;
+    Direction   direction;
 
-    private static <M extends Enum<M>> String buildCode(M master, Offset offset, Direction direction) {
+    private static <M extends Enum<M>> String buildCode(M master, OffsetState offset, Direction direction) {
         if (direction.isForward()) {
             return String.format(">>>>%s:%s", master.name(), offset.name());
         } else {
@@ -28,7 +28,7 @@ public class SagaState<M extends Enum<M>> extends State<Triple<M, SagaState.Offs
         }
     }
 
-    public SagaState(M master, Offset offset, Direction direction) {
+    public SagaState(M master, OffsetState offset, Direction direction) {
         this.master    = master;
         this.offset    = offset;
         this.direction = direction;
@@ -36,7 +36,7 @@ public class SagaState<M extends Enum<M>> extends State<Triple<M, SagaState.Offs
 
 
     @Override
-    public Triple<M, SagaState.Offset, Direction> stateCode() {
+    public Triple<M, OffsetState, Direction> stateCode() {
         return Triple.of(master, offset, direction);
     }
 
@@ -60,7 +60,7 @@ public class SagaState<M extends Enum<M>> extends State<Triple<M, SagaState.Offs
         return new SagaState<>(  this.getMaster(), this.offset, this.direction);
     }
 
-    public SagaState<M> offSet(Offset offset) {
+    public SagaState<M> offSet(OffsetState offset) {
         this.offset = offset;
         return this;
     }
@@ -75,9 +75,6 @@ public class SagaState<M extends Enum<M>> extends State<Triple<M, SagaState.Offs
     }
 
 
-    public enum Offset {
-        task, failover, su, retry, fail;
-    }
 
     public enum Direction {
         forward, backoff;

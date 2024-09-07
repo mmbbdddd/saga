@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.saga.worker;
 
 import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
@@ -23,10 +24,10 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     public SagaLocalWorker(int index, S pre, S current, S next, Class action) {
         super(index, current);
-        this.pre      = new SagaState<>(pre, SagaState.Offset.task, SagaState.Direction.backoff);
-        this.next     = new SagaState<>(next, SagaState.Offset.task, SagaState.Direction.forward);
-        this.rollback = new SagaState<>(current, SagaState.Offset.task, SagaState.Direction.backoff);
-        this.manual   = new SagaState<>(current, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.pre      = new SagaState<>(pre, OffsetState.task, SagaState.Direction.backoff);
+        this.next     = new SagaState<>(next, OffsetState.task, SagaState.Direction.forward);
+        this.rollback = new SagaState<>(current, OffsetState.task, SagaState.Direction.backoff);
+        this.manual   = new SagaState<>(current, OffsetState.manual, SagaState.Direction.backoff);
         this.action   = new LocalSagaActionProxy(action);
     }
 

@@ -1,8 +1,8 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.Payload;
-import lombok.Data;
 
 import java.io.Serializable;
 
@@ -18,9 +18,9 @@ public interface FsmPayload<S extends Enum<S>> extends Payload<FsmState<S>, FsmF
 
     void setFsmState(S fsmState);
 
-    FsmState.Offset getOffset();
+    OffsetState getOffset();
 
-    void setOffset(FsmState.Offset offset);
+    void setOffset(OffsetState offset);
 
     default FsmState<S> getState() {
         return new FsmState<>(getFsmState(), getOffset());

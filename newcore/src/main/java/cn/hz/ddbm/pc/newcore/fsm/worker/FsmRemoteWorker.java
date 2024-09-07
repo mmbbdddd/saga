@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.fsm.worker;
 
 import cn.hutool.core.lang.Assert;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
@@ -29,12 +30,12 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         ctx.setAction(action);
         ctx.setRouter(router);
         //如果任务可执行
-        FsmState<S>     lastSate = ctx.getState();
-        FsmState<S>     failover = ctx.getState().offset(FsmState.Offset.failover);
-        FsmState.Offset offset   = ctx.getState().getOffset();
+        FsmState<S> lastSate = ctx.getState();
+        FsmState<S> failover = ctx.getState().offset(OffsetState.failover);
+        OffsetState offset   = ctx.getState().getOffset();
 
 
-        if (Objects.equals(offset, FsmState.Offset.task)) {
+        if (Objects.equals(offset, OffsetState.task)) {
             //加锁
             processor.tryLock(ctx);
 
@@ -56,7 +57,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
                 processor.plugin()._finally(ctx);
                 processor.metricsNode(ctx);
             }
-        } else if (Objects.equals(offset, FsmState.Offset.failover)) {
+        } else if (Objects.equals(offset, OffsetState.failover)) {
             try {
                 Object actionResult = action.executeQuery(ctx);
                 Assert.notNull(actionResult, "queryResult is null");

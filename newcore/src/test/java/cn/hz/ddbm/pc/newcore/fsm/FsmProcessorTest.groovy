@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.fsm
 
 
 import cn.hz.ddbm.pc.newcore.FlowStatus
+import cn.hz.ddbm.pc.newcore.OffsetState
 import cn.hz.ddbm.pc.newcore.Profile
 import cn.hz.ddbm.pc.newcore.config.Coast
 import com.google.common.collect.Sets
@@ -34,9 +35,8 @@ class FsmProcessorTest {
 
     class PayFsmPayload implements FsmPayload<PayFsm> {
         Serializable id;
-        FlowStatus status;
         PayFsm fsmState;
-        FsmState.Offset offset;
+        OffsetState offset;
     }
 
     class PayFsmFlow extends FsmFlow<PayFsm> {

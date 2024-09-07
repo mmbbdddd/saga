@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.chaos;
 import cn.hz.ddbm.pc.chaos.support.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.newcore.config.Coast;
@@ -13,7 +14,6 @@ import cn.hz.ddbm.pc.newcore.exception.SessionException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
-import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
@@ -152,16 +152,16 @@ public class ChaosService {
 
 @Data
 class MockFsmPayload<S extends Enum<S>> implements FsmPayload<S> {
-    Serializable    id;
-    FlowStatus      status;
-    S               fsmState;
-    FsmState.Offset offset;
+    Serializable id;
+    FlowStatus   status;
+    S           fsmState;
+    OffsetState offset;
 
     public MockFsmPayload(Serializable id, S fsmState) {
         this.id       = id;
         this.status   = FlowStatus.RUNNABLE;
         this.fsmState = fsmState;
-        this.offset   = FsmState.Offset.task;
+        this.offset   = OffsetState.task;
     }
 }
 
@@ -169,17 +169,15 @@ class MockFsmPayload<S extends Enum<S>> implements FsmPayload<S> {
 class MockSagaPayload<S extends Enum<S>> implements SagaPayload<S> {
 
     Integer             id;
-    FlowStatus          status;
     S                   sagaState;
-    SagaState.Offset    offset;
+    OffsetState         offset;
     SagaState.Direction direction;
 
     public MockSagaPayload(Integer id, S sagaState) {
         this.id        = id;
         this.sagaState = sagaState;
         this.direction = SagaState.Direction.forward;
-        this.offset    = SagaState.Offset.task;
-        this.status    = FlowStatus.INIT;
+        this.offset    = OffsetState.task;
     }
 }
 
