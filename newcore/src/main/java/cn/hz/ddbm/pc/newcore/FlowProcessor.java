@@ -26,7 +26,7 @@ public interface FlowProcessor<C extends FlowContext> {
      * @throws InterruptedException
      * @throws PauseException
      */
-    default void flowProcess(C ctx) throws FlowEndException, InterruptedException, PauseException {
+    default void flowProcess(C ctx) throws  InterruptedException, PauseException {
         //判断流程是否结束
 
         while (true) {
@@ -42,9 +42,6 @@ public interface FlowProcessor<C extends FlowContext> {
                 throw e;
             } catch (RetryableException e) {
                 //继续执行
-            } catch (Exception e) {
-                Logs.error.error("未预料到的异常", e);
-                return;
             }
         }
         //
