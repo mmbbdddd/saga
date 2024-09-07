@@ -3,7 +3,9 @@ package cn.hz.ddbm.pc.newcore;
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
@@ -22,6 +24,8 @@ public class Profile {
     Coast.ScheduleType    schedule;
     List<Plugin>          plugins;
     Map<State, StateAttr> stateAttr;
+    @Getter
+    Set<Class<? extends Exception>> retryExceptions;
 
 
     public static Profile of() {
@@ -36,6 +40,9 @@ public class Profile {
                 .schedule(Coast.ScheduleType.timer)
                 .plugins(new ArrayList<>())
                 .stateAttr(new HashMap<>())
+                .retryExceptions(new HashSet<Class<? extends Exception>>() {{
+                    add(IdempotentException.class);
+                }})
                 .build();
     }
 
@@ -51,6 +58,9 @@ public class Profile {
                 .schedule(Coast.ScheduleType.timer)
                 .plugins(new ArrayList<>())
                 .stateAttr(new HashMap<>())
+                .retryExceptions(new HashSet<Class<? extends Exception>>() {{
+                    add(IdempotentException.class);
+                }})
                 .build();
     }
 
@@ -103,6 +113,13 @@ public class Profile {
     }
 
 
-
-
+    public boolean isRetryableException(Throwable e) {
+        if (retryExceptions == null || retryExceptions.isEmpty()) return false;
+        for (Class<? extends Exception> type : retryExceptions) {
+            if (type.isAssignableFrom(e.getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

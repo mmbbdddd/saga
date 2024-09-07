@@ -39,11 +39,11 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
 
 
     @Override
-    public void workerProcess(FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
+    public void workerProcess(FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException, RetryableException {
         workerProcess(Coast.FSM.EVENT_DEFAULT, ctx);
     }
 
-    public void workerProcess(String event, FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException {
+    public void workerProcess(String event, FsmContext<S> ctx) throws FlowEndException, InterruptedException, PauseException, RetryableException {
         Assert.notNull(ctx, "ctx is null");
         event = null == event ? Coast.FSM.EVENT_DEFAULT : event;
         ctx.setProcessor(this);
@@ -72,34 +72,7 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
             ctx.setWorker(worker);
             worker.execute(ctx);
         } catch (Throwable e) {
-            try {
-                if (ExceptionUtils.isInterrupted(e)) { //中断异常，暂停执行，等下一次事件触发
-                    Logs.error.error("中断异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    flush(ctx);
-                } else if (ExceptionUtils.isRetryable(e)) { //中断异常，暂停执行，等下一次事件触发
-                    Logs.flow.warn("可重试异常：{},{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    flush(ctx);
-                } else if (ExceptionUtils.isPaused(e)) { //暂停异常，状态设置为暂停，等人工修复
-                    Logs.error.error("暂停异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    ctx.getState().offset(OffsetState.pause);
-                    flush(ctx);
-                } else if (ExceptionUtils.isStoped(e)) {//流程结束或者取消
-                    Logs.flow.info("流程结束{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    flush(ctx);
-                } else {
-                    //不可预料的异常
-                    Logs.error.error("不可预料的异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    Integer loopErrorTimes = ctx.getLoopErrorTimes().incrementAndGet();
-                    if (loopErrorTimes > ctx.getProfile().getMaxLoopErrorTimes()) {
-                        throw new InterruptedException(String.format("节点%s执行次数超限制%s>%s", state.code(), loopErrorTimes, ctx.getProfile()
-                                .getMaxLoopErrorTimes()));
-                    }
-                    flush(ctx);
-//                    ctx.getFlow().execute(ctx);
-                }
-            } catch (StatusException | SessionException e2) {
-                Logs.status.error("", e2);
-            }
+            ExceptionUtils.wrap(e,ctx.getProfile());
         }
     }
 

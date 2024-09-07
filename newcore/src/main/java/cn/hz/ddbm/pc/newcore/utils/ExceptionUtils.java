@@ -2,11 +2,9 @@ package cn.hz.ddbm.pc.newcore.utils;
 
 
 import cn.hutool.core.util.ReflectUtil;
-import cn.hz.ddbm.pc.newcore.FlowContext;
-import cn.hz.ddbm.pc.newcore.FlowStatus;
-import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
-import cn.hz.ddbm.pc.newcore.exception.LockException;
+import cn.hz.ddbm.pc.newcore.Profile;
+import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
+import cn.hz.ddbm.pc.newcore.exception.*;
 
 import java.io.IOException;
 
@@ -51,7 +49,24 @@ public class ExceptionUtils {
     }
 
     public static boolean isStoped(Throwable e) {
-        return e instanceof FlowEndException ;
+        return e instanceof FlowEndException;
     }
 
+    public static void wrap(Throwable e, Profile profile) throws FlowEndException, InterruptedException, PauseException, RetryableException {
+//        throws IdempotentException, ActionException, LockException, FlowEndException, NoSuchRecordException
+        ///////停止执行
+        if (e instanceof FlowEndException) {
+            throw (FlowEndException) e;
+        }
+        ///////暂停执行，下次事件重新触发
+        ///////暂停执行，下次任务不触发
+        if (e instanceof PauseException) {
+            throw (PauseException) e;
+        }
+        if (!profile.isRetryableException(e)) {
+            throw new RetryableException(e);
+        } else {
+            throw new InterruptedException(e);
+        }
+    }
 }
