@@ -77,10 +77,7 @@ public class PayTest {
             return new ChaosService();
         }
 
-        @Bean
-        PaySaga test() {
-            return new PaySaga();
-        }
+
 
         @Bean
         PerformancePlugin performancePlugin() {
