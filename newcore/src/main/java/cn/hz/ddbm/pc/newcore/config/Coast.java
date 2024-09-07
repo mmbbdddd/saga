@@ -19,10 +19,17 @@ public class Coast {
     }
 
     public static class SAGA {
-        public final static String EVENT_FORWARD = "forward";
-        public final static String EVENT_BACKOFF = "backoff";
+        public final static String EVENT_FORWARD      = "forward";
+        public final static String EVENT_BACKOFF      = "backoff";
+        public final static String CHAOS_MODE         = "saga_mode";
+        public final static String CHAOS_TRUE         = "true";
+        public final static String CHAOS_FALSE        = "false";
+        public final static String CHAOS_RANDOM       = "random";
+        public final static Double CHAOS_TRUE_WEIGHT  = 0.9;
+        public final static Double CHAOS_FALSE_WEIGHT = 0.1;
 
     }
+
 
     public static class FSM {
         public final static String EVENT_DEFAULT = "push";

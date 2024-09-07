@@ -4,6 +4,7 @@ package cn.hz.ddbm.pc.newcore.infra;
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
@@ -21,9 +22,9 @@ import java.io.Serializable;
 public interface StatusManager {
     Coast.StatusType code();
 
-    void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> status, Integer timeout) throws StatusException;
+    void setStatus(String flow, Serializable flowId, State status, Integer timeout) throws StatusException;
 
-    Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws StatusException;
+    State getStatus(String flow, Serializable flowId) throws StatusException;
 
     void idempotent(String key) throws IdempotentException;
 
@@ -31,7 +32,7 @@ public interface StatusManager {
 
 
     default void flush(FlowContext ctx) throws StatusException {
-        setStatus(ctx.getFlow().getName(), ctx.getId(), Pair.of(ctx.getStatus(), ctx.getState()), ctx.getProfile().getStatusTimeoutMicros());
+        setStatus(ctx.getFlow().getName(), ctx.getId(), ctx.getState(), ctx.getProfile().getStatusTimeoutMicros());
     }
 
 }

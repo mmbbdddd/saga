@@ -1,57 +1,17 @@
 package cn.hz.ddbm.pc.newcore.chaos;
 
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
-import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
-import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
-import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
 public class ChaosRule {
-    ChaosRuleType type;
-    Class         target;
-    Object        value;
-    Double        weight;
-
-    private static List<ChaosRule> defaultRules() {
-        ArrayList<ChaosRule> rules = new ArrayList<>();
-        rules.add(new ChaosRule(ChaosRuleType.RESULT, RemoteSagaAction.class, true, 1.0));
-        rules.add(new ChaosRule(ChaosRuleType.RESULT, RemoteSagaAction.class, false, 1.0));
-
-        return rules;
-    }
-
-    public static Set<Pair<Enum, Double>> defaultFsmRouterResults(Class actionClass) {
-        Map<Class, List<ChaosRule>> ruleMaps = defaultRules()
-                .stream()
-                .filter(f -> f.type.equals(ChaosRuleType.RESULT))
-                .collect(Collectors.groupingBy(
-                        ChaosRule::getTarget
-                ));
-        return ruleMaps.get(actionClass).stream().map(ChaosRule::toFsmRouterResult).collect(Collectors.toSet());
-    }
+    Class  target;
+    Object value;
+    Double weight;
 
 
-    public static Set<Pair<Boolean, Double>> defaultSagaResults() {
-        Map<Class, List<ChaosRule>> ruleMaps = defaultRules().stream()
-                .filter(f -> f.type.equals(ChaosRuleType.RESULT))
-                .collect(Collectors.groupingBy(
-                        ChaosRule::getTarget
-                ));
-        return ruleMaps.get(RemoteSagaAction.class).stream().map(ChaosRule::toSagaActionResult).collect(Collectors.toSet());
-    }
 
 
-    public ChaosRule(ChaosRuleType type, Class target, Object value, Double weight) {
-        this.type   = type;
+    public ChaosRule(Class target, Object value, Double weight) {
         this.target = target;
         this.value  = value;
         this.weight = weight;
@@ -75,15 +35,5 @@ public class ChaosRule {
         throw e;
     }
 
-
-    public Pair<Enum, Double> toFsmRouterResult() {
-        Assert.isTrue(Enum.class.isAssignableFrom(value.getClass()), "类型不匹配Enum");
-        return Pair.of((Enum) value, weight);
-    }
-
-    public Pair<Boolean, Double> toSagaActionResult() {
-        Assert.isTrue(value instanceof Boolean, "类型不匹配Boolean");
-        return Pair.of((Boolean) value, weight);
-    }
 
 }

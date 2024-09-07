@@ -1,15 +1,12 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import lombok.Data;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
 public abstract class FlowModel<S extends State> {
@@ -17,7 +14,7 @@ public abstract class FlowModel<S extends State> {
     S      init;
     Set<S> ends;
     Set<S> tasks;
-    Set<S> allMasterStates;
+    Set<S> allStates;
 
     public FlowModel(String name, S init, Set<S> ends, Set<S> tasks) {
         Assert.notNull(name, "name is null");
@@ -27,11 +24,11 @@ public abstract class FlowModel<S extends State> {
         this.name            = name;
         this.init            = init;
         this.ends            = ends;
-        this.tasks           = tasks;
-        this.allMasterStates = new HashSet<>();
-        this.allMasterStates.add(init);
-        this.allMasterStates.addAll(ends);
-        this.allMasterStates.addAll(tasks);
+        this.tasks     = tasks;
+        this.allStates = new HashSet<>();
+        this.allStates.add(init);
+        this.allStates.addAll(ends);
+        this.allStates.addAll(tasks);
     }
 
     public Integer getRetry(S state) {
@@ -58,6 +55,7 @@ public abstract class FlowModel<S extends State> {
     }
 
     public Boolean isRightState(S stateCode) {
-        return allMasterStates.contains(stateCode);
+        return allStates.contains(stateCode);
     }
+
 }

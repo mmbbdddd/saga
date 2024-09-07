@@ -19,7 +19,6 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     final     Payload<S>          payload;
     final     Profile             profile;
     final     AtomicInteger       loopErrorTimes;
-    transient FlowStatus          status;
     transient S                   state;
     transient W                   worker;
     transient ProcesorService     processor;
@@ -35,21 +34,16 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
         this.profile        = flow.getProfile();
         this.session        = session == null ? new HashMap<>() : session;
         this.state          = payload.getState();
-        this.status         = payload.getStatus();
         this.loopErrorTimes = new AtomicInteger(0);
     }
 
 
     public void setState(S nextState) {
-        if (getFlow().getEnds().contains(nextState)) {
-            this.setStatus(FlowStatus.FINISH);
-        }
-        Logs.digest.info("{}==>{}", state, nextState);
+//        Logs.digest.info("{}==>{}", state, nextState);
         this.state = nextState;
     }
 
     public void syncpayload() {
-        payload.setStatus(status);
         payload.setState(state);
     }
 }

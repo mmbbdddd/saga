@@ -21,7 +21,7 @@ public class SagaDigestPlugin extends Plugin {
 
     @Override
     public void postAction(State lastNode, FlowContext ctx) {
-        Boolean forward   = ((SagaState) ctx.getState()).getIsForward();
+        Boolean forward   = ((SagaState) ctx.getState()).getDirection().isForward();
         String  directStr = forward ? ">>>>" + Math.random() : "<<<<" + Math.random();
 
         String       flow         = ctx.getFlow().getName();

@@ -1,9 +1,14 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
+import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Payload;
 
 public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>> {
 
+
+    FlowStatus getStatus();
+
+    void setStatus(FlowStatus status);
 
     S getSagaState();
 
@@ -14,20 +19,21 @@ public interface SagaPayload<S extends Enum<S>> extends Payload<SagaState<S>> {
 
     void setOffset(SagaState.Offset offset);
 
-    Boolean getForward();
+    SagaState.Direction getDirection();
 
-    void setForward(Boolean forward);
+    void setDirection(SagaState.Direction direction);
 
     @Override
     default SagaState<S> getState() {
-        return new SagaState<>(this.getSagaState(), getOffset(), getForward());
+        return new SagaState<>(this.getStatus(),this.getSagaState(), getOffset(), getDirection());
     }
 
     @Override
     default void setState(SagaState<S> state) {
+        setStatus(state.getStatus());
         setSagaState(state.getMaster());
         setOffset(state.getOffset());
-        setForward(state.getIsForward());
+        setDirection(state.getDirection());
     }
 
 }

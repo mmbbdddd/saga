@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore.infra.impl;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class JvmStatusManager implements StatusManager {
-    ConcurrentMap<String, Pair<FlowStatus, ?>> statusMap;
+    ConcurrentMap<String, State> statusMap;
     ConcurrentMap<String, Boolean>             actionTables;
     String                                     keyTemplate = "%s:%s";
 
@@ -28,9 +29,9 @@ public class JvmStatusManager implements StatusManager {
     }
 
     @Override
-    public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> status, Integer timeout) throws StatusException {
+    public void setStatus(String flow, Serializable flowId, State status, Integer timeout) throws StatusException {
         try {
-            Logs.status.debug("状态变迁到{}", status.getValue());
+            Logs.status.debug("状态变迁到{}", status);
             statusMap.put(String.format(keyTemplate, flow, flowId), status);
         } catch (Exception e) {
             throw new StatusException(e);
@@ -39,7 +40,7 @@ public class JvmStatusManager implements StatusManager {
 
 
     @Override
-    public Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws StatusException {
+    public State getStatus(String flow, Serializable flowId) throws StatusException {
         try {
             return statusMap.get(String.format(keyTemplate, flow, flowId));
         } catch (Exception e) {

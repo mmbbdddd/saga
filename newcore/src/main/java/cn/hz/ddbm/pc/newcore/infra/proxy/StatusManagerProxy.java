@@ -3,7 +3,7 @@ package cn.hz.ddbm.pc.newcore.infra.proxy;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
-import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
+import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
@@ -24,7 +24,7 @@ public class StatusManagerProxy implements StatusManager {
     }
 
     @Override
-    public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> status, Integer timeout) throws StatusException {
+    public void setStatus(String flow, Serializable flowId, State status, Integer timeout) throws StatusException {
         try {
             statusManager.setStatus(flow, flowId, status, timeout);
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class StatusManagerProxy implements StatusManager {
     }
 
     @Override
-    public Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws StatusException {
+    public State getStatus(String flow, Serializable flowId) throws StatusException {
         try {
             return statusManager.getStatus(flow, flowId);
         } catch (Exception e) {

@@ -1,7 +1,9 @@
 package cn.hz.ddbm.pc.newcore.plugins;
 
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
@@ -25,13 +27,13 @@ public class FsmDigestPlugin<S extends Enum<S>> extends Plugin<FsmFlow<S>, FsmSt
 
     @Override
     public void postAction(FsmState<S> preState, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) {
-        String                   flow         = ctx.getFlow().getName();
-        Serializable             id           = ctx.getId();
-        Pair<S, FsmState.Offset> from         = preState.code();
-        String                   action       = ctx.getAction().code();
-        Pair<S, FsmState.Offset> target = ctx.getState().code();
+        String                                 flow   = ctx.getFlow().getName();
+        Serializable                           id     = ctx.getId();
+        Triple<FlowStatus, S, FsmState.Offset> from   = preState.code();
+        String                                 action = ctx.getAction().code();
+        Triple<FlowStatus, S, FsmState.Offset> target = ctx.getState().code();
 
-        Logs.digest.info("{},{},{}_{}.{}==>{}_{}", flow, id, from.getKey(),from.getValue(), action, target.getKey(),target.getValue());
+        Logs.digest.info("{},{},{}.{}==>{}", flow, id, from, action, target);
     }
 
     @Override

@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.FlowModel;
+import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
@@ -37,10 +38,10 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
 //            SagaWorker<S> worker = new SagaWorker<>(i, getPre(tasks, i), getCurrent(tasks, i), getNext(tasks, i), actions.get(i));
             Class action = actions.get(i);
             if (LocalSagaAction.class.isAssignableFrom(actions.get(i))) {
-                SagaWorker<S> worker = SagaWorker.local(i, getPre(tasks, i), getCurrent(tasks, i), getNext(tasks, i), action);
+                SagaWorker<S> worker = SagaWorker.local(i, getPre(tasks,i),getCurrent(tasks,i),getNext(tasks,i), action);
                 pipeline.put(worker.getState(), worker);
             } else {
-                SagaWorker<S> worker = SagaWorker.remote(i, getPre(tasks, i), getCurrent(tasks, i), getNext(tasks, i), action);
+                SagaWorker<S> worker = SagaWorker.remote(i, getPre(tasks,i),getCurrent(tasks,i),getNext(tasks,i), action);
                 pipeline.put(worker.getState(), worker);
             }
 
@@ -73,26 +74,26 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
 
     private static <S extends Enum<S>> SagaState<S> buildInit(List<S> tasks) {
         Assert.notNull(tasks, "tasks is null");
-        return new SagaState<>(tasks.get(0), SagaState.Offset.task, true);
+        return new SagaState<>(FlowStatus.INIT,tasks.get(0), SagaState.Offset.task, SagaState.Direction.forward);
     }
 
     private static <S extends Enum<S>> Set<SagaState<S>> buildEnds(List<S> tasks) {
         Assert.notNull(tasks, "tasks is null");
         Set<SagaState<S>> ends = new HashSet<>();
         //初始化，并且状态是fail。为结束节点
-        ends.add(new SagaState<>(tasks.get(0), SagaState.Offset.fail, false));
+        ends.add(new SagaState<>(FlowStatus.FINISH,tasks.get(0), SagaState.Offset.fail, SagaState.Direction.backoff));
         //最后一个节点，状态为成功，为结束节点
-        ends.add(new SagaState<>(tasks.get(tasks.size() - 1), SagaState.Offset.su, true));
+        ends.add(new SagaState<>(FlowStatus.FINISH,tasks.get(tasks.size() - 1), SagaState.Offset.su, SagaState.Direction.forward));
         return ends;
     }
 
     private static <S extends Enum<S>> Set<SagaState<S>> buildTasks(List<S> tasks) {
         List<SagaState<S>> forwards = tasks.stream()
-                .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(state, offset, true)).collect(Collectors.toList()))
+                .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(FlowStatus.RUNNABLE,state, offset, SagaState.Direction.forward)).collect(Collectors.toList()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         List<SagaState<S>> backoff = tasks.stream()
-                .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(state, offset, false)).collect(Collectors.toList()))
+                .map(state -> EnumSet.allOf(SagaState.Offset.class).stream().map(offset -> new SagaState<S>(FlowStatus.RUNNABLE,state, offset, SagaState.Direction.backoff)).collect(Collectors.toList()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         List<SagaState<S>> all = new ArrayList<>();

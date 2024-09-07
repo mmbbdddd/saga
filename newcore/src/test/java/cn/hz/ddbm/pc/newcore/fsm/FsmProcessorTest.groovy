@@ -32,10 +32,11 @@ class FsmProcessorTest {
         fsmProcessor.flowProcess(ctx)
     }
 
-    class PayFsmPayload extends FsmPayload<PayFsm> {
-        PayFsmPayload() {
-            super(1, FlowStatus.RUNNABLE, init)
-        }
+    class PayFsmPayload implements FsmPayload<PayFsm> {
+        Serializable id;
+        FlowStatus status;
+        PayFsm fsmState;
+        FsmState.Offset offset;
     }
 
     class PayFsmFlow extends FsmFlow<PayFsm> {

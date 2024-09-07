@@ -13,6 +13,7 @@ import cn.hz.ddbm.pc.newcore.exception.SessionException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
+import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
@@ -115,11 +116,10 @@ public class ChaosService {
 
     public boolean isContinue(FlowContext ctx) {
 
-        String     flowName = ctx.getFlow().getName();
-        State      state    = ctx.getState();
-        FlowStatus status   = ctx.getStatus();
-        if (!FlowStatus.isRunnable(status)) {
-            Logs.flow.debug("流程不可运行：{},{},{},{}", flowName, ctx.getId(), status, state);
+        String flowName = ctx.getFlow().getName();
+        State  state    = ctx.getState();
+        if (state.isEnd() || state.isPause()) {
+            Logs.flow.debug("流程不可运行：{},{},{} ", flowName, ctx.getId(), state);
             return false;
         }
 
@@ -150,27 +150,34 @@ public class ChaosService {
 
 }
 
-
-class MockFsmPayload<S extends Enum<S>> extends FsmPayload<S> {
+@Data
+class MockFsmPayload<S extends Enum<S>> implements FsmPayload<S> {
+    Serializable    id;
+    FlowStatus      status;
+    S               fsmState;
+    FsmState.Offset offset;
 
     public MockFsmPayload(Serializable id, S fsmState) {
-        super(id, FlowStatus.INIT, fsmState);
+        this.id       = id;
+        this.status   = FlowStatus.RUNNABLE;
+        this.fsmState = fsmState;
+        this.offset   = FsmState.Offset.task;
     }
 }
 
 @Data
 class MockSagaPayload<S extends Enum<S>> implements SagaPayload<S> {
 
-    Integer          id;
-    FlowStatus       status;
-    S                sagaState;
-    SagaState.Offset offset;
-    Boolean          forward;
+    Integer             id;
+    FlowStatus          status;
+    S                   sagaState;
+    SagaState.Offset    offset;
+    SagaState.Direction direction;
 
     public MockSagaPayload(Integer id, S sagaState) {
         this.id        = id;
         this.sagaState = sagaState;
-        this.forward   = true;
+        this.direction = SagaState.Direction.forward;
         this.offset    = SagaState.Offset.task;
         this.status    = FlowStatus.INIT;
     }

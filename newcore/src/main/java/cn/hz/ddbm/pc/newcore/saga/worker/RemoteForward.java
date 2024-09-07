@@ -7,6 +7,7 @@ import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
 
@@ -24,14 +25,15 @@ public class RemoteForward<S extends Enum<S>> {
     //    当前节点回滚to状态
     SagaState<S> rollback;
 
-    public RemoteForward( S pre, S current, S next) {
-        this.task     = new SagaState<>(current, SagaState.Offset.task, true);
-        this.failover = new SagaState<>(current, SagaState.Offset.failover, true);
+    public RemoteForward(S pre, S current, S next) {
+        this.task     = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.task, SagaState.Direction.forward);
+        this.failover = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.failover, SagaState.Direction.forward);
 //        到下一个节点
-        this.su = new SagaState<>(next, SagaState.Offset.task, true);
+        this.su = null == next ? null : new SagaState<>(FlowStatus.RUNNABLE, next, SagaState.Offset.task, SagaState.Direction.forward);
 //        到前一个节点
-        this.rollback = new SagaState<>(pre, SagaState.Offset.task, false);
-        this.retry    = new SagaState<>(current, SagaState.Offset.task, true);
+        this.rollback = null == pre ? null : new SagaState<>(FlowStatus.RUNNABLE, pre, SagaState.Offset.task, SagaState.Direction.backoff);
+        this.retry    = new SagaState<>(FlowStatus.RUNNABLE, current, SagaState.Offset.task, SagaState.Direction.forward);
+
     }
 
     public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
@@ -77,15 +79,19 @@ public class RemoteForward<S extends Enum<S>> {
                     //超过重试次数，设置为失败，低于重试次数，设置为retry
                     if (executeTimeState > retryTimes) {
                         //失败处理机制：前向转后向，后向转人工
-                        ctx.setState(rollback);
+                        if(null == rollback){
+                            ctx.getState().setStatus(FlowStatus.FINISH);
+                        }else {
+                            ctx.setState(rollback);
+                        }
                     } else {
                         //如果可以重试，则设置为初始状态，重新执行任务。
                         ctx.setState(retry);
                     }
                 } else {
-                    if (null == su) {
-                        ctx.setStatus(FlowStatus.FINISH);
-                    } else {
+                    if(null == su){
+                        ctx.getState().status(FlowStatus.FINISH);
+                    }else {
                         ctx.setState(su);
                     }
                 }

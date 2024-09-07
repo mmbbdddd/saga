@@ -27,6 +27,7 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S
         this.state = state;
     }
 
+
     public static <S extends Enum<S>> SagaLocalWorker<S> local(int i, S pre, S current, S next, Class action) {
         return new SagaLocalWorker<>(i, pre, current, next, action);
     }
@@ -34,6 +35,7 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaContext<S
     public static <S extends Enum<S>> SagaRemoteWorker<S> remote(int i, S pre, S current, S next, Class action) {
         return new SagaRemoteWorker<>(i, pre, current, next, action);
     }
+
 
     @Override
     public abstract void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException;

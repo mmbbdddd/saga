@@ -1,5 +1,6 @@
 package cn.hz.ddbm.pc.chaos.support;
 
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;

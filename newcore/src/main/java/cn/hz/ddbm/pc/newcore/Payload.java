@@ -6,10 +6,6 @@ public interface Payload<S> {
 
     Serializable getId();
 
-    FlowStatus getStatus();
-
-    void setStatus(FlowStatus status);
-
     S getState();
 
     void setState(S state);

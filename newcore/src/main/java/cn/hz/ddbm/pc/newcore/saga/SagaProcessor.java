@@ -40,15 +40,14 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
     public void workerProcess(SagaContext ctx) throws FlowEndException, InterruptedException, PauseException {
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
-        SagaFlow   flow       = (SagaFlow) ctx.getFlow();
-        FlowStatus status     = ctx.getStatus();
-        SagaState  state      = (SagaState) ctx.getState();
-        Integer    stateRetry = flow.getRetry(state);
+        SagaFlow  flow       = (SagaFlow) ctx.getFlow();
+        SagaState state      = (SagaState) ctx.getState();
+        Integer   stateRetry = flow.getRetry(state);
         //状态不可执行
-        if (FlowStatus.isEnd(status)) {
+        if (state.isEnd()) {
             throw new FlowEndException();
         }
-        if (FlowStatus.PAUSE.equals(status)) {
+        if (state.isPause()) {
             throw new PauseException();
         }
         //工作流结束
@@ -75,12 +74,10 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
                     flush(ctx);
                 } else if (ExceptionUtils.isPaused(e)) { //暂停异常，状态设置为暂停，等人工修复
                     Logs.error.error("暂停异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    ctx.setStatus(FlowStatus.PAUSE);
+                    ctx.getState().setStatus(FlowStatus.PAUSE);
                     flush(ctx);
                 } else if (ExceptionUtils.isStoped(e)) {//流程结束或者取消
                     Logs.flow.info("{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    status = ctx.getFlow().getEnds().contains(ctx.getState()) ? FlowStatus.FINISH : ctx.getStatus();
-                    ctx.setStatus(status);
                     flush(ctx);
                 } else {
                     //可重试异常

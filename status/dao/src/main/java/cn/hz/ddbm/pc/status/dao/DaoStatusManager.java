@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.status.dao;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
@@ -55,12 +56,12 @@ public class DaoStatusManager implements StatusManager, InitializingBean, Applic
     }
 
     @Override
-    public void setStatus(String flow, Serializable flowId, Pair<FlowStatus, ?> status, Integer timeout) throws StatusException {
+    public void setStatus(String flow, Serializable flowId, State state, Integer timeout) throws StatusException {
 
     }
 
     @Override
-    public Pair<FlowStatus, ?> getStatus(String flow, Serializable flowId) throws StatusException {
+    public State getStatus(String flow, Serializable flowId) throws StatusException {
         return null;
     }
 

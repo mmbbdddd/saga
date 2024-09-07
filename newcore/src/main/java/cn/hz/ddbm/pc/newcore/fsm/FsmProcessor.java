@@ -49,14 +49,13 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
         event = null == event ? Coast.FSM.EVENT_DEFAULT : event;
         ctx.setProcessor(this);
         FsmFlow<S>  flow       = ctx.getFlow();
-        FlowStatus  status     = ctx.getStatus();
         FsmState<S> state      = ctx.getState();
         Integer     stateRetry = flow.getRetry(state);
         //状态不可执行
-        if (FlowStatus.isEnd(status)) {
+        if (state.isEnd()) {
             throw new FlowEndException();
         }
-        if (FlowStatus.isPause(status)) {
+        if (state.isPause()) {
             throw new PauseException();
         }
         //工作流结束
@@ -83,12 +82,10 @@ public class FsmProcessor<S extends Enum<S>> extends ProcesorService<FsmContext<
                     flush(ctx);
                 } else if (ExceptionUtils.isPaused(e)) { //暂停异常，状态设置为暂停，等人工修复
                     Logs.error.error("暂停异常：{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    ctx.setStatus(FlowStatus.PAUSE);
+                    ctx.getState().setStatus(FlowStatus.PAUSE);
                     flush(ctx);
                 } else if (ExceptionUtils.isStoped(e)) {//流程结束或者取消
                     Logs.flow.info("流程结束{},{}", ctx.getFlow().getName(), ctx.getId(), ExceptionUtils.unwrap(e));
-                    status = ctx.getFlow().getEnds().contains(ctx.getState()) ? FlowStatus.FINISH : ctx.getStatus();
-                    ctx.setStatus(status);
                     flush(ctx);
                 } else {
                     //不可预料的异常

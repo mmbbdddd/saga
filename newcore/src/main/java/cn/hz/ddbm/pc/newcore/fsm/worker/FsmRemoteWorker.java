@@ -30,9 +30,10 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         ctx.setRouter(router);
         //如果任务可执行
         FsmState<S>     lastSate = ctx.getState();
+        FsmState<S>     failover = ctx.getState().offset(FsmState.Offset.failover);
         FsmState.Offset offset   = ctx.getState().getOffset();
 
-        FsmState<S> failover = new FsmState<>(from.getState(), FsmState.Offset.failover);
+
         if (Objects.equals(offset, FsmState.Offset.task)) {
             //加锁
             processor.tryLock(ctx);

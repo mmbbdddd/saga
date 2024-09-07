@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.newcore.fsm;
 import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
 import cn.hz.ddbm.pc.newcore.FlowModel;
+import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
@@ -18,16 +19,18 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     Table<S, String, FsmWorker<S>> transitionTable;
 
     public FsmFlow(String name, S init, Set<S> ends, Set<S> tasks) {
-        super(name, FsmState.of(init),
-                ends.stream().map(FsmState::of).collect(Collectors.toSet()),
-                tasks.stream().map(e -> new FsmState<>(e, FsmState.Offset.task)).collect(Collectors.toSet()));
+        super(name, new FsmState<>(FlowStatus.INIT, init, FsmState.Offset.task), ends.stream()
+                .map(e -> new FsmState<>(FlowStatus.FINISH, e, FsmState.Offset.task))
+                .collect(Collectors.toSet()), tasks.stream()
+                .map(e -> new FsmState<>(FlowStatus.RUNNABLE, e, FsmState.Offset.task))
+                .collect(Collectors.toSet()));
         this.transitionTable = new RowKeyTable<>();
     }
 
     public FsmWorker<S> getWorker(FsmState<S> state, String event) throws TransitionNotFoundException {
-        FsmWorker<S> worker = transitionTable.get(state.code().getKey(), event);
+        FsmWorker<S> worker = transitionTable.get(state.getState(), event);
         if (null == worker) {
-            throw new TransitionNotFoundException(String.format("找不到这样的FsmTransition事件定义:%s,%s", state.code().getKey(), event));
+            throw new TransitionNotFoundException(String.format("找不到这样的FsmTransition事件定义:%s,%s", state.getState(), event));
         }
         return worker;
     }
@@ -44,4 +47,6 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
         this.transitionTable.put(from, event, sagaFsmWorker);
         return this;
     }
+
+
 }

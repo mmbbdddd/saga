@@ -2,7 +2,7 @@ package cn.hz.ddbm.pc.chaos.support;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
-import cn.hz.ddbm.pc.newcore.chaos.ChaosRuleType;
+import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
@@ -20,22 +20,18 @@ import java.util.stream.Collectors;
  */
 public class ChaosHandler {
     Set<Pair<ChaosRule, Double>> errorRules;
-    Set<Pair<ChaosRule, Double>> resultRules;
 
     public ChaosHandler() {
-        this.errorRules  = new HashSet<>();
-        this.resultRules = new HashSet<>();
+        this.errorRules = new HashSet<>();
     }
 
     public void setChaosRules(List<ChaosRule> rules) {
         if (null == rules) {
             rules = new ArrayList<>();
         }
-        this.errorRules  = rules.stream()
-                .filter(r -> r.getType().equals(ChaosRuleType.EXCEPTION))
+        this.errorRules = rules.stream()
                 .map(r -> Pair.of(r, r.getWeight()))
                 .collect(Collectors.toSet());
-        this.resultRules = rules.stream().filter(r -> r.getType().equals(ChaosRuleType.RESULT)).map(r -> Pair.of(r, r.getWeight())).collect(Collectors.toSet());
 
     }
 
@@ -54,10 +50,18 @@ public class ChaosHandler {
     }
 
 
-
-
     public Boolean sagaRouter(SagaContext ctx) {
-        Set<Pair<Boolean, Double>> results = ctx.getFlow().getProfile().getChaos().getSagaRouterRules();
-        return RandomUitl.selectByWeight("SAGA_ROUTER", results);
+        String sagaMode = System.getProperty(Coast.SAGA.CHAOS_MODE);
+        if (Objects.equals(sagaMode, Coast.SAGA.CHAOS_TRUE)) {
+            return true;
+        } else if (Objects.equals(sagaMode, Coast.SAGA.CHAOS_FALSE)) {
+            return false;
+        } else {
+            Set<Pair<Boolean, Double>> results = new HashSet<>();
+            results.add(Pair.of(Boolean.TRUE, Coast.SAGA.CHAOS_TRUE_WEIGHT));
+            results.add(Pair.of(Boolean.FALSE, Coast.SAGA.CHAOS_FALSE_WEIGHT));
+            return RandomUitl.selectByWeight("SAGA_ROUTER", results);
+        }
+
     }
 }

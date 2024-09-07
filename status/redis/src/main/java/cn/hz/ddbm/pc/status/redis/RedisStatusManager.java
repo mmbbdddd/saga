@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.status.redis;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.StatusException;
@@ -22,12 +23,12 @@ public class RedisStatusManager implements StatusManager {
     }
 
     @Override
-    public void setStatus(String s, Serializable serializable, Pair<FlowStatus, ?> pair, Integer integer) throws StatusException {
+    public void setStatus(String s, Serializable serializable, State pair, Integer integer) throws StatusException {
 
     }
 
     @Override
-    public Pair<FlowStatus, ?> getStatus(String s, Serializable serializable) throws StatusException {
+    public State getStatus(String s, Serializable serializable) throws StatusException {
         return null;
     }
 

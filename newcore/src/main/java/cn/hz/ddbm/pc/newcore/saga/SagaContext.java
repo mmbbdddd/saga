@@ -5,6 +5,7 @@ import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class SagaContext<S extends Enum<S>> extends FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> {
 
@@ -13,7 +14,7 @@ public class SagaContext<S extends Enum<S>> extends FlowContext<SagaFlow<S>, Sag
     }
 
     public String getEvent() {
-        return getState().getIsForward() ? Coast.SAGA.EVENT_FORWARD : Coast.SAGA.EVENT_BACKOFF;
+        return getState().getDirection().isForward() ? Coast.SAGA.EVENT_FORWARD : Coast.SAGA.EVENT_BACKOFF;
     }
 
 

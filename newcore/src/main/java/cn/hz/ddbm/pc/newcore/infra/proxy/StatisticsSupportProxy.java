@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.newcore.infra.proxy;
 
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.State;
-import cn.hz.ddbm.pc.newcore.chaos.ChaosHandler;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.infra.StatisticsSupport;
 

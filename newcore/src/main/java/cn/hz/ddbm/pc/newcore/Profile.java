@@ -22,7 +22,6 @@ public class Profile {
     Coast.ScheduleType    schedule;
     List<Plugin>          plugins;
     Map<State, StateAttr> stateAttr;
-    ChaosConfig           chaos;
 
 
     public static Profile of() {
@@ -37,7 +36,6 @@ public class Profile {
                 .schedule(Coast.ScheduleType.timer)
                 .plugins(new ArrayList<>())
                 .stateAttr(new HashMap<>())
-                .chaos(new ChaosConfig())
                 .build();
     }
 
@@ -53,7 +51,6 @@ public class Profile {
                 .schedule(Coast.ScheduleType.timer)
                 .plugins(new ArrayList<>())
                 .stateAttr(new HashMap<>())
-                .chaos(new ChaosConfig())
                 .build();
     }
 
@@ -105,17 +102,7 @@ public class Profile {
         return stateAttr == null ? new HashMap<>() : stateAttr;
     }
 
-    public ChaosConfig getChaos() {
-        return chaos == null ? new ChaosConfig() : chaos;
-    }
-
-    @Setter
-    public static class ChaosConfig {
-        Set<Pair<Boolean, Double>>  sagaRouterRules;
-        public Set<Pair<Boolean, Double>> getSagaRouterRules() {
-            return sagaRouterRules == null ? ChaosRule.defaultSagaResults() : sagaRouterRules;
-        }
 
 
-    }
+
 }
