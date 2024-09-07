@@ -31,9 +31,10 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
         this.action   = new LocalSagaActionProxy(action);
     }
 
-    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException {
+    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException, FlowEndException {
         ProcesorService processor = ctx.getProcessor();
         ctx.setAction(action);
+        SagaState lastState = ctx.getState();
         if (ctx.getState().getDirection().isForward()) {
             Integer retryTimes       = ctx.getFlow().getRetry(ctx.getState());
             Long    executeTimeState = processor.getExecuteTimes(ctx, ctx.getState());
@@ -42,6 +43,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
                 ctx.setState(rollback);
             }
             try {
+                processor.plugin().pre(ctx);
                 processor.idempotent(ctx);
                 action.execute(ctx);
                 Logs.flow.debug(">>>>状态变迁{}", ctx.getState().getState());
@@ -50,8 +52,13 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
                 } else {
                     ctx.setState(next);
                 }
+                processor.plugin().post(lastState,ctx);
+            } catch (FlowEndException e) {
+                processor.plugin().post(lastState,ctx);
+                throw e;
             } catch (Exception e) {
                 processor.unidempotent(ctx);
+                processor.plugin().error(lastState,e,ctx);
             }
         } else {
             Integer retryTimes       = ctx.getFlow().getRetry(ctx.getState());
@@ -61,6 +68,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
                 ctx.setState(manual);
             }
             try {
+                processor.plugin().pre(ctx);
                 processor.idempotent(ctx);
                 action.execute(ctx);
                 if (null == pre) {
@@ -69,8 +77,13 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
                     Logs.flow.debug("<<<<状态变迁{}>>>>{}", ctx.getState().getState(), pre);
                     ctx.setState(pre);
                 }
+                processor.plugin().post(lastState,ctx);
+            } catch (FlowEndException e) {
+                processor.plugin().post(lastState,ctx);
+                throw e;
             } catch (Exception e) {
                 processor.unidempotent(ctx);
+                processor.plugin().error(lastState,e,ctx);
             }
         }
     }
