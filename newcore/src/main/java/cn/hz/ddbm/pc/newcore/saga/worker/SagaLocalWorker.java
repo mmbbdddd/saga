@@ -14,6 +14,8 @@ import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaActionProxy;
 
+import java.util.Objects;
+
 public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
     SagaState<S>            pre;
     SagaState<S>            next;
@@ -24,7 +26,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     public SagaLocalWorker(Integer index, Pair<S, Class<? extends SagaAction>> node, Integer total) {
         super(index, node.getKey());
-        this.next     = index + 1 > total ? null : new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
+        this.next     = Objects.equals(total, index+1) ? null : new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
         this.rollback = new SagaState<>(index, SagaState.Offset.rollback, FlowStatus.RUNNABLE);
         this.pre      = index == 0 ? null : new SagaState<>(index - 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
         this.manual   = FlowStatus.MANUAL;
