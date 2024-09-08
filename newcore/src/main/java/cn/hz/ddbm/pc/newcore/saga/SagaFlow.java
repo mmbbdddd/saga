@@ -10,7 +10,7 @@ import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import java.util.*;
 
 public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
-    public Pipeline<S> pipeline;
+    Pipeline<S> pipeline;
 
     public SagaFlow(String name, List<Pair<S, Class<? extends SagaAction>>> chains) {
         Assert.notNull(chains, "chains is null");
@@ -62,7 +62,7 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
 
 
     public SagaWorker<S> getWorker(Integer index, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws FlowEndException {
-        return pipeline.get(index,ctx);
+        return pipeline.get(index, ctx);
     }
 
 
