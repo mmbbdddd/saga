@@ -46,9 +46,10 @@ public class ChaosService {
     ChaosHandler chaosHandler;
 
 
-
-    public void saga(String flowName, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
+    public void saga(String flowName, Boolean mock, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig) throws PauseException, SessionException, FlowEndException, InterruptedException {
+        if (mock) {
+            System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
+        }
         chaosHandler.setChaosConfig(chaosConfig);
         Coast.DEFAULT_RETRYTIME = retry;
         statisticsLines         = Collections.synchronizedList(new ArrayList<>(times));
@@ -85,8 +86,10 @@ public class ChaosService {
     }
 
 
-    public void fsm(String flowName, Enum initStatus, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig) throws PauseException, SessionException, FlowEndException, InterruptedException {
-        System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
+    public void fsm(String flowName, Boolean mock, Enum initStatus, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig) throws PauseException, SessionException, FlowEndException, InterruptedException {
+        if (mock) {
+            System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
+        }
         Coast.DEFAULT_RETRYTIME = retry;
         chaosHandler.setChaosConfig(chaosConfig);
         statisticsLines = Collections.synchronizedList(new ArrayList<>(times));

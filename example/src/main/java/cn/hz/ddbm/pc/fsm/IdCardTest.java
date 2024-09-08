@@ -42,7 +42,7 @@ public class IdCardTest {
 
         try {
             //执行100此，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init, 1, 100, 20, ChaosConfig.goodOf());
+            chaosService.fsm("test",true, IdCardState.init, 1, 100, 20, ChaosConfig.goodOf());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,7 +63,7 @@ public class IdCardTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init, 1, 100, 1000, ChaosConfig.goodOf());
+            chaosService.fsm("test",true, IdCardState.init, 1, 100, 1000, ChaosConfig.goodOf());
         } catch (Exception e) {
             e.printStackTrace();
         }

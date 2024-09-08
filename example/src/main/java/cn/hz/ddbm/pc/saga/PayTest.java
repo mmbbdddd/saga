@@ -7,6 +7,9 @@ import cn.hz.ddbm.pc.chaos.config.ChaosConfiguration;
 import cn.hz.ddbm.pc.chaos.support.ChaosConfig;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
+import cn.hz.ddbm.pc.saga.actions.SagaFreezeAction;
+import cn.hz.ddbm.pc.saga.actions.SagaPayAction;
+import cn.hz.ddbm.pc.saga.actions.SagaSendAction;
 import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +43,7 @@ public class PayTest {
 
         try {
             //执行100此，查看流程中断概率
-            chaosService.saga("test",  1, 1, 4, chaosConfig );
+            chaosService.saga("test",  true,1, 1000, 4, chaosConfig );
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,7 +64,7 @@ public class PayTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.saga("test", 2, 1, 1000, chaosConfig);
+            chaosService.saga("test", false,2, 1000, 1000, chaosConfig);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,6 +75,18 @@ public class PayTest {
     }
 
     public static class CC {
+        @Bean
+        SagaFreezeAction sagaFreezeAction(){
+            return new SagaFreezeAction();
+        }
+        @Bean
+        SagaPayAction sagaPayAction(){
+            return new SagaPayAction();
+        }
+        @Bean
+        SagaSendAction sagaSendAction(){
+            return new SagaSendAction();
+        }
         @Bean
         ChaosService chaosService() {
             return new ChaosService();

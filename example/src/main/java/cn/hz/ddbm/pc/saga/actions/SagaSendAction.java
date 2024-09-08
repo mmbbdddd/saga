@@ -16,7 +16,7 @@ public class SagaSendAction implements RemoteSagaAction {
 
     @Override
     public Boolean remoteSagaQuery(FlowContext ctx) throws Exception {
-        return null;
+        return Math.random()>0.5;
     }
 
     @Override
@@ -26,6 +26,6 @@ public class SagaSendAction implements RemoteSagaAction {
 
     @Override
     public Boolean remoteSagaRollbackFailover(FlowContext ctx) throws Exception {
-        return null;
+        return Math.random()>0.5;
     }
 }

@@ -16,6 +16,7 @@ import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatisticsSupport;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
+import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -136,7 +137,7 @@ public abstract class ProcesorService<S extends State, C extends FlowContext<?, 
         Assert.notNull(action, "action is null");
         String runMode = System.getProperty(Coast.RUN_MODE);
         if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
-            if (LocalFsmAction.class.isAssignableFrom(action)) {
+            if (LocalFsmAction.class.isAssignableFrom(action) || LocalSagaAction.class.isAssignableFrom(action)) {
                 return SpringUtil.getBean(Coast.LOCAL_CHAOS_ACTION);
             } else {
                 return SpringUtil.getBean(Coast.REMOTE_CHAOS_ACTION);
