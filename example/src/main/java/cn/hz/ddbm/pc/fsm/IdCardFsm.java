@@ -9,8 +9,10 @@ import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
+import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
 import com.google.common.collect.Sets;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +42,9 @@ public class IdCardFsm implements FSM<IdCardState> {
 
     @Override
     public List<Plugin> plugins() {
-        return null;
+        return new ArrayList<Plugin>(){{
+            add(new FsmDigestPlugin());
+        }};
     }
 
     @Override

@@ -41,7 +41,7 @@ public class IdCardTest {
 
         try {
             //执行100此，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init,  5,100, 20, rules);
+            chaosService.fsm("test", IdCardState.init,  1,100, 20, rules);
         } catch (Exception e) {
             e.printStackTrace();
         }

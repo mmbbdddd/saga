@@ -16,7 +16,7 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
     LocalFsmActionProxy<S> action;
     LocalRouter<S>         router;
 
-    public FsmLocalWorker( Class<? extends LocalFsmAction> action, LocalRouter<S> router) {
+    public FsmLocalWorker(Class<? extends LocalFsmAction> action, LocalRouter<S> router) {
         this.action = new LocalFsmActionProxy<>(action);
         this.router = router;
     }
@@ -44,7 +44,13 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
         processor.idempotent(ctx);
         //执行业务
         try {
-            action.execute(ctx);
+            Object result = action.execute(ctx);
+            S state =  router.router(ctx, result);
+            ctx.setState(new FsmState<>(state, FsmState.Offset.task));
+        } catch (NoSuchRecordException e) {
+            ctx.getState().setOffset(FsmState.Offset.taskRetry);
+        } catch (ProcessingException e) {
+            ctx.getState().setOffset(FsmState.Offset.failover);
         } finally {
             processor.metricsNode(ctx);
         }

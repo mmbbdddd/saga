@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Data
 public abstract class State<E extends Enum<E>> implements Serializable {
-    FlowStatus status;
+    protected FlowStatus status;
 
     public abstract E code();
 

@@ -43,7 +43,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
             Object actionResult = action.executeQuery(ctx);
             Assert.notNull(actionResult, "queryResult is null");
             S nextState = router.router(ctx, actionResult);
-            ctx.setState(new FsmState<>(nextState));
+            ctx.setState(new FsmState<>(nextState, FsmState.Offset.task));
         } catch (NoSuchRecordException e) {
             try {
                 processor.unidempotent(ctx);

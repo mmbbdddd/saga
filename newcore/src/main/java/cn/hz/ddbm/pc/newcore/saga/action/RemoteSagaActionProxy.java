@@ -4,6 +4,7 @@ import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
 
 
@@ -16,50 +17,70 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
     }
 
     public void execute(SagaContext ctx) throws ActionException {
+        SagaState lastState = (SagaState) ctx.getState();
         try {
+            ctx.getProcessor().plugin().pre(ctx);
             getOrInitAction().execute(ctx);
             ctx.setActionResult(true);
+            ctx.getProcessor().plugin().post(lastState, ctx);
         } catch (Exception e) {
             ctx.setActionResult(false);
+            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
+        } finally {
+            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 
 
     public Boolean executeQuery(SagaContext ctx) throws NoSuchRecordException, ActionException {
+        SagaState lastState = (SagaState) ctx.getState();
         try {
+            ctx.getProcessor().plugin().pre(ctx);
+            Boolean result =  getOrInitAction().executeQuery(ctx);
             ctx.setActionResult(true);
-            return getOrInitAction().executeQuery(ctx);
-        } catch (NoSuchRecordException e) {
-            ctx.setActionResult(false);
-            throw e;
+            ctx.getProcessor().plugin().post(lastState, ctx);
+            return result;
         } catch (Exception e) {
             ctx.setActionResult(false);
+            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
+        } finally {
+            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 
 
     public void rollback(SagaContext ctx) throws ActionException {
+        SagaState lastState = (SagaState) ctx.getState();
         try {
+            ctx.getProcessor().plugin().pre(ctx);
             getOrInitAction().rollback(ctx);
             ctx.setActionResult(true);
+            ctx.getProcessor().plugin().post(lastState, ctx);
         } catch (Exception e) {
             ctx.setActionResult(false);
+            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
+        } finally {
+            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 
     public Boolean rollbackQuery(SagaContext ctx) throws NoSuchRecordException, ActionException {
+        SagaState lastState = (SagaState) ctx.getState();
         try {
+            ctx.getProcessor().plugin().pre(ctx);
+            Boolean result =  getOrInitAction().rollbackQuery(ctx);
             ctx.setActionResult(true);
-            return getOrInitAction().rollbackQuery(ctx);
-        } catch (NoSuchRecordException e) {
-            ctx.setActionResult(false);
-            throw e;
+            ctx.getProcessor().plugin().post(lastState, ctx);
+            return result;
         } catch (Exception e) {
             ctx.setActionResult(false);
+            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
+        } finally {
+            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 

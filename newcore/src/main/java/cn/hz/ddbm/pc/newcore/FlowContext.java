@@ -26,6 +26,7 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     public FlowContext(F flow, Payload<S> payload, Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
         Assert.notNull(payload, "payload is null");
+        Assert.notNull(payload.getState(), "payload.state is null");
         this.id             = payload.getId();
         this.flow           = flow;
         this.payload        = payload;

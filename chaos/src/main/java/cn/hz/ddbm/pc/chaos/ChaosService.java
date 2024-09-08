@@ -13,10 +13,7 @@ import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.saga.SagaContext;
-import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
-import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
-import cn.hz.ddbm.pc.newcore.saga.SagaState;
+import cn.hz.ddbm.pc.newcore.saga.*;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +42,10 @@ public class ChaosService {
         chaosHandler.setChaosRules(rules);
         Coast.DEFAULT_RETRYTIME = retry;
         statisticsLines         = Collections.synchronizedList(new ArrayList<>(times));
-        CountDownLatch cdl = new CountDownLatch(times);
+        CountDownLatch cdl  = new CountDownLatch(times);
+        SagaFlow       flow = (SagaFlow) sagaProcessor.getFlow(flowName);
         for (int i = 0; i < times; i++) {
-            MockSagaPayload mockPayLoad = new MockSagaPayload(i, initStatus);
+            MockSagaPayload mockPayLoad = new MockSagaPayload(i,   flow);
             mockPayLoad.setId(i);
             threadPool.submit(() -> {
                 Object result = null;
@@ -167,12 +165,14 @@ class MockFsmPayload<S extends Enum<S>> implements FsmPayload<S> {
 
     @Override
     public FsmState<S> getState() {
-        return null;
+        return new FsmState<>(fsmState, offset);
     }
 
     @Override
     public void setState(FsmState<S> state) {
-
+        this.fsmState = state.getState();
+        this.offset   = state.getOffset();
+        this.status   = state.getStatus();
     }
 }
 
@@ -180,24 +180,28 @@ class MockFsmPayload<S extends Enum<S>> implements FsmPayload<S> {
 class MockSagaPayload<S extends Enum<S>> implements SagaPayload<S> {
 
     Integer          id;
-    S                sagaState;
+    Integer          step;
     SagaState.Offset offset;
     FlowStatus       status;
+    SagaFlow<S>      flow;
 
-    public MockSagaPayload(Integer id, S sagaState) {
-        this.id        = id;
-        this.sagaState = sagaState;
-        this.offset    = SagaState.Offset.task;
+    public MockSagaPayload(Integer id, SagaFlow<S> flow) {
+        this.id     = id;
+        this.step   = 0;
+        this.offset = SagaState.Offset.task;
+        this.flow   = flow;
     }
 
     @Override
     public SagaState<S> getState() {
-        return null;
+        return new SagaState<>(step, SagaState.Offset.task, flow);
     }
 
     @Override
     public void setState(SagaState<S> state) {
-
+        this.step   = state.getIndex();
+        this.offset = state.getOffset();
+        this.status = state.getStatus();
     }
 
 
