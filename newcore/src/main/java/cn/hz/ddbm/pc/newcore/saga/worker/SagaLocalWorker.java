@@ -24,9 +24,9 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     public SagaLocalWorker(Integer index, Pair<S, Class<? extends SagaAction>> node, SagaFlow<S> flow) {
         super(index, node.getKey(), flow);
-        this.next     = new SagaState<>(index + 1, SagaState.Offset.task, flow);
-        this.rollback = new SagaState<>(index, SagaState.Offset.rollback, flow);
-        this.pre      = new SagaState<>(index - 1, SagaState.Offset.task, flow);
+        this.next     = new SagaState<>(index + 1, SagaState.Offset.task,FlowStatus.RUNNABLE, flow);
+        this.rollback = new SagaState<>(index, SagaState.Offset.rollback, FlowStatus.RUNNABLE,flow);
+        this.pre      = new SagaState<>(index - 1, SagaState.Offset.task, FlowStatus.RUNNABLE,flow);
         this.manual   = FlowStatus.MANUAL;
         this.action   = new LocalSagaActionProxy<>(node.getValue());
     }

@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.newcore.saga;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.newcore.FlowModel;
+import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 
 import java.util.*;
@@ -26,16 +27,16 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
 
     private static <S extends Enum<S>> SagaState<S> buildInit(List<Pair<S, Class<? extends SagaAction>>> lines, SagaFlow<S> flow) {
         Assert.notNull(lines, "lines is null");
-        return new SagaState<>(0, SagaState.Offset.task, flow);
+        return new SagaState<>(0, SagaState.Offset.task, FlowStatus.RUNNABLE, flow);
     }
 
     private static <S extends Enum<S>> Set<SagaState<S>> buildEnds(List<Pair<S, Class<? extends SagaAction>>> lines, SagaFlow<S> flow) {
         Assert.notNull(lines, "tasks is null");
         Set<SagaState<S>> ends = new HashSet<>();
         //最后一个节点，状态为成功，为结束节点
-        ends.add(new SagaState<>(lines.size()-1, null, flow));
+        ends.add(new SagaState<>(lines.size() - 1, null, FlowStatus.SU, flow));
         //初始化，并且状态是fail。为结束节点
-        ends.add(new SagaState<>(0, null, flow));
+        ends.add(new SagaState<>(0, null, FlowStatus.FAIL, flow));
         return ends;
     }
 
@@ -44,7 +45,7 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
         for (int index = 0; index < lines.size(); index++) {
             int finalIndex = index;
             EnumSet.allOf(SagaState.Offset.class).forEach(offset -> {
-                all.add(new SagaState<>(finalIndex, offset, flow));
+                all.add(new SagaState<>(finalIndex, offset,FlowStatus.RUNNABLE, flow));
             });
         }
         all.remove(buildInit(lines, flow));
@@ -54,7 +55,8 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
 
     @Override
     public boolean isEnd(SagaState<S> state) {
-        return getEnds().contains(state);
+        return FlowStatus.isEnd(state.getStatus());
+
     }
 
 
