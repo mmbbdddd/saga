@@ -32,17 +32,6 @@ public class IdCardTest {
     @Autowired
     ChaosService chaosService;
 
-    ChaosConfig chaosConfig = new ChaosConfig() {
-        @Override
-        public Set<Pair<ChaosRule, Double>> infraChaosRule() {
-            return Sets.newHashSet();
-        }
-
-        @Override
-        public Set<Pair<Boolean, Double>> sagaFailoverResult() {
-            return Sets.newHashSet(Pair.of(Boolean.TRUE,1.0));
-        }
-    };
 
     /**
      * doc/img_4.png
@@ -53,7 +42,7 @@ public class IdCardTest {
 
         try {
             //执行100此，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init, 1, 100, 20, chaosConfig);
+            chaosService.fsm("test", IdCardState.init, 1, 100, 20, ChaosConfig.goodOf());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,7 +63,7 @@ public class IdCardTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init, 1, 100, 1000, chaosConfig);
+            chaosService.fsm("test", IdCardState.init, 1, 100, 1000, ChaosConfig.goodOf());
         } catch (Exception e) {
             e.printStackTrace();
         }

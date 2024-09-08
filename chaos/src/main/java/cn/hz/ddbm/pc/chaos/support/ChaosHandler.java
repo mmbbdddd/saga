@@ -20,25 +20,8 @@ public class ChaosHandler {
     @Setter
     ChaosConfig chaosConfig;
 
-    public ChaosHandler() {
-        this.chaosConfig = new ChaosConfig() {
-            @Override
-            public Set<Pair<ChaosRule, Double>> infraChaosRule() {
-                Set<Pair<ChaosRule, Double>> s = new HashSet<>();
-                s.add(Pair.of(new ChaosRule(true), 8.0));
-                s.add(Pair.of(new ChaosRule(RuntimeException.class), 1.0));
-                s.add(Pair.of(new ChaosRule(Exception.class), 1.0));
-                return s;
-            }
-
-            @Override
-            public Set<Pair<Boolean, Double>> sagaFailoverResult() {
-                Set<Pair<Boolean, Double>> s = new HashSet<>();
-                s.add(Pair.of(Boolean.TRUE, 4.0));
-                s.add(Pair.of(Boolean.FALSE, 1.0));
-                return s;
-            }
-        };
+    private ChaosConfig getOrDefault() {
+        return null == chaosConfig ? ChaosConfig.defaultOf() : chaosConfig;
     }
 
     /**
@@ -47,7 +30,7 @@ public class ChaosHandler {
      * @throws Exception
      */
     public void infraChaos() throws Exception {
-        ChaosRule rule = RandomUitl.selectByWeight("infraChaosRule", chaosConfig.infraChaosRule());
+        ChaosRule rule = RandomUitl.selectByWeight("infraChaosRule", getOrDefault().infraChaosRule());
         if (rule.isException()) {
             rule.raiseException();
         }
@@ -55,7 +38,7 @@ public class ChaosHandler {
 
 
     public Boolean sagaRouter() {
-        return RandomUitl.selectByWeight("sagaFailoverResult", chaosConfig.sagaFailoverResult());
+        return RandomUitl.selectByWeight("sagaFailoverResult", getOrDefault().sagaFailoverResult());
     }
 
 

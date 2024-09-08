@@ -29,19 +29,7 @@ public class PayTest {
 
     @Autowired
     ChaosService chaosService;
-    ChaosConfig chaosConfig = new ChaosConfig() {
-        @Override
-        public Set<Pair<ChaosRule, Double>> infraChaosRule() {
-            return Sets.newHashSet();
-        }
-
-        @Override
-        public Set<Pair<Boolean, Double>> sagaFailoverResult() {
-            return Sets.newHashSet(
-                    Pair.of(Boolean.TRUE,1.0)
-            );
-        }
-    };
+    ChaosConfig chaosConfig = ChaosConfig.goodOf();
 
     /**
      * doc/img_4.png
