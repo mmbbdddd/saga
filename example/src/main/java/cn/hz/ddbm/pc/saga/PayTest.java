@@ -40,7 +40,7 @@ public class PayTest {
         }};
         try {
             //执行100此，查看流程中断概率
-            chaosService.saga("test", PayState.init, 1, 1, 20, rules);
+            chaosService.saga("test", PayState.init, 1, 1, 4, rules);
         } catch (Exception e) {
             e.printStackTrace();
         }

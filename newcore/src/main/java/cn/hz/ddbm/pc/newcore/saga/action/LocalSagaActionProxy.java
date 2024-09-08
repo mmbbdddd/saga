@@ -18,35 +18,23 @@ public class LocalSagaActionProxy<S extends Enum<S>> implements LocalSagaAction<
     }
 
     public void localSaga(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws ActionException {
-        SagaState<S> lastState = ctx.getState();
         try {
-            ctx.getProcessor().plugin().pre(ctx);
             getOrInitAction().localSaga(ctx);
             ctx.setActionResult(true);
-            ctx.getProcessor().plugin().post(lastState, ctx);
         } catch (Exception e) {
             ctx.setActionResult(false);
-            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
-        } finally {
-            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 
     @Override
     public void localSagaRollback(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws Exception {
-        SagaState<S> lastState = ctx.getState();
         try {
-            ctx.getProcessor().plugin().pre(ctx);
             getOrInitAction().localSagaRollback(ctx);
             ctx.setActionResult(true);
-            ctx.getProcessor().plugin().post(lastState, ctx);
         } catch (Exception e) {
             ctx.setActionResult(false);
-            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
-        } finally {
-            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 

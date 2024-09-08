@@ -17,7 +17,7 @@ public abstract class Plugin<S extends State> {
 
     public abstract void errorAction(S preState, Exception e, FlowContext<?, S, ?> ctx);
 
-    public abstract void finallyAction(FlowContext<?, S, ?> ctx);
+    public abstract void finallyAction(State preNode,FlowContext<?, S, ?> ctx);
 
     @Override
     public boolean equals(Object object) {

@@ -4,6 +4,7 @@ import cn.hz.ddbm.pc.common.lang.Triple;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.Plugin;
+import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 
@@ -37,7 +38,7 @@ public class FsmDigestPlugin<S extends Enum<S>> extends Plugin<FsmState<S>> {
     }
 
     @Override
-    public void finallyAction(FlowContext<?, FsmState<S>, ?> ctx) {
+    public void finallyAction(State preNode, FlowContext<?, FsmState<S>, ?> ctx) {
 
     }
 

@@ -41,22 +41,30 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
     private void doFsmActionFailover(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws InterruptedException, ActionException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
         try {
+            processor.plugin().pre(ctx);
             Object actionResult = action.remoteFsmQuery(ctx);
             Assert.notNull(actionResult, "queryResult is null");
             S nextState = router.router(ctx, actionResult);
             ctx.setState(new FsmState<>(nextState, FsmState.Offset.task));
+            processor.plugin().post(lastSate,   ctx);
         } catch (NoSuchRecordException e) {
+            processor.plugin().error(lastSate, e, ctx);
             try {
                 processor.unidempotent(ctx);
             } catch (IdempotentException ex) {
                 Logs.error.error("", e);
             }
         } catch (ProcessingException e) {
-            Logs.flow.info("", e);
+            processor.plugin().error(lastSate, e, ctx);
             throw new InterruptedException(e);
         } catch (ActionException e) {
+            processor.plugin().error(lastSate, e, ctx);
+            throw e;
+        } catch (Exception e) {
+            processor.plugin().error(lastSate, e, ctx);
             throw e;
         } finally {
+            processor.plugin()._finally(lastSate, ctx);
             processor.metricsNode(ctx);
         }
 
@@ -64,6 +72,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
 
     private void doFsmAction(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException, IdempotentException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
+        processor.plugin().pre(ctx);
         //设置容错
         ctx.getState().setOffset(FsmState.Offset.failover);
         processor.updateStatus(ctx);
@@ -72,7 +81,12 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         //执行业务
         try {
             action.remoteFsm(ctx);
+            processor.plugin().post(lastSate, ctx);
+        } catch (Exception e) {
+            processor.plugin().error(lastSate, e, ctx);
+            throw e;
         } finally {
+            processor.plugin()._finally(lastSate, ctx);
             processor.metricsNode(ctx);
         }
     }

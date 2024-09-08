@@ -202,7 +202,7 @@ class MockSagaPayload<S extends Enum<S>> implements SagaPayload<S> {
 
     @Override
     public SagaState<S> getState() {
-        return new SagaState<>(step, SagaState.Offset.task,status, flow);
+        return new SagaState<>(step, SagaState.Offset.task,status);
     }
 
     @Override

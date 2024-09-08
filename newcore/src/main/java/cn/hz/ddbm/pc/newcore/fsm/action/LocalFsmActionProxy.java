@@ -37,17 +37,11 @@ public class LocalFsmActionProxy<S extends Enum<S>> implements LocalFsmAction<S>
 
     @Override
     public Object localFsm(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException {
-        FsmState lastState = ctx.getState();
         try {
-            ctx.getProcessor().plugin().pre(ctx);
             Object result = getOrInitAction().localFsm(ctx);
-            ctx.getProcessor().plugin().post(lastState, ctx);
             return result;
         } catch (Exception e) {
-            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
-        } finally {
-            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 

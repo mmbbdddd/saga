@@ -37,32 +37,20 @@ public class RemoteFsmActionProxy<S extends Enum<S>> implements RemoteFsmAction<
 
     @Override
     public void remoteFsm(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException {
-        FsmState lastState = ctx.getState();
         try {
-            ctx.getProcessor().plugin().pre(ctx);
             getOrInitAction().remoteFsm(ctx);
-            ctx.getProcessor().plugin().post(lastState, ctx);
         } catch (Exception e) {
-            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
-        } finally {
-            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 
     @Override
     public Object remoteFsmQuery(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException {
-        FsmState lastState = ctx.getState();
         try {
-            ctx.getProcessor().plugin().pre(ctx);
             Object result = getOrInitAction().remoteFsmQuery(ctx);
-            ctx.getProcessor().plugin().post(lastState, ctx);
             return result;
         } catch (Exception e) {
-            ctx.getProcessor().plugin().error(lastState, e, ctx);
             throw new ActionException(e);
-        } finally {
-            ctx.getProcessor().plugin()._finally(ctx);
         }
     }
 

@@ -39,7 +39,7 @@ public class PerformancePlugin extends Plugin implements ApplicationListener<Per
     }
 
     @Override
-    public void finallyAction(FlowContext ctx) {
+    public void finallyAction(State preNode,FlowContext ctx) {
 
     }
 //

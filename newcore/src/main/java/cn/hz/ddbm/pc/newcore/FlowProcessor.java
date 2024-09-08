@@ -2,6 +2,7 @@ package cn.hz.ddbm.pc.newcore;
 
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 
 public interface FlowProcessor<C extends FlowContext> {
 
@@ -32,6 +33,7 @@ public interface FlowProcessor<C extends FlowContext> {
             try {
                 workerProcess(ctx);
             } catch (FlowEndException e) {
+                Logs.flow.info("流程结束{},{}",ctx.getFlow().getName(),ctx.getId());
                 return;
             } catch (PauseException e) {
                 //暂停，下次调度无法触发

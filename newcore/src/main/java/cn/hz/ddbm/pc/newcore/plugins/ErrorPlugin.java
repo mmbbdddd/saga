@@ -28,7 +28,7 @@ public class ErrorPlugin extends Plugin {
     }
 
     @Override
-    public void finallyAction(FlowContext ctx) {
+    public void finallyAction(State preNode,FlowContext ctx) {
     }
 
 

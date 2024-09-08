@@ -30,7 +30,7 @@ public class ErrorPlugin<S extends State> extends Plugin<S> {
     }
 
     @Override
-    public void finallyAction(FlowContext<?, S, ?> ctx) {
+    public void finallyAction(State preNode,FlowContext<?, S, ?> ctx) {
 
     }
 

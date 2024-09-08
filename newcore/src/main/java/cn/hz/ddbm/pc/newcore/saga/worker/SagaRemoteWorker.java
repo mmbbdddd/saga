@@ -26,15 +26,15 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
     FlowStatus               fail;
     FlowStatus               manual;
 
-    public SagaRemoteWorker(Integer index, Pair<S, Class<? extends SagaAction>> node, SagaFlow<S> flow) {
-        super(index, node.getKey(), flow);
+    public SagaRemoteWorker(Integer index, Pair<S, Class<? extends SagaAction>> node, Integer total) {
+        super(index, node.getKey());
         action                = new RemoteSagaActionProxy<>(node.getValue());
-        this.failover         = new SagaState<>(index, SagaState.Offset.failover, FlowStatus.RUNNABLE, flow);
-        this.next             = new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE, flow);
+        this.failover         = new SagaState<>(index, SagaState.Offset.failover, FlowStatus.RUNNABLE);
+        this.next             = Objects.equals(total, index) ? null : new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
         this.su               = FlowStatus.SU;
-        this.rollback         = new SagaState<>(index, SagaState.Offset.rollback, FlowStatus.RUNNABLE, flow);
-        this.rollbackFailover = new SagaState<>(index, SagaState.Offset.rollbackFailover, FlowStatus.RUNNABLE, flow);
-        this.pre              = new SagaState<>(index - 1, SagaState.Offset.rollback, FlowStatus.RUNNABLE, flow);
+        this.rollback         = new SagaState<>(index, SagaState.Offset.rollback, FlowStatus.RUNNABLE);
+        this.rollbackFailover = new SagaState<>(index, SagaState.Offset.rollbackFailover, FlowStatus.RUNNABLE);
+        this.pre              = 0 == index ? null : new SagaState<>(index - 1, SagaState.Offset.rollback, FlowStatus.RUNNABLE);
         this.fail             = FlowStatus.FAIL;
         this.manual           = FlowStatus.MANUAL;
     }
@@ -67,10 +67,10 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     private void doRollbackActionFailover(SagaState lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws ActionException {
         ProcesorService processor = ctx.getProcessor();
+        processor.plugin().pre(ctx);
         try {
             Boolean queryResult = action.remoteSagaRollbackFailover(ctx);
             //如果业务未发送成功，取消冥等，设置为任务可执行状态
-            SagaState.Offset offset = null;
             if (Objects.equals(queryResult, null)) {
                 processor.unidempotent(ctx);
                 ctx.getState().setOffset(SagaState.Offset.rollbackRetry);
@@ -94,7 +94,9 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
                     ctx.getState().setStatus(fail);
                 }
             }
+            processor.plugin().post(lastState, ctx);
         } catch (NoSuchRecordException e) {
+            processor.plugin().error(lastState, e, ctx);
             try {
                 processor.unidempotent(ctx);
             } catch (IdempotentException ex) {
@@ -102,16 +104,20 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
             }
             ctx.getState().setOffset(SagaState.Offset.taskRetry);
         } catch (IdempotentException e) {
+            processor.plugin().error(lastState, e, ctx);
             Logs.error.error("取消冥等异常", e);
         } catch (ActionException e) {
+            processor.plugin().error(lastState, e, ctx);
             throw e;
         } finally {
+            processor.plugin()._finally(lastState, ctx);
             processor.metricsNode(ctx);
         }
     }
 
     private void rollbackAction(SagaState lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws ActionException, IdempotentException {
         ProcesorService processor = ctx.getProcessor();
+        processor.plugin().pre(ctx);
         //冥等
         processor.idempotent(ctx);
         //设置容错
@@ -120,13 +126,19 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
         //执行业务
         try {
             action.remoteSagaRollback(ctx);
+            processor.plugin().post(lastState, ctx);
+        } catch (ActionException e) {
+            processor.plugin().error(lastState, e, ctx);
+            throw e;
         } finally {
+            processor.plugin()._finally(lastState, ctx);
             processor.metricsNode(ctx);
         }
     }
 
     private void doActionFailover(SagaState lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws ActionException {
         ProcesorService processor = ctx.getProcessor();
+        processor.plugin().pre(ctx);
         try {
             Boolean queryResult = action.remoteSagaQuery(ctx);
             //如果业务未发送成功，取消冥等，设置为任务可执行状态
@@ -154,7 +166,9 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
                     ctx.getState().setStatus(su);
                 }
             }
+            processor.plugin().post(lastState, ctx);
         } catch (NoSuchRecordException e) {
+            processor.plugin().error(lastState, e, ctx);
             try {
                 processor.unidempotent(ctx);
             } catch (IdempotentException ex) {
@@ -163,15 +177,19 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
             ctx.getState().setOffset(SagaState.Offset.taskRetry);
         } catch (IdempotentException e) {
             Logs.error.error("取消冥等异常", e);
+            processor.plugin().error(lastState, e, ctx);
         } catch (ActionException e) {
+            processor.plugin().error(lastState, e, ctx);
             throw e;
         } finally {
+            processor.plugin()._finally(lastState, ctx);
             processor.metricsNode(ctx);
         }
     }
 
     private void doAction(SagaState lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws ActionException, IdempotentException {
         ProcesorService processor = ctx.getProcessor();
+        processor.plugin().pre(ctx);
         //冥等
         processor.idempotent(ctx);
         //设置容错
@@ -180,7 +198,12 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
         //执行业务
         try {
             action.remoteSaga(ctx);
+            processor.plugin().post(lastState, ctx);
+        } catch (ActionException e) {
+            processor.plugin().error(lastState, e, ctx);
+            throw e;
         } finally {
+            processor.plugin()._finally(lastState, ctx);
             processor.metricsNode(ctx);
         }
     }

@@ -14,28 +14,26 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaAction,
         FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>>> {
     protected Integer     index;
     protected S           state;
-    protected SagaFlow<S> flow;
 
-    public SagaWorker(Integer index, S state, SagaFlow<S> flow) {
+    public SagaWorker(Integer index, S state) {
         this.index = index;
-        this.flow  = flow;
         this.state = state;
     }
 
-    public static <S extends Enum<S>> SagaWorker<S> of(Integer index, Pair<S, Class<? extends SagaAction>> pair, SagaFlow<S> flow) {
+    public static <S extends Enum<S>> SagaWorker<S> of(Integer index, Pair<S, Class<? extends SagaAction>> pair, Integer total) {
         if (LocalSagaAction.class.isAssignableFrom(pair.getValue())) {
-            return local(index, pair, flow);
+            return local(index, pair, total);
         } else {
-            return remote(index, pair, flow);
+            return remote(index, pair, total);
         }
     }
 
-    public static <S extends Enum<S>> SagaLocalWorker<S> local(Integer index, Pair<S, Class<? extends SagaAction>> node, SagaFlow<S> flow) {
-        return new SagaLocalWorker<>(index, node, flow);
+    public static <S extends Enum<S>> SagaLocalWorker<S> local(Integer index, Pair<S, Class<? extends SagaAction>> node, Integer total) {
+        return new SagaLocalWorker<>(index, node, total);
     }
 
-    public static <S extends Enum<S>> SagaRemoteWorker<S> remote(Integer index, Pair<S, Class<? extends SagaAction>> node, SagaFlow<S> flow) {
-        return new SagaRemoteWorker<>(index, node, flow);
+    public static <S extends Enum<S>> SagaRemoteWorker<S> remote(Integer index, Pair<S, Class<? extends SagaAction>> node,Integer total) {
+        return new SagaRemoteWorker<>(index, node,total);
     }
 
 

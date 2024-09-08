@@ -16,15 +16,13 @@ public class SagaState<S extends Enum<S>> extends State<S> {
     Integer index;
     @Setter
     Offset offset;
-    SagaFlow<S> flow;
 
 //    public SagaState(Integer index, Offset offset, SagaFlow<S> flow) {
 //        this(index,offset,FlowStatus.RUNNABLE,flow);
 //    }
-    public SagaState(Integer index, Offset offset, FlowStatus status, SagaFlow<S> flow) {
+    public SagaState(Integer index, Offset offset, FlowStatus status) {
         this.index  = index;
         this.offset = offset;
-        this.flow   = flow;
         this.status = status;
     }
 
