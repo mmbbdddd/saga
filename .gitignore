@@ -23,6 +23,7 @@ locker/redis/target/
 locker/zk/target/
 plugin/digest/target/
 plugin/error/target/
+plugin/performance/target/
 scheudule/lazy-queue/target/
 scheudule/notify/target/
 scheudule/spring-cron/target/
@@ -36,5 +37,6 @@ statistics/simple/target/
 status/dao/target/
 status/memory/target/
 status/redis/target/
+newcore/target/
 out
 gen
