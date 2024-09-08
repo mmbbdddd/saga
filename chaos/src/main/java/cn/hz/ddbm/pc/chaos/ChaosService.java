@@ -45,13 +45,10 @@ public class ChaosService {
     @Autowired
     ChaosHandler chaosHandler;
 
-    public enum ResultGenerator {
-        TRUE, FALSE, RANDOM
-    }
 
-    public void saga(String flowName, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig, ResultGenerator sagaResultGenerator) throws PauseException, SessionException, FlowEndException, InterruptedException {
+
+    public void saga(String flowName, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
-        System.setProperty(Coast.SAGA.CHAOS_MODE, sagaResultGenerator.name().toLowerCase());
         chaosHandler.setChaosConfig(chaosConfig);
         Coast.DEFAULT_RETRYTIME = retry;
         statisticsLines         = Collections.synchronizedList(new ArrayList<>(times));
