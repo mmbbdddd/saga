@@ -63,8 +63,8 @@ public class PayTest {
         bank    = new AtomicInteger(0);
 
         try {
-            //执行10000次，查看流程中断概率
-            chaosService.saga("test", false,2, 1000, 1000, chaosConfig);
+            //执行1000次，查看流程中断概率
+            chaosService.saga("test", true,1, 100, 1000, ChaosConfig.defaultOf());
         } catch (Exception e) {
             e.printStackTrace();
         }

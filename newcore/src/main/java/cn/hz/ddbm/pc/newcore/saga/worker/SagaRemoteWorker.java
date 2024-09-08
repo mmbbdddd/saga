@@ -5,6 +5,7 @@ import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
@@ -30,7 +31,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
         super(index, node.getKey());
         action                = new RemoteSagaActionProxy<>(node.getValue());
         this.failover         = new SagaState<>(index, SagaState.Offset.failover, FlowStatus.RUNNABLE);
-        this.next             = Objects.equals(total, index+1) ? null : new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
+        this.next             = Objects.equals(total, index + 1) ? null : new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
         this.su               = FlowStatus.SU;
         this.rollback         = new SagaState<>(index, SagaState.Offset.rollback, FlowStatus.RUNNABLE);
         this.rollbackFailover = new SagaState<>(index, SagaState.Offset.rollbackFailover, FlowStatus.RUNNABLE);
@@ -77,16 +78,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
 //                ctx.setState(currentState);
             } else if (!queryResult) {   //业务不成功
                 processor.unidempotent(ctx);
-                //失败补偿策略:反复执行。直接失败
-                Integer retryTimes       = ctx.getFlow().getRetry(lastState);
-                Long    executeTimeState = processor.getExecuteTimes(ctx, lastState);
-                //超过重试次数，设置为失败，低于重试次数，设置为retry；高于重试次数，设置为manual
-                if (executeTimeState <= retryTimes) {
-                    //可重试
-                    ctx.getState().setOffset(SagaState.Offset.rollbackRetry);
-                } else {
-                    ctx.getState().setStatus(manual);
-                }
+                ctx.getState().setStatus(manual);
             } else {//如果成功，设置为pre，如果pre为空，设置fail
                 if (null != pre) {
                     ctx.setState(pre);
@@ -140,6 +132,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
         ProcesorService processor = ctx.getProcessor();
         processor.plugin().pre(ctx);
         try {
+            //失败补偿策略:反复执行。直接失败
             Boolean queryResult = action.remoteSagaQuery(ctx);
             //如果业务未发送成功，取消冥等，设置为任务可执行状态
 
@@ -149,16 +142,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
 //                ctx.setState(currentState);
             } else if (!queryResult) {   //业务不成功
                 processor.unidempotent(ctx);
-                //失败补偿策略:反复执行。直接失败
-                Integer retryTimes       = ctx.getFlow().getRetry(lastState);
-                Long    executeTimeState = processor.getExecuteTimes(ctx, lastState);
-                //超过重试次数，设置为失败，低于重试次数，设置为retry；高于重试次数，设置为rollback
-                if (executeTimeState <= retryTimes) {
-                    //可重试
-                    ctx.getState().setOffset(SagaState.Offset.taskRetry);
-                } else {
-                    ctx.setState(rollback);
-                }
+                ctx.setState(rollback);
             } else {//如果成功，设置为下一个，如果下一个为空，设置为成功
                 if (null != next) {
                     ctx.setState(next);

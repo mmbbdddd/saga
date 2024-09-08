@@ -4,36 +4,20 @@
 
 ## 0 场景
 
-![img_5.png](doc/img_5.png)
+![img.png](img.png)
 
 ## 1 流程编排
 
 ``` java 
     @Override
-    public Map<PayState, FlowStatus> nodes() {
-        Map<PayState, FlowStatus> map = new HashMap<>();
-        map.put(PayState.init, FlowStatus.INIT);
-        map.put(PayState.payed, FlowStatus.RUNNABLE);
-        map.put(PayState.sended, FlowStatus.RUNNABLE);
-        map.put(PayState.payed_failover, FlowStatus.RUNNABLE);
-        map.put(PayState.sended_failover, FlowStatus.RUNNABLE);
-        map.put(PayState.su, FlowStatus.FINISH);
-        map.put(PayState.fail, FlowStatus.FINISH);
-        map.put(PayState.error, FlowStatus.FINISH);
-        return map;
+    public List<Pair<PayState, Class<? extends SagaAction>>> pipeline() {
+        return new ArrayList<Pair<PayState, Class<? extends SagaAction>>>() {{
+            add(Pair.of(PayState.freeze, SagaFreezeAction.class));
+            add(Pair.of(PayState.send, SagaSendAction.class));
+            add(Pair.of(PayState.pay, SagaPayAction.class));
+        }}; 
     }
-    @Override
-    public void transitions(Transitions<PayState> t) {
-//        payAction:执行本地扣款
-        t.saga(PayState.init, Coasts.EVENT_DEFAULT, Sets.newSet(PayState.init), PayState.payed_failover, "payAction")
-                //本地扣款容错payQueryAction 扣款结果查询
-                .router(PayState.payed_failover, Coasts.EVENT_DEFAULT, "payQueryAction")
-                //发送异常，不明确是否发送
-                .saga(PayState.payed, Coasts.EVENT_DEFAULT, Sets.newSet(PayState.payed), PayState.sended_failover, "sendAction")
-                .router(PayState.sended_failover, Coasts.EVENT_DEFAULT, "sendQueryAction")
-                //sendAction，执行远程发生&sendQueryAction。
-                .router(PayState.sended, Coasts.EVENT_DEFAULT, "sendQueryAction");
-    }
+
 
 ```
 
@@ -49,29 +33,24 @@
 * 4，异常情况下，成功率会如何下降？应该如何优化？
 
 ```java
-
     @Test
-    public void chaos() throws Exception {
-        String event = Coasts.EVENT_DEFAULT; 
-        List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
-            //注入业务逻辑异常，概率20%
-//            add(new ChaosRule(ChaosTarget.ACTION, "true", "action异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
-//                add(RuntimeException.class);
-//                add(Exception.class);
-//            }}));
-            //注入锁错误
-//            add(new ChaosRule(ChaosTarget.LOCK, "true", "锁异常", 0.1, new ArrayList<Class<? extends Throwable>>() {{
-//                add(RuntimeException.class);
-//                add(Exception.class);
-//            }}));
-        }};
-        try {
-            //执行1000次，执行报表
-            chaosService.execute("test", new ChaosPcService.MockPayLoad(PayState.init), event, 1000, 10, rules, true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void acid() throws Exception {
+      account = new AtomicInteger(10000);
+      freezed = new AtomicInteger(0);
+      bank    = new AtomicInteger(0);
+    
+      try {
+        //执行1000次，查看流程中断概率
+        chaosService.saga("test", true,1, 1000, 1000, ChaosConfig.defaultOf());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      System.out.println("account:" + account.get());
+      System.out.println("freezed:" + freezed.get());
+      System.out.println("bank:" + bank.get());
+      SpringUtil.publishEvent(new PerformancePlugin.Event());
     }
+ 
 ```
 
 理想情况下，1000笔交易retry = 1的有（716+79）/1000可以完成。其他卡在执行次数限制上
