@@ -36,6 +36,7 @@ public class RemoteSagaActionProxy<S extends Enum<S>> implements RemoteSagaActio
             ctx.setActionResult(true);
             return result;
         } catch (Exception e) {
+            e.printStackTrace();
             ctx.setActionResult(false);
             throw new ActionException(e);
         }

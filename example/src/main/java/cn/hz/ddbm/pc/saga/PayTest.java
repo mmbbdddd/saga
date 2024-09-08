@@ -73,7 +73,7 @@ public class PayTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.saga("test", 2, 20, 1000, null, ChaosService.ResultGenerator.TRUE);
+            chaosService.saga("test", 2, 1, 1000, chaosConfig, ChaosService.ResultGenerator.TRUE);
         } catch (Exception e) {
             e.printStackTrace();
         }

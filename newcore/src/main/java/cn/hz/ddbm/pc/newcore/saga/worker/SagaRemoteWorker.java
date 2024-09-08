@@ -179,6 +179,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
             Logs.error.error("取消冥等异常", e);
             processor.plugin().error(lastState, e, ctx);
         } catch (ActionException e) {
+            e.printStackTrace();
             processor.plugin().error(lastState, e, ctx);
             throw e;
         } finally {
