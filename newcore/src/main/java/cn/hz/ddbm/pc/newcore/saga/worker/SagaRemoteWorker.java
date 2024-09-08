@@ -28,7 +28,15 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     public SagaRemoteWorker(Integer index, Pair<S, Class<? extends SagaAction>> node, SagaFlow<S> flow) {
         super(index, node.getKey(), flow);
-
+        action                = new RemoteSagaActionProxy<>(node.getValue());
+        this.failover         = new SagaState<>(index, SagaState.Offset.failover, FlowStatus.RUNNABLE, flow);
+        this.next             = new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE, flow);
+        this.su               = FlowStatus.SU;
+        this.rollback         = new SagaState<>(index, SagaState.Offset.rollback, FlowStatus.RUNNABLE, flow);
+        this.rollbackFailover = new SagaState<>(index, SagaState.Offset.rollbackFailover, FlowStatus.RUNNABLE, flow);
+        this.pre              = new SagaState<>(index - 1, SagaState.Offset.rollback, FlowStatus.RUNNABLE, flow);
+        this.fail             = FlowStatus.FAIL;
+        this.manual           = FlowStatus.MANUAL;
     }
 
 
@@ -36,7 +44,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
         ctx.setAction(action);
         SagaState        lastState = ctx.getState();
         SagaState.Offset offset    = lastState.getOffset();
-        if(null == offset){
+        if (null == offset) {
             return;
         }
         switch (offset) {

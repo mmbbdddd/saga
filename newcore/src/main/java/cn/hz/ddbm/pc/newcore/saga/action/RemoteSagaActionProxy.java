@@ -4,16 +4,17 @@ import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 
 
 public class RemoteSagaActionProxy<S extends Enum<S>> implements RemoteSagaAction<S> {
-    Class<? extends RemoteSagaAction> actionClass;
+    Class<? extends SagaAction> actionClass;
     RemoteSagaAction                  action;
 
-    public RemoteSagaActionProxy(Class<? extends RemoteSagaAction> actionClass) {
+    public RemoteSagaActionProxy(Class<? extends SagaAction> actionClass) {
         this.actionClass = actionClass;
     }
 
@@ -93,7 +94,7 @@ public class RemoteSagaActionProxy<S extends Enum<S>> implements RemoteSagaActio
     private RemoteSagaAction getOrInitAction() {
         if (null == action) {
             synchronized (this) {
-                this.action = ProcesorService.getAction(actionClass);
+                this.action = (RemoteSagaAction) ProcesorService.getAction(actionClass);
             }
         }
         return action;

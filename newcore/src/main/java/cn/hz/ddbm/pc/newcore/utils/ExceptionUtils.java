@@ -63,6 +63,9 @@ public class ExceptionUtils {
         if (e instanceof PauseException) {
             throw (PauseException) e;
         }
+        if (e instanceof RuntimeException) {
+            throw (RuntimeException) e;
+        }
         if (!profile.isRetryableException(e)) {
             throw new RetryableException(e);
         } else {
