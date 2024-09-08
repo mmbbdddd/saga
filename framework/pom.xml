@@ -20,11 +20,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>cn.hz.ddbm.pc</groupId>
-            <artifactId>common</artifactId>
-            <version>${pc.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>cn.hz.ddbm.pc</groupId>
