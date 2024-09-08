@@ -1,7 +1,5 @@
 package cn.hz.ddbm.pc.newcore.infra.impl;
 
-import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
@@ -14,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class JvmStatusManager implements StatusManager {
-    ConcurrentMap<String, State> statusMap;
-    ConcurrentMap<String, Boolean>             actionTables;
+    ConcurrentMap<String, State>   statusMap;
+    ConcurrentMap<String, Boolean> actionTables;
     String                                     keyTemplate = "%s:%s";
 
     public JvmStatusManager() {

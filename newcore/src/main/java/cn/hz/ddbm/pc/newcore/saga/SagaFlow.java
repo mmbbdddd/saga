@@ -2,104 +2,53 @@ package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.newcore.Action;
 import cn.hz.ddbm.pc.newcore.FlowModel;
-import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
-import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
 
 import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
-    Map<S, SagaWorker<S>> pipeline;
+    Pipeline<S> pipeline;
 
-
-    public SagaFlow(String name, List<Pair<S, Class<? extends Action>>> pairs) {
-        this(name, parseTasks(pairs), parseActions(pairs));
+    public SagaFlow(String name, List<Pair<S, Class<? extends SagaAction>>> chains) {
+        Assert.notNull(chains, "chains is null");
+        Assert.notNull(name, "name is null");
+        this.name      = name;
+        this.init      = buildInit(chains,this);
+        this.ends      = buildEnds(chains,this);
+        this.tasks     = buildTasks(chains,this);
+        this.allStates = new HashSet<>();
+        this.allStates.add(init);
+        this.allStates.addAll(ends);
+        this.allStates.addAll(tasks);
+        pipeline = new Pipeline<>(chains, this);
     }
 
-    private static <S extends Enum<S>> List<Class<? extends Action>> parseActions(List<Pair<S, Class<? extends Action>>> pairs) {
-        Assert.notNull(pairs, "pair is null");
-        return pairs.stream().map(Pair::getValue).collect(Collectors.toList());
+    private static <S extends Enum<S>> SagaState<S> buildInit(List<Pair<S, Class<? extends SagaAction>>> lines,SagaFlow<S> flow) {
+        Assert.notNull(lines, "lines is null");
+        return new SagaState<>(0, SagaState.Offset.task,flow);
     }
 
-    private static <S extends Enum<S>> List<S> parseTasks(List<Pair<S, Class<? extends Action>>> pairs) {
-        Assert.notNull(pairs, "pair is null");
-        return pairs.stream().map(Pair::getKey).collect(Collectors.toList());
-    }
-
-    private SagaFlow(String name, List<S> tasks, List<Class<? extends Action>> actions) {
-        super(name, buildInit(tasks), buildEnds(tasks), buildTasks(tasks));
-
-        pipeline = new HashMap<>();
-        for (int i = 0; i < tasks.size(); i++) {
-//            SagaWorker<S> worker = new SagaWorker<>(i, getPre(tasks, i), getCurrent(tasks, i), getNext(tasks, i), actions.get(i));
-            Class action = actions.get(i);
-            if (LocalSagaAction.class.isAssignableFrom(actions.get(i))) {
-                SagaWorker<S> worker = SagaWorker.local(i, getPre(tasks, i), getCurrent(tasks, i), getNext(tasks, i), action);
-                pipeline.put(worker.getState(), worker);
-            } else {
-                SagaWorker<S> worker = SagaWorker.remote(i, getPre(tasks, i), getCurrent(tasks, i), getNext(tasks, i), action);
-                pipeline.put(worker.getState(), worker);
-            }
-        }
-    }
-
-    private S getPre(List<S> tasks, int i) {
-        if (i == 0) return null;
-        return tasks.get(i - 1);
-    }
-
-    private S getCurrent(List<S> tasks, int i) {
-        return tasks.get(i);
-    }
-
-    private S getNext(List<S> tasks, int i) {
-        if (i > (tasks.size() - 2)) return null;
-        return tasks.get(i + 1);
-    }
-
-
-    public SagaWorker<S> getWorker(S state) throws FlowEndException {
-        return pipeline.get(state);
-    }
-
-
-    private static <S extends Enum<S>> SagaState<S> buildInit(List<S> tasks) {
-        Assert.notNull(tasks, "tasks is null");
-        return new SagaState<>(tasks.get(0), OffsetState.init, SagaState.Direction.forward);
-    }
-
-    private static <S extends Enum<S>> Set<SagaState<S>> buildEnds(List<S> tasks) {
-        Assert.notNull(tasks, "tasks is null");
+    private static <S extends Enum<S>> Set<SagaState<S>> buildEnds(List<Pair<S, Class<? extends SagaAction>>> lines,SagaFlow<S> flow) {
+        Assert.notNull(lines, "tasks is null");
         Set<SagaState<S>> ends = new HashSet<>();
-        //初始化，并且状态是fail。为结束节点
-        ends.add(new SagaState<>(tasks.get(0), OffsetState.fail, SagaState.Direction.backoff));
         //最后一个节点，状态为成功，为结束节点
-        ends.add(new SagaState<>(tasks.get(tasks.size() - 1), OffsetState.su, SagaState.Direction.forward));
+        ends.add(new SagaState<>(null, null,flow));
+        //初始化，并且状态是fail。为结束节点
+        ends.add(new SagaState<>(null, null,flow));
         return ends;
     }
 
-    private static <S extends Enum<S>> Set<SagaState<S>> buildTasks(List<S> tasks) {
-        List<SagaState<S>> forwards = tasks.stream()
-                .map(state -> OffsetState.runnables()
-                        .stream()
-                        .map(offset -> new SagaState<S>(state, offset, SagaState.Direction.forward))
-                        .collect(Collectors.toList()))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        List<SagaState<S>> backoff = tasks.stream()
-                .map(state -> OffsetState.runnables()
-                        .stream()
-                        .map(offset -> new SagaState<S>(state, offset, SagaState.Direction.backoff))
-                        .collect(Collectors.toList()))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+    private static <S extends Enum<S>> Set<SagaState<S>> buildTasks(List<Pair<S, Class<? extends SagaAction>>> lines,SagaFlow<S> flow) {
         List<SagaState<S>> all = new ArrayList<>();
-        all.addAll(forwards);
-        all.addAll(backoff);
+        for (int index = 0; index < lines.size(); index++) {
+            int finalIndex = index;
+            EnumSet.allOf(SagaState.Offset.class).forEach(offset -> {
+                all.add(new SagaState<>(finalIndex, offset,flow));
+            });
+        }
+        all.remove(buildInit(lines,flow));
+        all.removeAll(buildEnds(lines,flow));
         return new HashSet<>(all);
     }
 
@@ -109,6 +58,23 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
     }
 
 
+    public SagaWorker<S> getWorker(Integer index) throws FlowEndException {
+        return pipeline.get(index);
+    }
+}
 
+class Pipeline<S extends Enum<S>> {
+    List<Pair<S, SagaWorker<S>>> list;
 
+    public Pipeline(List<Pair<S, Class<? extends SagaAction>>> chains, SagaFlow<S> flow) {
+        this.list = new ArrayList<>();
+        for (int i = 0; i < chains.size(); i++) {
+            Pair<S, Class<? extends SagaAction>> node = chains.get(i);
+            this.list.add(Pair.of(node.getKey(), SagaWorker.of(i, node, flow)));
+        }
+    }
+
+    public SagaWorker<S> get(Integer index) throws FlowEndException {
+        return list.stream().filter(f -> f.getValue().index.equals(index)).findFirst().orElseThrow(() -> new FlowEndException()).getValue();
+    }
 }

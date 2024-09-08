@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.ProcesorService;
-import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.support.ActionResult;
 import lombok.Data;
 
@@ -12,19 +11,19 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
-public class FlowContext<F extends FlowModel<S>, S extends State, W extends Worker<?>> {
+public class FlowContext<F extends FlowModel<S>, S extends State, W extends Worker<?, ?>> {
     final     Serializable        id;
     final     F                   flow;
     final     Map<String, Object> session;
-    final     Payload<S, F>       payload;
+    final     Payload<S>          payload;
     final     AtomicInteger       loopErrorTimes;
     transient S                   state;
     transient W                   worker;
     transient ProcesorService     processor;
     transient Action              action;
-    transient ActionResult        actionResult;
+    transient Boolean             actionResult;
 
-    public FlowContext(F flow, Payload<S,F> payload, Map<String, Object> session) {
+    public FlowContext(F flow, Payload<S> payload, Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
         Assert.notNull(payload, "payload is null");
         this.id             = payload.getId();

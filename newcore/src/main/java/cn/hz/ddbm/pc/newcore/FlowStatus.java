@@ -5,7 +5,7 @@ import java.util.Objects;
 public enum FlowStatus {
     INIT(Type.init),
     RUNNABLE(Type.runnable), PAUSE(Type.runnable),
-    FINISH(Type.end), MANUAL(Type.end),
+    SU(Type.end), FAIL(Type.end), MANUAL(Type.end),
     ;
 
     private final Type type;
@@ -25,6 +25,7 @@ public enum FlowStatus {
     public static Boolean isEnd(FlowStatus status) {
         return Objects.equals(Type.end, status.type);
     }
+
     public static Boolean isPause(FlowStatus status) {
         return Objects.equals(PAUSE, status);
     }

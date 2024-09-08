@@ -7,7 +7,7 @@ public enum PayState {
     sendSuccess,
     sendFail,
     su,
-    fail,
+    fail, freeze_rollback, send_rollback, error,
 
 
 }

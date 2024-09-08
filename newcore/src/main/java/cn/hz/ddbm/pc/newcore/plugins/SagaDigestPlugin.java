@@ -8,19 +8,21 @@ import cn.hz.ddbm.pc.newcore.saga.SagaState;
 
 import java.io.Serializable;
 
-public class SagaDigestPlugin extends Plugin {
+public class SagaDigestPlugin<S extends Enum<S>> extends Plugin<SagaState<S>> {
     @Override
     public String code() {
         return "digest";
     }
 
+
+
     @Override
-    public void preAction(FlowContext ctx) {
+    public void preAction(FlowContext<?, SagaState<S>, ?> ctx) {
 
     }
 
     @Override
-    public void postAction(State lastNode, FlowContext ctx) {
+    public void postAction(SagaState<S> lastNode, FlowContext<?, SagaState<S>, ?> ctx) {
 
         String       flow         = ctx.getFlow().getName();
         Serializable id           = ctx.getId();
@@ -33,12 +35,12 @@ public class SagaDigestPlugin extends Plugin {
     }
 
     @Override
-    public void errorAction(State preNode, Exception e, FlowContext ctx) {
+    public void errorAction(SagaState<S> preNode, Exception e, FlowContext<?, SagaState<S>, ?> ctx) {
 
     }
 
     @Override
-    public void finallyAction(FlowContext ctx) {
+    public void finallyAction(FlowContext<?, SagaState<S>, ?> ctx) {
 //        log.info("{},{},{},{}", ctx.getFlow().getName(), ctx.getId(),  ctx.getAction().code(), ctx.getActionResult());
 //        log.info("{},{},{},{}", ctx.getFlow().getName(), ctx.getId(),  ctx.getStatus(), ctx.getState());
     }

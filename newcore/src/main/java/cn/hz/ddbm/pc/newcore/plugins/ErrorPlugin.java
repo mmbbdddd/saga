@@ -4,9 +4,6 @@ import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.saga.SagaState;
-
-import java.io.Serializable;
 
 public class ErrorPlugin extends Plugin {
     @Override

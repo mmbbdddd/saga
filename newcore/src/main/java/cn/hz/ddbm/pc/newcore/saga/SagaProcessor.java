@@ -3,13 +3,11 @@ package cn.hz.ddbm.pc.newcore.saga;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ProcesorService;
-import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
-import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import java.util.ArrayList;
@@ -43,10 +41,10 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
         SagaState state      = (SagaState) ctx.getState();
         Integer   stateRetry = flow.getRetry(state);
         //状态不可执行
-        if (state.isEnd(flow)) {
+        if (flow.isEnd(state)) {
             throw new FlowEndException();
         }
-        if (state.isPause()) {
+        if (state.isPaused()) {
             throw new PauseException();
         }
         //工作流结束
@@ -55,7 +53,7 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
             throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
         }
 
-        SagaWorker worker = flow.getWorker(state.getState());
+        SagaWorker worker = flow.getWorker(state.getIndex());
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);

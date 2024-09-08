@@ -1,7 +1,5 @@
 package cn.hz.ddbm.pc.status.dao;
 
-import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;

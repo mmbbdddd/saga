@@ -18,9 +18,9 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
     public void execute(SagaContext ctx) throws ActionException {
         try {
             getOrInitAction().execute(ctx);
-            ctx.setActionResult(ActionResult.success());
+            ctx.setActionResult(true);
         } catch (Exception e) {
-            ctx.setActionResult(ActionResult.fail(e.getMessage()));
+            ctx.setActionResult(false);
             throw new ActionException(e);
         }
     }
@@ -28,13 +28,13 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
 
     public Boolean executeQuery(SagaContext ctx) throws NoSuchRecordException, ActionException {
         try {
-            ctx.setActionResult(ActionResult.success());
+            ctx.setActionResult(true);
             return getOrInitAction().executeQuery(ctx);
         } catch (NoSuchRecordException e) {
-            ctx.setActionResult(ActionResult.fail(e.getClass().getSimpleName()));
+            ctx.setActionResult(false);
             throw e;
         } catch (Exception e) {
-            ctx.setActionResult(ActionResult.fail(e.getClass().getSimpleName()));
+            ctx.setActionResult(false);
             throw new ActionException(e);
         }
     }
@@ -43,22 +43,22 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
     public void rollback(SagaContext ctx) throws ActionException {
         try {
             getOrInitAction().rollback(ctx);
-            ctx.setActionResult(ActionResult.success());
+            ctx.setActionResult(true);
         } catch (Exception e) {
-            ctx.setActionResult(ActionResult.fail(e.getClass().getSimpleName()));
+            ctx.setActionResult(false);
             throw new ActionException(e);
         }
     }
 
     public Boolean rollbackQuery(SagaContext ctx) throws NoSuchRecordException, ActionException {
         try {
-            ctx.setActionResult(ActionResult.success());
+            ctx.setActionResult(true);
             return getOrInitAction().rollbackQuery(ctx);
         } catch (NoSuchRecordException e) {
-            ctx.setActionResult(ActionResult.fail(e.getClass().getSimpleName()));
+            ctx.setActionResult(false);
             throw e;
         } catch (Exception e) {
-            ctx.setActionResult(ActionResult.fail(e.getClass().getSimpleName()));
+            ctx.setActionResult(false);
             throw new ActionException(e);
         }
     }

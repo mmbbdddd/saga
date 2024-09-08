@@ -1,6 +1,5 @@
 package cn.hz.ddbm.pc.newcore;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -9,16 +8,16 @@ import java.util.Objects;
  * ___2,如果业务和插件之间需要信息交互，通过上下文完成。
  */
 
-public abstract class Plugin<F extends FlowModel<S>, S extends State, W extends Worker<?>> {
+public abstract class Plugin<S extends State> {
     public abstract String code();
 
-    public abstract void preAction(FlowContext<F, S, W> ctx);
+    public abstract void preAction(FlowContext<?, S, ?> ctx);
 
-    public abstract void postAction(S preState, FlowContext<F, S, W> ctx);
+    public abstract void postAction(S preState, FlowContext<?, S, ?> ctx);
 
-    public abstract void errorAction(S preState, Exception e, FlowContext<F, S, W> ctx);
+    public abstract void errorAction(S preState, Exception e, FlowContext<?, S, ?> ctx);
 
-    public abstract void finallyAction(FlowContext<F, S, W> ctx);
+    public abstract void finallyAction(FlowContext<?, S, ?> ctx);
 
     @Override
     public boolean equals(Object object) {

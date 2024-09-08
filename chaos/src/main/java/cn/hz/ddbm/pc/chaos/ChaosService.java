@@ -1,10 +1,7 @@
 package cn.hz.ddbm.pc.chaos;
 
 import cn.hz.ddbm.pc.chaos.support.ChaosHandler;
-import cn.hz.ddbm.pc.newcore.FlowContext;
-import cn.hz.ddbm.pc.newcore.FlowStatus;
-import cn.hz.ddbm.pc.newcore.OffsetState;
-import cn.hz.ddbm.pc.newcore.State;
+import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
@@ -14,6 +11,7 @@ import cn.hz.ddbm.pc.newcore.exception.SessionException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
+import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
@@ -117,15 +115,17 @@ public class ChaosService {
 
     public boolean isContinue(FlowContext ctx) {
 
-        String flowName = ctx.getFlow().getName();
-        State  state    = ctx.getState();
-        if (state.isEnd(ctx.getFlow()) || state.isPause()) {
+        FlowModel flow     = ctx.getFlow();
+        String    flowName = flow.getName();
+        State     state    = ctx.getState();
+        if (flow.isEnd(state) || state.isPaused()) {
             Logs.flow.debug("流程不可运行：{},{},{} ", flowName, ctx.getId(), state);
             return false;
         }
 
-        Long    executeCount = fsmProcessor.getExecuteTimes(ctx, ctx.getState());
-        Integer nodeRetry    = ctx.getFlow().getRetry(ctx.getState());
+        Long executeCount = fsmProcessor.getExecuteTimes(ctx, ctx.getState());
+        Integer nodeRetry = ctx.getFlow()
+                .getRetry(ctx.getState());
 
         if (executeCount > nodeRetry) {
             Logs.flow.warn("流程已限流：{},{},{},{}>{}", flowName, ctx.getId(), state, executeCount, nodeRetry);
@@ -153,33 +153,54 @@ public class ChaosService {
 
 @Data
 class MockFsmPayload<S extends Enum<S>> implements FsmPayload<S> {
-    Serializable id;
-    FlowStatus   status;
-    S           fsmState;
-    OffsetState offset;
+    Serializable    id;
+    FlowStatus      status;
+    S               fsmState;
+    FsmState.Offset offset;
 
     public MockFsmPayload(Serializable id, S fsmState) {
         this.id       = id;
         this.status   = FlowStatus.RUNNABLE;
         this.fsmState = fsmState;
-        this.offset   = OffsetState.task;
+        this.offset   = FsmState.Offset.task;
+    }
+
+    @Override
+    public FsmState<S> getState() {
+        return null;
+    }
+
+    @Override
+    public void setState(FsmState<S> state) {
+
     }
 }
 
 @Data
 class MockSagaPayload<S extends Enum<S>> implements SagaPayload<S> {
 
-    Integer             id;
-    S                   sagaState;
-    OffsetState         offset;
-    SagaState.Direction direction;
+    Integer          id;
+    S                sagaState;
+    SagaState.Offset offset;
+    FlowStatus       status;
 
     public MockSagaPayload(Integer id, S sagaState) {
         this.id        = id;
         this.sagaState = sagaState;
-        this.direction = SagaState.Direction.forward;
-        this.offset    = OffsetState.task;
+        this.offset    = SagaState.Offset.task;
     }
+
+    @Override
+    public SagaState<S> getState() {
+        return null;
+    }
+
+    @Override
+    public void setState(SagaState<S> state) {
+
+    }
+
+
 }
 
 class StatisticsLine {
@@ -206,12 +227,15 @@ class StatisticsResult {
 
     public StatisticsResult(Throwable t) {
         this.isResult = false;
-        this.value    = t.getClass().getSimpleName() + ":" + t.getMessage();
+        this.value    = t.getClass()
+                .getSimpleName() + ":" + t.getMessage();
     }
 
     public StatisticsResult(FlowContext<?, ?, ?> ctx) {
         this.isResult = true;
-        this.value    = ctx.getState().code().toString();
+        this.value    = ctx.getState()
+                .code()
+                .toString();
     }
 
     @Override

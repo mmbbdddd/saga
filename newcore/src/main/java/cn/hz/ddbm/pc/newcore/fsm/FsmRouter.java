@@ -37,11 +37,25 @@ public class FsmRouter<S extends Enum<S>> {
         if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
             return routerByWeight();
         } else {
+            Map<String, Object> routerContext = new HashMap<>();
+            routerContext.put("result", actionResult);
+            try {
+                if (ExpressionEngineUtils.eval(noRecordExpression, routerContext, Boolean.class)) {
+                    throw new NoSuchRecordException();
+                }
+            } catch (Exception e) {
+                Logs.error.error("", e);
+            }
+            try {
+                if (ExpressionEngineUtils.eval(prcessingExpression, routerContext, Boolean.class)) {
+                    throw new NoSuchRecordException();
+                }
+            } catch (Exception e) {
+                Logs.error.error("", e);
+            }
             for (Table.Cell<String, S, Double> entry : stateExpressions) {
-                String              expression    = entry.getRowKey();
-                S                   state         = entry.getColumnKey();
-                Map<String, Object> routerContext = new HashMap<>();
-                routerContext.put("result", actionResult);
+                String expression = entry.getRowKey();
+                S      state      = entry.getColumnKey();
                 try {
                     if (ExpressionEngineUtils.eval(expression, routerContext, Boolean.class)) {
                         return state;

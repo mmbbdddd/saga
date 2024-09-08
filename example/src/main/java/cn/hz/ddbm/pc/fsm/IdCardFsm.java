@@ -57,13 +57,13 @@ public class IdCardFsm implements FSM<IdCardState> {
     @Override
     public void transitions(Transitions<IdCardState> transitions) {
         transitions.state(IdCardState.init)
-                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.presend))
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.presend))
                 .endState()
                 .state(IdCardState.presend)
-                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.auditing))
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.auditing))
                 .endState()
                 .state(IdCardState.auditing)
-                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalRouter<>(new RowKeyTable<String, IdCardState, Double>() {{
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalRouter<>(new RowKeyTable<String, IdCardState, Double>() {{
                     put("result.code == '0000'", IdCardState.su, 1.0);
                     put("result.code == '0001'", IdCardState.fail, 0.1);
                     put("result.code == '0002'", IdCardState.no_such_order, 0.1);
@@ -71,10 +71,10 @@ public class IdCardFsm implements FSM<IdCardState> {
                 }}))
                 .endState()
                 .state(IdCardState.no_such_order)
-                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.presend))
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.presend))
                 .endState()
                 .state(IdCardState.lost_date)
-                .local(Coast.FSM.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.init))
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.init))
                 .endState()
         ;
     }

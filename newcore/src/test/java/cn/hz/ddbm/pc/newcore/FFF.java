@@ -7,24 +7,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class FsmStateMachine<S> {
-    Integer        index;
-    S              state;
-    FsmPipeline    pipeline;
-    FsmSyncAdapter action;
+public class FFF<S> {
+    Integer     index;
+    S           state;
+    FsmPipeline pipeline;
+    FFA         action;
 
-    public FsmStateMachine(Integer index, S state, FsmPipeline pipeline) {
+    public FFF(Integer index, S state, FsmPipeline pipeline) {
         this.index    = index;
         this.state    = state;
         this.pipeline = pipeline;
-        this.action   = new FsmSyncAdapter();
+        this.action   = new FFA();
     }
 
     public void onEvent(FsmContext ctx) throws FlowEndException {
-
-
         switch (ctx.subState) {
             case task:
+            case retry:
                 try {
                     action.doIt();
                     ctx.updateState(state, SubState.failover);
@@ -63,18 +62,18 @@ public class FsmStateMachine<S> {
         pipeline.doIt(ctx);
     }
 
-    private FsmStateMachine<S> getPre() throws FlowEndException {
+    private FFF<S> getPre() throws FlowEndException {
         if (index == 0) {
             throw new FlowEndException();
         }
         return pipeline.pipelines.get(index - 1);
     }
 
-    private FsmStateMachine<S> getNext() throws FlowEndException {
+    private FFF<S> getNext() throws FlowEndException {
         if (index == pipeline.pipelines.size() - 1) {
             throw new FlowEndException();
         }
-        FsmStateMachine<S> next = pipeline.pipelines.get(index + 1);
+        FFF<S> next = pipeline.pipelines.get(index + 1);
         return next;
     }
 
@@ -109,7 +108,7 @@ public class FsmStateMachine<S> {
 
     ExecutorService es = Executors.newFixedThreadPool(2);
 
-    class FsmSyncAdapter extends FsmAction {
+    class FFA extends FsmAction {
         Future<Boolean> future;
 
         public Boolean doit() {

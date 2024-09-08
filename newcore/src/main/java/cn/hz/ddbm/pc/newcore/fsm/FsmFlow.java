@@ -1,15 +1,16 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
 import cn.hz.ddbm.pc.newcore.FlowModel;
-import cn.hz.ddbm.pc.newcore.OffsetState;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
 import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,11 +18,18 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     Table<S, String, FsmWorker<S>> transitionTable;
 
     public FsmFlow(String name, S init, Set<S> ends, Set<S> tasks) {
-        super(name, new FsmState<>(init, OffsetState.task), ends.stream()
-                .map(e -> new FsmState<>(e, OffsetState.task))
-                .collect(Collectors.toSet()), tasks.stream()
-                .map(e -> new FsmState<>( e, OffsetState.task))
-                .collect(Collectors.toSet()));
+        Assert.notNull(name, "name is null");
+        Assert.notNull(init, "init is null");
+        Assert.notNull(ends, "ends null");
+        Assert.notNull(tasks, "tasks is null");
+        this.name      = name;
+        this.init      = new FsmState<>(init);
+        this.ends      = ends.stream().map(e -> new FsmState(e)).collect(Collectors.toSet());
+        this.tasks     = tasks.stream().map(e -> new FsmState(e)).collect(Collectors.toSet());
+        this.allStates = new HashSet<>();
+        this.allStates.add(this.init);
+        this.allStates.addAll(this.ends);
+        this.allStates.addAll(this.tasks);
         this.transitionTable = new RowKeyTable<>();
     }
 

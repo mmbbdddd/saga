@@ -13,14 +13,13 @@ public class Coast {
     public static final String  CHAOS_WEIGHTS           = "chaos_weight";
     public static       Integer DEFAULT_RETRYTIME       = 1;
 
+    public final static String EVENT_DEFAULT = "push";
     public static class STATISTICS {
         public final static String EXECUTE_TIMES = "execute_times";
 
     }
 
     public static class SAGA {
-        public final static String EVENT_FORWARD      = "forward";
-        public final static String EVENT_BACKOFF      = "backoff";
         public final static String CHAOS_MODE         = "saga_mode";
         public final static String CHAOS_TRUE         = "true";
         public final static String CHAOS_FALSE        = "false";
@@ -32,7 +31,6 @@ public class Coast {
 
 
     public static class FSM {
-        public final static String EVENT_DEFAULT = "push";
     }
 
     public enum LockType {

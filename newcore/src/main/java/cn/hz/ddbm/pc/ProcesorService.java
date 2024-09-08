@@ -136,9 +136,9 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
 
     public void metricsNode(FlowContext ctx) {
         String            flowName = ctx.getFlow().getName();
-        Serializable      id       = ctx.getId();
-        State             state    = ctx.getState();
-        StatisticsSupport ss       = statisticsSupportMap.get(ctx.getProfile().getStatistics());
+        Serializable      id    = ctx.getId();
+        State             state = ctx.getState();
+        StatisticsSupport ss    = statisticsSupportMap.get(ctx.getProfile().getStatistics());
         ss.increment(flowName, id, state, Coast.STATISTICS.EXECUTE_TIMES);
     }
 

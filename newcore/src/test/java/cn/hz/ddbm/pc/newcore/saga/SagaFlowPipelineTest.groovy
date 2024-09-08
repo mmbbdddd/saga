@@ -13,7 +13,7 @@ class SagaFlowPipelineTest {
     void setUp() {
         sagaPipeline = new SagaFlow("test", Lists.newArrayList(
                 Pair.of(PayStateMachine.init, "payFreezedAction"),
-                Pair.of(PayStateMachine.pay, "sendAction"),
+                Pair.of(PayStateMachine.freezed, "sendAction"),
                 Pair.of(PayStateMachine.send, "payCommitAction")
         ));
     }

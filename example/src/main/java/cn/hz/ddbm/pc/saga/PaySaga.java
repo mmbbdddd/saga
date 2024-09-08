@@ -5,10 +5,7 @@ import cn.hz.ddbm.pc.factory.saga.SAGA;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
-import cn.hz.ddbm.pc.newcore.saga.action.RemoteSagaAction;
-import cn.hz.ddbm.pc.saga.actions.SagaFreezeAction;
-import cn.hz.ddbm.pc.saga.actions.SagaPayAction;
-import cn.hz.ddbm.pc.saga.actions.SagaSendAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -23,17 +20,20 @@ public class PaySaga implements SAGA<PayState> {
     }
 
     @Override
-    public List<Pair<PayState, Class<? extends RemoteSagaAction>>> pipeline() {
-        return new ArrayList<Pair<PayState, Class<? extends RemoteSagaAction>>>() {{
-            add(Pair.of(PayState.init, SagaFreezeAction.class));
-            add(Pair.of(PayState.freezed, SagaSendAction.class));
-            add(Pair.of(PayState.sended, SagaPayAction.class));
-        }};
+    public List<Pair<PayState, Class<? extends SagaAction>>> pipeline() {
+        return new ArrayList<>();
+
+//        new ArrayList<Triple<PayState, PayState, Class<? extends Action>>>() {{
+//            add(Triple.of(PayState.init, PayState.fail, SagaFreezeAction.class));
+//            add(Triple.of(PayState.freezed, PayState.freeze_rollback, SagaSendAction.class));
+//            add(Triple.of(PayState.sended, PayState.send_rollback, SagaPayAction.class));
+//            add(Triple.of(PayState.su, PayState.error, null));
+//        }}
     }
 
     @Override
     public List<Plugin> plugins() {
-        return new ArrayList<Plugin>(){{
+        return new ArrayList<Plugin>() {{
             add(new SagaDigestPlugin());
         }};
     }

@@ -9,11 +9,9 @@ import lombok.Setter;
 import java.util.Map;
 
 public class FsmContext<S extends Enum<S>> extends FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> {
-    @Setter
-    @Getter
-    FsmRouter<S> router;
 
-    public FsmContext(FsmFlow<S> flow, Payload<FsmState<S>,FsmFlow<S>> payload, Map<String, Object> session) {
+
+    public FsmContext(FsmFlow<S> flow, Payload<FsmState<S>> payload, Map<String, Object> session) {
         super(flow, payload, session);
     }
 

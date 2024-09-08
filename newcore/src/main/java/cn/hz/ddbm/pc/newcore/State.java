@@ -1,22 +1,19 @@
 package cn.hz.ddbm.pc.newcore;
 
-import lombok.Getter;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Data
+public abstract class State<E extends Enum<E>> implements Serializable {
+    FlowStatus status;
 
-public abstract class State<S extends Enum<S>, F> implements Serializable {
-    @Getter
-    protected S           state;
-    @Getter
-    protected OffsetState offset;
+    public abstract E code();
 
-    public abstract Serializable code();
-
-    public abstract boolean isEnd(F flow);
-
-
+    public boolean isPaused() {
+        return FlowStatus.isPause(getStatus());
+    }
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -36,9 +33,4 @@ public abstract class State<S extends Enum<S>, F> implements Serializable {
     }
 
 
-    public abstract State offset(OffsetState offsetState);
-
-    public boolean isPause() {
-        return offset.isPaused();
-    }
 }

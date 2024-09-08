@@ -18,9 +18,9 @@ public class LocalSagaActionProxy implements LocalSagaAction {
     public void execute(SagaContext ctx) throws ActionException {
         try {
             getOrInitAction().execute(ctx);
-            ctx.setActionResult(ActionResult.success());
+            ctx.setActionResult(true);
         } catch (Exception e) {
-            ctx.setActionResult(ActionResult.fail(e.getMessage()));
+            ctx.setActionResult(false);
             throw new ActionException(e);
         }
     }
