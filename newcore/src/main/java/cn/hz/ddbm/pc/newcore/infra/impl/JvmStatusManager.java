@@ -13,12 +13,12 @@ import java.util.concurrent.ConcurrentMap;
 
 public class JvmStatusManager implements StatusManager {
     ConcurrentMap<String, State>   statusMap;
-    ConcurrentMap<String, Boolean> actionTables;
+    ConcurrentMap<String, Boolean> idempotentRecords;
     String                         keyTemplate = "%s:%s";
 
     public JvmStatusManager() {
-        this.statusMap    = new ConcurrentHashMap<>();
-        this.actionTables = new ConcurrentHashMap<>();
+        this.statusMap         = new ConcurrentHashMap<>();
+        this.idempotentRecords = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -48,17 +48,15 @@ public class JvmStatusManager implements StatusManager {
 
     @Override
     public void idempotent(String key) throws IdempotentException {
-        try {
-            if (actionTables.containsKey(key)) {
-                throw new IdempotentException(String.format("交易已发生:" + key));
-            }
-        } catch (Exception e) {
-            throw new IdempotentException(String.format("交易已发生:" + key), e);
+        if (idempotentRecords.containsKey(key)) {
+            throw new IdempotentException(String.format("交易已发生:" + key));
+        } else {
+            idempotentRecords.put(key, true);
         }
     }
 
     @Override
     public void unidempotent(String key) throws IdempotentException {
-        actionTables.remove(key);
+        idempotentRecords.remove(key);
     }
 }
