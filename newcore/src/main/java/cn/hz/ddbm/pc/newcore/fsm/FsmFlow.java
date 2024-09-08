@@ -24,7 +24,7 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
         Assert.notNull(tasks, "tasks is null");
         this.name      = name;
         this.init      = new FsmState<>(init, FsmState.Offset.task);
-        this.ends      = ends.stream().map(e -> new FsmState<>(e, null)).collect(Collectors.toSet());
+        this.ends      = ends.stream().map(e -> new FsmState<>(e, FsmState.Offset.task)).collect(Collectors.toSet());
         this.tasks     = tasks.stream().map(e -> new FsmState<>(e, FsmState.Offset.task)).collect(Collectors.toSet());
         this.allStates = new HashSet<>();
         this.allStates.add(this.init);
@@ -57,7 +57,7 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
 
     @Override
     public boolean isEnd(FsmState<S> state) {
-        return getEnds().contains(state);
+        return getEnds().stream().map(e->e.getState()).collect(Collectors.toSet()).contains(state.getState());
     }
 
 }

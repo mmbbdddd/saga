@@ -35,6 +35,9 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
         ctx.setAction(action);
         SagaState<S>     lastState = ctx.getState();
         SagaState.Offset offset    = lastState.getOffset();
+        if(null == offset){
+            return;
+        }
         switch (offset) {
             case task:
             case taskRetry:

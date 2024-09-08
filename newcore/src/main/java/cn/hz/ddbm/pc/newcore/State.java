@@ -6,10 +6,10 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Data
-public abstract class State<E extends Enum<E>> implements Serializable {
+public abstract class State<S extends Enum<S>> implements Serializable {
     protected FlowStatus status;
 
-    public abstract E code();
+    public abstract Serializable code();
 
     public boolean isPaused() {
         return FlowStatus.isPause(getStatus());

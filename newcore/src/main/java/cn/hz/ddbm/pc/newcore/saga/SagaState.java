@@ -1,5 +1,7 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
+import cn.hz.ddbm.pc.common.lang.Triple;
+import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.State;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +25,8 @@ public class SagaState<S extends Enum<S>> extends State<S> {
     }
 
     @Override
-    public S code() {
-        return null;
+    public Triple<FlowStatus,Integer,Offset> code() {
+        return Triple.of(status,index,offset);
     }
 
     public enum Offset {

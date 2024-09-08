@@ -6,6 +6,9 @@ import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.plugins.SagaDigestPlugin;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.saga.actions.SagaFreezeAction;
+import cn.hz.ddbm.pc.saga.actions.SagaPayAction;
+import cn.hz.ddbm.pc.saga.actions.SagaSendAction;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,14 +24,12 @@ public class PaySaga implements SAGA<PayState> {
 
     @Override
     public List<Pair<PayState, Class<? extends SagaAction>>> pipeline() {
-        return new ArrayList<>();
+        return new ArrayList<Pair<PayState, Class<? extends SagaAction>>>() {{
+            add(Pair.of(PayState.freeze, SagaFreezeAction.class));
+            add(Pair.of(PayState.send, SagaSendAction.class));
+            add(Pair.of(PayState.pay, SagaPayAction.class));
+        }};
 
-//        new ArrayList<Triple<PayState, PayState, Class<? extends Action>>>() {{
-//            add(Triple.of(PayState.init, PayState.fail, SagaFreezeAction.class));
-//            add(Triple.of(PayState.freezed, PayState.freeze_rollback, SagaSendAction.class));
-//            add(Triple.of(PayState.sended, PayState.send_rollback, SagaPayAction.class));
-//            add(Triple.of(PayState.su, PayState.error, null));
-//        }}
     }
 
     @Override
