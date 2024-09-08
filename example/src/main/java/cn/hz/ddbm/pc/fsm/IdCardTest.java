@@ -1,10 +1,13 @@
 package cn.hz.ddbm.pc.fsm;
 
+import cn.hutool.core.lang.Pair;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.chaos.ChaosService;
 import cn.hz.ddbm.pc.chaos.config.ChaosConfiguration;
+import cn.hz.ddbm.pc.chaos.support.ChaosConfig;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.plugin.PerformancePlugin;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ComponentScan("cn.hz.ddbm.pc.actions")
@@ -27,10 +31,18 @@ public class IdCardTest {
 
     @Autowired
     ChaosService chaosService;
-    List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
-//       this.add(new ChaosRule(ChaosRuleType.EXCEPTION,RuntimeException.class,0.2));
-//       this.add(new ChaosRule(ChaosRuleType.EXCEPTION,"true",0.8));
-    }};
+
+    ChaosConfig chaosConfig = new ChaosConfig() {
+        @Override
+        public Set<Pair<ChaosRule, Double>> infraChaosRule() {
+            return Sets.newHashSet();
+        }
+
+        @Override
+        public Set<Pair<Boolean, Double>> sagaFailoverResult() {
+            return Sets.newHashSet(Pair.of(Boolean.TRUE,1.0));
+        }
+    };
 
     /**
      * doc/img_4.png
@@ -41,7 +53,7 @@ public class IdCardTest {
 
         try {
             //执行100此，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init, 1, 100, 20, rules);
+            chaosService.fsm("test", IdCardState.init, 1, 100, 20, chaosConfig);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,7 +74,7 @@ public class IdCardTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init, 1, 100, 1000, null);
+            chaosService.fsm("test", IdCardState.init, 1, 100, 1000, chaosConfig);
         } catch (Exception e) {
             e.printStackTrace();
         }

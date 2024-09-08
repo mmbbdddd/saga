@@ -12,13 +12,14 @@ import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SagaProcessor<E extends Enum<E>> extends ProcesorService<SagaState<E>, FlowContext<SagaFlow<E>, SagaState<E>, SagaWorker<E>>> {
 
-
+    @PostConstruct
     public void afterPropertiesSet() {
         initParent();
         SpringUtil.getBeansOfType(SagaFlowFactory.class).forEach((key, flowFactory) -> {
@@ -53,7 +54,7 @@ public class SagaProcessor<E extends Enum<E>> extends ProcesorService<SagaState<
         //工作流结束
         Long stateExecuteTimes = getExecuteTimes(ctx, state);
         if (stateExecuteTimes > stateRetry) {
-            throw new InterruptedException(String.format("节点%s执行次数超限制{}>{}", state.code(), stateExecuteTimes, stateRetry));
+            throw new InterruptedException(String.format("%s:%s>%s",state.code(), stateExecuteTimes, stateRetry));
         }
 
         SagaWorker worker = flow.getWorker(state.getIndex(),ctx);

@@ -1,13 +1,11 @@
 package cn.hz.ddbm.pc.chaos.support;
 
 import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
-import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
+import lombok.Setter;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 混沌发生器
@@ -19,20 +17,28 @@ import java.util.stream.Collectors;
  * type
  */
 public class ChaosHandler {
-    Set<Pair<ChaosRule, Double>> errorRules;
+    @Setter
+    ChaosConfig chaosConfig;
 
     public ChaosHandler() {
-        this.errorRules = new HashSet<>();
-    }
+        this.chaosConfig = new ChaosConfig() {
+            @Override
+            public Set<Pair<ChaosRule, Double>> infraChaosRule() {
+                Set<Pair<ChaosRule, Double>> s = new HashSet<>();
+                s.add(Pair.of(new ChaosRule(true), 8.0));
+                s.add(Pair.of(new ChaosRule(RuntimeException.class), 1.0));
+                s.add(Pair.of(new ChaosRule(Exception.class), 1.0));
+                return s;
+            }
 
-    public void setChaosRules(List<ChaosRule> rules) {
-        if (null == rules) {
-            rules = new ArrayList<>();
-        }
-        this.errorRules = rules.stream()
-                .map(r -> Pair.of(r, r.getWeight()))
-                .collect(Collectors.toSet());
-
+            @Override
+            public Set<Pair<Boolean, Double>> sagaFailoverResult() {
+                Set<Pair<Boolean, Double>> s = new HashSet<>();
+                s.add(Pair.of(Boolean.TRUE, 4.0));
+                s.add(Pair.of(Boolean.FALSE, 1.0));
+                return s;
+            }
+        };
     }
 
     /**
@@ -40,28 +46,17 @@ public class ChaosHandler {
      *
      * @throws Exception
      */
-    public void handle() throws Exception {
-        if (null != errorRules && !errorRules.isEmpty()) {
-            ChaosRule rule = RandomUitl.selectByWeight("error", errorRules);
-            if (rule.isException()) {
-                rule.raiseException();
-            }
+    public void infraChaos() throws Exception {
+        ChaosRule rule = RandomUitl.selectByWeight("infraChaosRule", chaosConfig.infraChaosRule());
+        if (rule.isException()) {
+            rule.raiseException();
         }
     }
 
 
-    public Boolean sagaRouter(FlowContext ctx) {
-        String sagaMode = System.getProperty(Coast.SAGA.CHAOS_MODE);
-        if (Objects.equals(sagaMode, Coast.SAGA.CHAOS_TRUE)) {
-            return true;
-        } else if (Objects.equals(sagaMode, Coast.SAGA.CHAOS_FALSE)) {
-            return false;
-        } else {
-            Set<Pair<Boolean, Double>> results = new HashSet<>();
-            results.add(Pair.of(Boolean.TRUE, Coast.SAGA.CHAOS_TRUE_WEIGHT));
-            results.add(Pair.of(Boolean.FALSE, Coast.SAGA.CHAOS_FALSE_WEIGHT));
-            return RandomUitl.selectByWeight("SAGA_ROUTER", results);
-        }
-
+    public Boolean sagaRouter() {
+        return RandomUitl.selectByWeight("sagaFailoverResult", chaosConfig.sagaFailoverResult());
     }
+
+
 }

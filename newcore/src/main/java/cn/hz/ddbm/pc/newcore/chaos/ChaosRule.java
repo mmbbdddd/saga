@@ -4,15 +4,11 @@ import lombok.Data;
 
 @Data
 public class ChaosRule {
-    Class  target;
     Object value;
-    Double weight;
 
 
-    public ChaosRule(Class target, Object value, Double weight) {
-        this.target = target;
+    public ChaosRule(Object value) {
         this.value  = value;
-        this.weight = weight;
     }
 
 

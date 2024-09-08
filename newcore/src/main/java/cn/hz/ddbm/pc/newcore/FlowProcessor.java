@@ -36,6 +36,7 @@ public interface FlowProcessor<C extends FlowContext> {
                 Logs.flow.info("流程结束{},{}",ctx.getFlow().getName(),ctx.getId());
                 return;
             } catch (PauseException e) {
+                e.printStackTrace();
                 //暂停，下次调度无法触发
                 throw e;
             } catch (InterruptedException e) {

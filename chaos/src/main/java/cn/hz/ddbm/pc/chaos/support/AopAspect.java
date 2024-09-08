@@ -21,19 +21,19 @@ public class AopAspect {
 
     @Around("execution(* cn.hz.ddbm.pc.newcore.infra.Locker.*(..))")
     public Object locker(ProceedingJoinPoint pjp) throws Throwable {
-        chaosHandler.handle();
+        chaosHandler.infraChaos();
         return pjp.proceed();
     }
 
     @Around("execution(* cn.hz.ddbm.pc.newcore.infra.SessionManager.*(..))")
     public Object session(ProceedingJoinPoint pjp) throws Throwable {
-        chaosHandler.handle();
+        chaosHandler.infraChaos();
         return pjp.proceed();
     }
 
     @Around("execution(* cn.hz.ddbm.pc.newcore.infra.StatusManager.*(..))")
     public Object status(ProceedingJoinPoint pjp) throws Throwable {
-        chaosHandler.handle();
+        chaosHandler.infraChaos();
         return pjp.proceed();
     }
 }

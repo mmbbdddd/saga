@@ -39,7 +39,7 @@ public class RemoteChaosAction<S extends Enum<S>> implements RemoteSagaAction<S>
 
     @Override
     public Boolean remoteSagaQuery(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws Exception {
-        return chaosHandler.sagaRouter(ctx);
+        return chaosHandler.sagaRouter();
     }
 
     @Override
@@ -49,6 +49,6 @@ public class RemoteChaosAction<S extends Enum<S>> implements RemoteSagaAction<S>
 
     @Override
     public Boolean remoteSagaRollbackFailover(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws Exception {
-        return chaosHandler.sagaRouter(ctx);
+        return chaosHandler.sagaRouter();
     }
 }

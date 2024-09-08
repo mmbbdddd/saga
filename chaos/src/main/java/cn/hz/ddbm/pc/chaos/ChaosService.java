@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.chaos;
 
 import cn.hz.ddbm.pc.chaos.support.ChaosHandler;
+import cn.hz.ddbm.pc.chaos.support.ChaosConfig;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowModel;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
@@ -44,10 +45,14 @@ public class ChaosService {
     @Autowired
     ChaosHandler chaosHandler;
 
+    public enum ResultGenerator {
+        TRUE, FALSE, RANDOM
+    }
 
-    public void saga(String flowName, Enum initStatus, Integer retry, Integer times, Integer timeout, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void saga(String flowName, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig, ResultGenerator sagaResultGenerator) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
-        chaosHandler.setChaosRules(rules);
+        System.setProperty(Coast.SAGA.CHAOS_MODE, sagaResultGenerator.name().toLowerCase());
+        chaosHandler.setChaosConfig(chaosConfig);
         Coast.DEFAULT_RETRYTIME = retry;
         statisticsLines         = Collections.synchronizedList(new ArrayList<>(times));
         CountDownLatch cdl  = new CountDownLatch(times);
@@ -64,7 +69,7 @@ public class ChaosService {
                     }
                     result = ctx;
                 } catch (Throwable t) {
-                    Logs.error.error("{}", ExceptionUtils.unwrap(t));
+                    Logs.error.error("{}", ExceptionUtils.unwrap(t).getMessage());
                     result = t;
                 } finally {
                     cdl.countDown();
@@ -83,10 +88,10 @@ public class ChaosService {
     }
 
 
-    public void fsm(String flowName, Enum initStatus, Integer retry, Integer times, Integer timeout, List<ChaosRule> rules) throws PauseException, SessionException, FlowEndException, InterruptedException {
+    public void fsm(String flowName, Enum initStatus, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig) throws PauseException, SessionException, FlowEndException, InterruptedException {
         System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
         Coast.DEFAULT_RETRYTIME = retry;
-        chaosHandler.setChaosRules(rules);
+        chaosHandler.setChaosConfig(chaosConfig);
         statisticsLines = Collections.synchronizedList(new ArrayList<>(times));
         CountDownLatch cdl = new CountDownLatch(times);
         for (int i = 0; i < times; i++) {
@@ -202,7 +207,7 @@ class MockSagaPayload<S extends Enum<S>> implements SagaPayload<S> {
 
     @Override
     public SagaState<S> getState() {
-        return new SagaState<>(step, SagaState.Offset.task,status);
+        return new SagaState<>(step, SagaState.Offset.task, status);
     }
 
     @Override

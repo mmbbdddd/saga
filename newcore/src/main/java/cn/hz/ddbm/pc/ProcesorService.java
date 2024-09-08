@@ -16,7 +16,6 @@ import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatisticsSupport;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import org.springframework.beans.factory.InitializingBean;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class ProcesorService<S extends State, C extends FlowContext<?, S, ?>> implements FlowProcessor<C>, InitializingBean {
+public abstract class ProcesorService<S extends State, C extends FlowContext<?, S, ?>> implements FlowProcessor<C> {
     protected Map<String, FlowModel> flows;
     Map<Coast.SessionType, SessionManager>       sessionManagerMap;
     Map<Coast.StatusType, StatusManager>         statusManagerMap;
@@ -43,6 +42,7 @@ public abstract class ProcesorService<S extends State, C extends FlowContext<?, 
         this.statisticsSupportMap = new HashMap<>();
 
         this.pluginService = new PluginService(getDefaultPlugins());
+
         this.statisticsSupportMap.put(Coast.StatisticsType.jvm, new JvmStatisticsSupport());
         this.sessionManagerMap.put(Coast.SessionType.jvm, new JvmSessionManager());
         this.statusManagerMap.put(Coast.StatusType.jvm, new JvmStatusManager());
@@ -87,27 +87,7 @@ public abstract class ProcesorService<S extends State, C extends FlowContext<?, 
         return sessionManagerMap.get(profile.getSession()).get(flowName, id);
     }
 
-    public boolean tryLock(C ctx) throws LockException {
-        Profile profile = ctx.getProfile();
-        String  key     = String.format("lock:%s:%s:%s", profile.getNamespace(), ctx.getFlow().getName(), ctx.getId());
 
-        try {
-            lockerMap.get(profile.getLock()).tryLock(key, profile.getLockTimeoutMicros());
-            return true;
-        } catch (LockException e) {
-            throw new LockException(e);
-        }
-    }
-
-    public void unLock(C ctx) {
-        Profile profile = ctx.getProfile();
-        String  key     = String.format("lock:%s:%s:%s", profile.getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        try {
-            lockerMap.get(profile.getLock()).releaseLock(key);
-        } catch (LockException e) {
-            Logs.error.error("", e);
-        }
-    }
 
     public void updateStatus(C ctx) throws StatusException {
         ctx.syncpayload();
@@ -161,7 +141,6 @@ public abstract class ProcesorService<S extends State, C extends FlowContext<?, 
             } else {
                 return SpringUtil.getBean(Coast.REMOTE_CHAOS_ACTION);
             }
-
         } else {
             return SpringUtil.getBean(action);
         }

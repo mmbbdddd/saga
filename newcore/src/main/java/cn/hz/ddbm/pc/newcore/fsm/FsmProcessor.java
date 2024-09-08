@@ -12,11 +12,13 @@ import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class FsmProcessor<E extends Enum<E>> extends ProcesorService<FsmState<E>, FlowContext<FsmFlow<E>, FsmState<E>, FsmWorker<E>>> {
+    @PostConstruct
     public void afterPropertiesSet() {
         initParent();
 
