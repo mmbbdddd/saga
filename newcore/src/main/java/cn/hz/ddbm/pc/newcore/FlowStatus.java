@@ -3,9 +3,8 @@ package cn.hz.ddbm.pc.newcore;
 import java.util.Objects;
 
 public enum FlowStatus {
-    INIT(Type.init),
-    RUNNABLE(Type.runnable), PAUSE(Type.runnable),
-    SU(Type.end), FAIL(Type.end), MANUAL(Type.end),
+    RUNNABLE(Type.runnable), PAUSE(Type.runnable), MANUAL(Type.runnable),
+    SU(Type.end), FAIL(Type.end),
     ;
 
     private final Type type;
@@ -14,21 +13,19 @@ public enum FlowStatus {
         this.type = type;
     }
 
-    public static Boolean isInit(FlowStatus status) {
-        return Objects.equals(Type.init, status.type);
+
+    public static Boolean isPaused(FlowStatus status) {
+        return Objects.equals(PAUSE, status);
     }
 
     public static Boolean isRunnable(FlowStatus status) {
-        return !Objects.equals(Type.end, status.type);
+        return Objects.equals(RUNNABLE, status);
     }
 
     public static Boolean isEnd(FlowStatus status) {
-        return Objects.equals(Type.end, status.type);
+        return Objects.equals(status, SU) || Objects.equals(status, FAIL);
     }
 
-    public static Boolean isPause(FlowStatus status) {
-        return Objects.equals(PAUSE, status);
-    }
 
     public enum Type {
         init, runnable, end

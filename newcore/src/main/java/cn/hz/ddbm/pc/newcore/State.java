@@ -12,7 +12,7 @@ public abstract class State<S extends Enum<S>> implements Serializable {
     public abstract Serializable code();
 
     public boolean isPaused() {
-        return FlowStatus.isPause(getStatus());
+        return FlowStatus.isPaused(getStatus());
     }
 
     @Override
