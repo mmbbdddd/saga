@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentMap;
 public class JvmStatusManager implements StatusManager {
     ConcurrentMap<String, State>   statusMap;
     ConcurrentMap<String, Boolean> actionTables;
-    String                                     keyTemplate = "%s:%s";
+    String                         keyTemplate = "%s:%s";
 
     public JvmStatusManager() {
         this.statusMap    = new ConcurrentHashMap<>();

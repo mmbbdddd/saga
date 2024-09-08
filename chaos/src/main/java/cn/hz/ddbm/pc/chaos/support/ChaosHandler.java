@@ -1,9 +1,9 @@
 package cn.hz.ddbm.pc.chaos.support;
 
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 
 import java.util.*;
@@ -50,7 +50,7 @@ public class ChaosHandler {
     }
 
 
-    public Boolean sagaRouter(SagaContext ctx) {
+    public Boolean sagaRouter(FlowContext ctx) {
         String sagaMode = System.getProperty(Coast.SAGA.CHAOS_MODE);
         if (Objects.equals(sagaMode, Coast.SAGA.CHAOS_TRUE)) {
             return true;

@@ -28,6 +28,7 @@ public class ChaosConfiguration {
     RemoteChaosAction remoteChaosAction() {
         return new RemoteChaosAction();
     }
+
     @Bean
     LocalChaosAction localChaosAction() {
         return new LocalChaosAction();

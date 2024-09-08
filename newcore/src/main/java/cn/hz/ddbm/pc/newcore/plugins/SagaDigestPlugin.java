@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.newcore.plugins;
 
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Plugin;
-import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
 
@@ -13,7 +12,6 @@ public class SagaDigestPlugin<S extends Enum<S>> extends Plugin<SagaState<S>> {
     public String code() {
         return "digest";
     }
-
 
 
     @Override
@@ -30,7 +28,7 @@ public class SagaDigestPlugin<S extends Enum<S>> extends Plugin<SagaState<S>> {
         String       action       = ctx.getAction().code();
         Serializable targetStatus = ctx.getState().code();
 
-        Logs.digest.info(" {},{}, {},{},{}",  flow, id, from, action,   targetStatus);
+        Logs.digest.info(" {},{}, {},{},{}", flow, id, from, action, targetStatus);
 
     }
 

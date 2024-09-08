@@ -10,8 +10,8 @@ import java.util.Set;
 public abstract class FlowModel<S extends State> {
     protected String name;
     protected S      init;
-    protected Set    ends;
-    protected Set    tasks;
+    protected Set<S> ends;
+    protected Set<S> tasks;
     protected Set<S> allStates;
 
 

@@ -1,14 +1,15 @@
 package cn.hz.ddbm.pc.newcore.saga.action;
 
 import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
-import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
 import cn.hz.ddbm.pc.newcore.saga.SagaState;
-import cn.hz.ddbm.pc.newcore.support.ActionResult;
+import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 
 
-public class RemoteSagaActionProxy implements RemoteSagaAction {
+public class RemoteSagaActionProxy<S extends Enum<S>> implements RemoteSagaAction<S> {
     Class<? extends RemoteSagaAction> actionClass;
     RemoteSagaAction                  action;
 
@@ -16,11 +17,11 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
         this.actionClass = actionClass;
     }
 
-    public void execute(SagaContext ctx) throws ActionException {
-        SagaState lastState = (SagaState) ctx.getState();
+    public void remoteSaga(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws ActionException {
+        SagaState lastState = ctx.getState();
         try {
             ctx.getProcessor().plugin().pre(ctx);
-            getOrInitAction().execute(ctx);
+            getOrInitAction().remoteSaga(ctx);
             ctx.setActionResult(true);
             ctx.getProcessor().plugin().post(lastState, ctx);
         } catch (Exception e) {
@@ -33,11 +34,11 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
     }
 
 
-    public Boolean executeQuery(SagaContext ctx) throws NoSuchRecordException, ActionException {
-        SagaState lastState = (SagaState) ctx.getState();
+    public Boolean remoteSagaQuery(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws NoSuchRecordException, ActionException {
+        SagaState lastState = ctx.getState();
         try {
             ctx.getProcessor().plugin().pre(ctx);
-            Boolean result =  getOrInitAction().executeQuery(ctx);
+            Boolean result = getOrInitAction().remoteSagaQuery(ctx);
             ctx.setActionResult(true);
             ctx.getProcessor().plugin().post(lastState, ctx);
             return result;
@@ -51,11 +52,11 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
     }
 
 
-    public void rollback(SagaContext ctx) throws ActionException {
-        SagaState lastState = (SagaState) ctx.getState();
+    public void remoteSagaRollback(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws ActionException {
+        SagaState lastState = ctx.getState();
         try {
             ctx.getProcessor().plugin().pre(ctx);
-            getOrInitAction().rollback(ctx);
+            getOrInitAction().remoteSagaRollback(ctx);
             ctx.setActionResult(true);
             ctx.getProcessor().plugin().post(lastState, ctx);
         } catch (Exception e) {
@@ -67,11 +68,11 @@ public class RemoteSagaActionProxy implements RemoteSagaAction {
         }
     }
 
-    public Boolean rollbackQuery(SagaContext ctx) throws NoSuchRecordException, ActionException {
-        SagaState lastState = (SagaState) ctx.getState();
+    public Boolean remoteSagaRollbackFailover(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws NoSuchRecordException, ActionException {
+        SagaState lastState = ctx.getState();
         try {
             ctx.getProcessor().plugin().pre(ctx);
-            Boolean result =  getOrInitAction().rollbackQuery(ctx);
+            Boolean result = getOrInitAction().remoteSagaRollbackFailover(ctx);
             ctx.setActionResult(true);
             ctx.getProcessor().plugin().post(lastState, ctx);
             return result;

@@ -4,7 +4,10 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
+import cn.hz.ddbm.pc.newcore.exception.LockException;
+import cn.hz.ddbm.pc.newcore.exception.SessionException;
+import cn.hz.ddbm.pc.newcore.exception.StatusException;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.infra.*;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmLocker;
@@ -21,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class ProcesorService<C extends FlowContext> implements FlowProcessor<C>, InitializingBean {
+public abstract class ProcesorService<S extends State, C extends FlowContext<?, S, ?>> implements FlowProcessor<C>, InitializingBean {
     protected Map<String, FlowModel> flows;
     Map<Coast.SessionType, SessionManager>       sessionManagerMap;
     Map<Coast.StatusType, StatusManager>         statusManagerMap;
@@ -66,12 +69,12 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         });
     }
 
-    public abstract C getContext(String flowName, Payload payload) throws SessionException;
+    public abstract C getContext(String flowName, Payload<S> payload) throws SessionException;
 
     protected abstract List<Plugin> getDefaultPlugins();
 
-    public FlowModel getFlow(String flowName) {
-        return flows.get(flowName);
+    public <F> F getFlow(String flowName) {
+        return (F) flows.get(flowName);
     }
 
     public PluginService plugin() {
@@ -84,7 +87,7 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         return sessionManagerMap.get(profile.getSession()).get(flowName, id);
     }
 
-    public boolean tryLock(FlowContext ctx) throws LockException {
+    public boolean tryLock(C ctx) throws LockException {
         Profile profile = ctx.getProfile();
         String  key     = String.format("lock:%s:%s:%s", profile.getNamespace(), ctx.getFlow().getName(), ctx.getId());
 
@@ -96,7 +99,7 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         }
     }
 
-    public void unLock(FlowContext ctx) {
+    public void unLock(C ctx) {
         Profile profile = ctx.getProfile();
         String  key     = String.format("lock:%s:%s:%s", profile.getNamespace(), ctx.getFlow().getName(), ctx.getId());
         try {
@@ -106,7 +109,7 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         }
     }
 
-    public void updateStatus(FlowContext ctx) throws StatusException {
+    public void updateStatus(C ctx) throws StatusException {
         ctx.syncpayload();
         statusManagerMap.get(ctx.getProfile().getStatus()).flush(ctx);
     }
@@ -114,35 +117,35 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
     /**
      * 刷新状态到基础设施
      */
-    public void flush(FlowContext ctx) throws SessionException, StatusException {
+    public void flush(C ctx) throws SessionException, StatusException {
         ctx.syncpayload();
         sessionManagerMap.get(ctx.getProfile().getSession()).flush(ctx);
         statusManagerMap.get(ctx.getProfile().getStatus()).flush(ctx);
     }
 
-    public void idempotent( FlowContext ctx) throws IdempotentException {
+    public void idempotent(C ctx) throws IdempotentException {
         String namespace = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
         String key       = String.format("%s:%s", namespace, ctx.getAction().code());
         statusManagerMap.get(ctx.getProfile().getStatus()).idempotent(key);
     }
 
 
-    public void unidempotent( FlowContext ctx) throws IdempotentException {
+    public void unidempotent(C ctx) throws IdempotentException {
         String namespace = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
         String key       = String.format("%s:%s", namespace, ctx.getAction().code());
         statusManagerMap.get(ctx.getProfile().getStatus()).unidempotent(key);
     }
 
 
-    public void metricsNode(FlowContext ctx) {
+    public void metricsNode(C ctx) {
         String            flowName = ctx.getFlow().getName();
-        Serializable      id    = ctx.getId();
-        State             state = ctx.getState();
-        StatisticsSupport ss    = statisticsSupportMap.get(ctx.getProfile().getStatistics());
+        Serializable      id       = ctx.getId();
+        State             state    = ctx.getState();
+        StatisticsSupport ss       = statisticsSupportMap.get(ctx.getProfile().getStatistics());
         ss.increment(flowName, id, state, Coast.STATISTICS.EXECUTE_TIMES);
     }
 
-    public Long getExecuteTimes(FlowContext ctx, State state) {
+    public Long getExecuteTimes(C ctx, State state) {
         String            flowName = ctx.getFlow().getName();
         Serializable      id       = ctx.getId();
         StatisticsSupport ss       = statisticsSupportMap.get(ctx.getProfile().getStatistics());
@@ -153,9 +156,9 @@ public abstract class ProcesorService<C extends FlowContext> implements FlowProc
         Assert.notNull(action, "action is null");
         String runMode = System.getProperty(Coast.RUN_MODE);
         if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
-            if(LocalFsmAction.class.isAssignableFrom(action)){
+            if (LocalFsmAction.class.isAssignableFrom(action)) {
                 return SpringUtil.getBean(Coast.LOCAL_CHAOS_ACTION);
-            }else {
+            } else {
                 return SpringUtil.getBean(Coast.REMOTE_CHAOS_ACTION);
             }
 

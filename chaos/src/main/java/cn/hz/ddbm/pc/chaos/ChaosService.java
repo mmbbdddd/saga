@@ -1,19 +1,24 @@
 package cn.hz.ddbm.pc.chaos;
 
 import cn.hz.ddbm.pc.chaos.support.ChaosHandler;
-import cn.hz.ddbm.pc.newcore.*;
+import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.FlowModel;
+import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.chaos.ChaosRule;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.PauseException;
 import cn.hz.ddbm.pc.newcore.exception.SessionException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmPayload;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.saga.*;
+import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
+import cn.hz.ddbm.pc.newcore.saga.SagaPayload;
+import cn.hz.ddbm.pc.newcore.saga.SagaProcessor;
+import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -43,14 +51,14 @@ public class ChaosService {
         Coast.DEFAULT_RETRYTIME = retry;
         statisticsLines         = Collections.synchronizedList(new ArrayList<>(times));
         CountDownLatch cdl  = new CountDownLatch(times);
-        SagaFlow       flow = (SagaFlow) sagaProcessor.getFlow(flowName);
+        FlowModel      flow = (SagaFlow) sagaProcessor.getFlow(flowName);
         for (int i = 0; i < times; i++) {
-            MockSagaPayload mockPayLoad = new MockSagaPayload(i,   flow);
+            MockSagaPayload mockPayLoad = new MockSagaPayload(i, (SagaFlow) flow);
             mockPayLoad.setId(i);
             threadPool.submit(() -> {
                 Object result = null;
                 try {
-                    SagaContext ctx = sagaProcessor.getContext(flowName, mockPayLoad);
+                    FlowContext ctx = sagaProcessor.getContext(flowName, mockPayLoad);
                     while (isContinue(ctx)) {
                         sagaProcessor.flowProcess(ctx);
                     }
@@ -87,7 +95,7 @@ public class ChaosService {
             threadPool.submit(() -> {
                 Object result = null;
                 try {
-                    FsmContext ctx = fsmProcessor.getContext(flowName, mockPayLoad);
+                    FlowContext ctx = fsmProcessor.getContext(flowName, mockPayLoad);
                     while (isContinue(ctx)) {
                         fsmProcessor.flowProcess(ctx);
                     }

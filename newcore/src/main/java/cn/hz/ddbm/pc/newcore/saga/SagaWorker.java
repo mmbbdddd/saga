@@ -1,25 +1,25 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Pair;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Worker;
 import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
-import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaActionProxy;
 import cn.hz.ddbm.pc.newcore.saga.worker.SagaLocalWorker;
 import cn.hz.ddbm.pc.newcore.saga.worker.SagaRemoteWorker;
 import lombok.Getter;
 
 @Getter
-public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaAction, SagaContext<S>> {
+public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaAction,
+        FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>>> {
     protected Integer     index;
     protected S           state;
     protected SagaFlow<S> flow;
 
-    public SagaWorker(Integer index,S state, SagaFlow<S> flow) {
+    public SagaWorker(Integer index, S state, SagaFlow<S> flow) {
         this.index = index;
         this.flow  = flow;
-        this.state  = state;
+        this.state = state;
     }
 
     public static <S extends Enum<S>> SagaWorker<S> of(Integer index, Pair<S, Class<? extends SagaAction>> pair, SagaFlow<S> flow) {
@@ -40,7 +40,7 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaAction, S
 
 
     @Override
-    public abstract void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException, FlowEndException, NoSuchRecordException;
+    public abstract void execute(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException, ActionException, LockException, FlowEndException, NoSuchRecordException;
 
 
 }

@@ -1,6 +1,6 @@
 package cn.hz.ddbm.pc.newcore.saga
 
-
+import cn.hz.ddbm.pc.newcore.FlowContext
 import org.junit.Test
 
 class SagaProcessorTest {
@@ -9,7 +9,7 @@ class SagaProcessorTest {
     @Test
     void testWorkerProcess() {
         MockSagaPayload payload = new MockSagaPayload();
-        SagaContext ctx = new SagaContext(
+        FlowContext<SagaFlow, SagaState, SagaWorker> ctx = new FlowContext(
                 MockSagaPipeline.toSagaFlow(), payload, new HashMap<String, Object>()
         )
         sagaProcessor.workerProcess(ctx)
@@ -18,7 +18,7 @@ class SagaProcessorTest {
     @Test
     void testFlowProcessor() {
         MockSagaPayload payload = new MockSagaPayload();
-        SagaContext ctx = new SagaContext(
+        FlowContext<SagaFlow, SagaState, SagaWorker> ctx = new FlowContext(
                 MockSagaPipeline.toSagaFlow(), payload, new HashMap<String, Object>()
         )
         sagaProcessor.flowProcess(ctx)

@@ -14,6 +14,7 @@ public abstract class State<E extends Enum<E>> implements Serializable {
     public boolean isPaused() {
         return FlowStatus.isPause(getStatus());
     }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

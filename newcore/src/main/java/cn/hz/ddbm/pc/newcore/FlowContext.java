@@ -2,7 +2,6 @@ package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.ProcesorService;
-import cn.hz.ddbm.pc.newcore.support.ActionResult;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,7 +14,7 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     final     Serializable        id;
     final     F                   flow;
     final     Map<String, Object> session;
-    final     Payload<S>          payload;
+    final     Payload             payload;
     final     AtomicInteger       loopErrorTimes;
     transient S                   state;
     transient W                   worker;

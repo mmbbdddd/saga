@@ -4,14 +4,15 @@ import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
-import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
 import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 import lombok.Data;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 public interface FSM<S extends Enum<S>> {
     /**
@@ -29,16 +30,15 @@ public interface FSM<S extends Enum<S>> {
     String describe();
 
     /**
-     *
      * @return
      */
     S init();
 
     /**
-     *
      * @return
      */
     Set<S> ends();
+
     /**
      * 定义插件，在每个节点执行前后执行。
      * 常用的插件有日志插件，监控埋点插件……
@@ -84,9 +84,9 @@ public interface FSM<S extends Enum<S>> {
 
 
     default FsmFlow<S> build() throws Exception {
-        S       init  = init();
-        Set<S>  ends  = ends();
-        Set<S>  tasks = getTaskNodes();
+        S          init  = init();
+        Set<S>     ends  = ends();
+        Set<S>     tasks = getTaskNodes();
         FsmFlow<S> flow  = new FsmFlow<>(flowId(), init, ends, tasks);
 
         transitions(new Transitions<>(flow));
@@ -98,9 +98,6 @@ public interface FSM<S extends Enum<S>> {
         profile.setPlugins(plugins());
         return flow;
     }
-
-
-
 
 
     default Set<S> getTaskNodes() {

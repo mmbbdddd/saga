@@ -43,7 +43,7 @@ public class RandomUitl {
         private TreeMap<Double, K> weightMap = new TreeMap<Double, K>();
 
         public WeightRandom(Set<Pair<K, Double>> list) {
-            Assert.notNull(list,"args is null");
+            Assert.notNull(list, "args is null");
             for (Pair<K, Double> pair : list) {
                 double lastWeight = this.weightMap.size() == 0 ? 0 : this.weightMap.lastKey().doubleValue();//统一转为double
                 this.weightMap.put(pair.getValue().doubleValue() + lastWeight, pair.getKey());//权重累加

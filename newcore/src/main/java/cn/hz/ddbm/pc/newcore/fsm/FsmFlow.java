@@ -4,10 +4,9 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
 import cn.hz.ddbm.pc.newcore.FlowModel;
-import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
-import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
 import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 
@@ -25,8 +24,8 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
         Assert.notNull(tasks, "tasks is null");
         this.name      = name;
         this.init      = new FsmState<>(init, FsmState.Offset.task);
-        this.ends      = ends.stream().map(e -> new FsmState(e, null)).collect(Collectors.toSet());
-        this.tasks     = tasks.stream().map(e -> new FsmState(e,FsmState.Offset.task)).collect(Collectors.toSet());
+        this.ends      = ends.stream().map(e -> new FsmState<>(e, null)).collect(Collectors.toSet());
+        this.tasks     = tasks.stream().map(e -> new FsmState<>(e, FsmState.Offset.task)).collect(Collectors.toSet());
         this.allStates = new HashSet<>();
         this.allStates.add(this.init);
         this.allStates.addAll(this.ends);

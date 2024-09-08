@@ -1,5 +1,6 @@
 package cn.hz.ddbm.pc.newcore.fsm
 
+import cn.hz.ddbm.pc.newcore.FlowContext
 import cn.hz.ddbm.pc.newcore.FlowStatus
 import cn.hz.ddbm.pc.newcore.Profile
 import cn.hz.ddbm.pc.newcore.config.Coast
@@ -15,7 +16,7 @@ class FsmProcessorTest {
     void testWorkerProcess() {
 
         PayFsmPayload payload = new PayFsmPayload();
-        FsmContext ctx = new FsmContext(
+        FlowContext<FsmFlow, FsmState, FsmWorker> ctx = new FlowContext(
                 new PayFsmFlow(), payload, new HashMap<String, Object>()
         )
         fsmProcessor.workerProcess(ctx)
@@ -25,7 +26,7 @@ class FsmProcessorTest {
     void testFlowProcess() {
 
         PayFsmPayload payload = new PayFsmPayload();
-        FsmContext ctx = new FsmContext(
+        FlowContext<FsmFlow, FsmState, FsmWorker> ctx = new FlowContext(
                 new PayFsmFlow(), payload, new HashMap<String, Object>()
         )
         fsmProcessor.flowProcess(ctx)

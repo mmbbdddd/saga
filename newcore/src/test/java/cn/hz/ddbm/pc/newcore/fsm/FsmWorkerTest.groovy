@@ -3,7 +3,8 @@ package cn.hz.ddbm.pc.newcore.fsm
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmActionProxy
 import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter
 import cn.hz.ddbm.pc.newcore.fsm.worker.FsmRemoteWorker
-import spock.lang.*
+import spock.lang.Specification
+import spock.lang.Unroll
 
 class FsmWorkerTest extends Specification {
 
@@ -14,8 +15,8 @@ class FsmWorkerTest extends Specification {
         ((FsmRemoteWorker) FsmWorker.remote(from, action, router)).from.state == expectedResult
 
         where:
-        router                                                                                      | action               | from || expectedResult
-        new RemoteRouter<S>("noRecordExpression", "prcessingExpression", ["stateExpressions": S.a]) | RemoteFsmActionProxy.class | S.a || S.a
+        router                                                                                      | action                     | from || expectedResult
+        new RemoteRouter<S>("noRecordExpression", "prcessingExpression", ["stateExpressions": S.a]) | RemoteFsmActionProxy.class | S.a  || S.a
     }
 
     enum S {

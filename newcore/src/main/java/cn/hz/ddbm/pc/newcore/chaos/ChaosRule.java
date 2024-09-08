@@ -9,8 +9,6 @@ public class ChaosRule {
     Double weight;
 
 
-
-
     public ChaosRule(Class target, Object value, Double weight) {
         this.target = target;
         this.value  = value;

@@ -1,7 +1,5 @@
 package cn.hz.ddbm.pc.newcore.fsm.router;
 
-import cn.hz.ddbm.pc.newcore.fsm.FsmRouter;
-
 import java.util.HashMap;
 
 /**

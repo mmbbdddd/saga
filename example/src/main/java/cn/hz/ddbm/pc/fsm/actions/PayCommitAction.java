@@ -1,13 +1,12 @@
 package cn.hz.ddbm.pc.fsm.actions;
 
-import cn.hz.ddbm.pc.saga.PayState;
-import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
+import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
+import cn.hz.ddbm.pc.newcore.fsm.FsmState;
+import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.saga.PayState;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
 
 @Component
 public class PayCommitAction implements RemoteFsmAction<PayState> {
@@ -17,14 +16,12 @@ public class PayCommitAction implements RemoteFsmAction<PayState> {
     }
 
     @Override
-    public void execute(FsmContext<PayState> ctx) throws ActionException {
+    public void remoteFsm(FlowContext<FsmFlow<PayState>, FsmState<PayState>, FsmWorker<PayState>> ctx) throws Exception {
 
     }
 
     @Override
-    public Object executeQuery(FsmContext<PayState> ctx) throws NoSuchRecordException, ActionException {
-        return new HashMap<String, Object>() {{
-            put("code", "0000");
-        }};
+    public Object remoteFsmQuery(FlowContext<FsmFlow<PayState>, FsmState<PayState>, FsmWorker<PayState>> ctx) throws Exception {
+        return null;
     }
 }

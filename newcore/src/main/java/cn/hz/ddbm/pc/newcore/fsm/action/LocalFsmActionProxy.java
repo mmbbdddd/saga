@@ -2,11 +2,11 @@ package cn.hz.ddbm.pc.newcore.fsm.action;
 
 
 import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
-
-import java.util.Objects;
+import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
 
 /**
  * @param <S>
@@ -36,11 +36,11 @@ public class LocalFsmActionProxy<S extends Enum<S>> implements LocalFsmAction<S>
     }
 
     @Override
-    public Object execute(FsmContext<S> ctx) throws ActionException {
+    public Object localFsm(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException {
         FsmState lastState = ctx.getState();
         try {
             ctx.getProcessor().plugin().pre(ctx);
-            Object result = getOrInitAction().execute(ctx);
+            Object result = getOrInitAction().localFsm(ctx);
             ctx.getProcessor().plugin().post(lastState, ctx);
             return result;
         } catch (Exception e) {

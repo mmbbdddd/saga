@@ -2,9 +2,11 @@ package cn.hz.ddbm.pc.newcore.fsm.action;
 
 
 import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
+import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
 
 /**
  * @param <S>
@@ -34,11 +36,11 @@ public class RemoteFsmActionProxy<S extends Enum<S>> implements RemoteFsmAction<
     }
 
     @Override
-    public void execute(FsmContext<S> ctx) throws ActionException {
+    public void remoteFsm(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException {
         FsmState lastState = ctx.getState();
         try {
             ctx.getProcessor().plugin().pre(ctx);
-            getOrInitAction().execute(ctx);
+            getOrInitAction().remoteFsm(ctx);
             ctx.getProcessor().plugin().post(lastState, ctx);
         } catch (Exception e) {
             ctx.getProcessor().plugin().error(lastState, e, ctx);
@@ -49,11 +51,11 @@ public class RemoteFsmActionProxy<S extends Enum<S>> implements RemoteFsmAction<
     }
 
     @Override
-    public Object executeQuery(FsmContext<S> ctx) throws ActionException {
+    public Object remoteFsmQuery(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException {
         FsmState lastState = ctx.getState();
         try {
             ctx.getProcessor().plugin().pre(ctx);
-            Object result = getOrInitAction().executeQuery(ctx);
+            Object result = getOrInitAction().remoteFsmQuery(ctx);
             ctx.getProcessor().plugin().post(lastState, ctx);
             return result;
         } catch (Exception e) {

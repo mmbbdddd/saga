@@ -14,6 +14,7 @@ public class Coast {
     public static       Integer DEFAULT_RETRYTIME       = 1;
 
     public final static String EVENT_DEFAULT = "push";
+
     public static class STATISTICS {
         public final static String EXECUTE_TIMES = "execute_times";
 

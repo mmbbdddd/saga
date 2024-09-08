@@ -1,16 +1,15 @@
 package cn.hz.ddbm.pc.newcore.fsm.worker;
 
-import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.exception.*;
+import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionProxy;
 import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
-
-import java.util.Objects;
 
 public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
     LocalFsmActionProxy<S> action;
@@ -21,7 +20,7 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
         this.router = router;
     }
 
-    public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException {
+    public void execute(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException {
         ctx.setAction(action);
         //如果任务可执行
         //如果任务可执行
@@ -37,15 +36,15 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
         }
     }
 
-    private void doFsmActionWithTranscational(FsmState<S> lastSate, FsmContext<S> ctx) throws ActionException, IdempotentException {
+    private void doFsmActionWithTranscational(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException, IdempotentException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
         processor.updateStatus(ctx);
         //冥等
         processor.idempotent(ctx);
         //执行业务
         try {
-            Object result = action.execute(ctx);
-            S state =  router.router(ctx, result);
+            Object result = action.localFsm(ctx);
+            S      state  = router.router(ctx, result);
             ctx.setState(new FsmState<>(state, FsmState.Offset.task));
         } catch (NoSuchRecordException e) {
             ctx.getState().setOffset(FsmState.Offset.taskRetry);

@@ -3,18 +3,20 @@ package cn.hz.ddbm.pc.newcore.saga;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.Payload;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.SagaFlowFactory;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SagaProcessor extends ProcesorService<SagaContext> {
+public class SagaProcessor<E extends Enum<E>> extends ProcesorService<SagaState<E>, FlowContext<SagaFlow<E>, SagaState<E>, SagaWorker<E>>> {
 
 
     public void afterPropertiesSet() {
@@ -25,20 +27,21 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
     }
 
     @Override
-    public SagaContext getContext(String flowName, Payload payload) throws SessionException {
+    public FlowContext<SagaFlow<E>, SagaState<E>, SagaWorker<E>> getContext(String flowName, Payload<SagaState<E>> payload) throws SessionException {
         Assert.notNull(flowName, "flowName is null");
         Assert.notNull(payload, "payload is null");
-        SagaFlow            flow    = (SagaFlow) getFlow(flowName);
-        Map<String, Object> session = getSession(flowName, payload.getId());
-        SagaContext         ctx     = new SagaContext<>(flow, payload, session);
+        SagaFlow<E>                                           flow    = getFlow(flowName);
+        Map<String, Object>                                   session = getSession(flowName, payload.getId());
+        FlowContext<SagaFlow<E>, SagaState<E>, SagaWorker<E>> ctx     = new FlowContext<>(flow, payload, session);
+        Logs.flow.debug("create context:{},{}", flow, payload);
         return ctx;
     }
 
-    public void workerProcess(SagaContext ctx) throws FlowEndException, InterruptedException, PauseException, RetryableException {
+    public void workerProcess(FlowContext<SagaFlow<E>, SagaState<E>, SagaWorker<E>> ctx) throws FlowEndException, InterruptedException, PauseException, RetryableException {
         Assert.notNull(ctx, "ctx is null");
         ctx.setProcessor(this);
-        SagaFlow  flow       = (SagaFlow) ctx.getFlow();
-        SagaState state      = (SagaState) ctx.getState();
+        SagaFlow  flow       = ctx.getFlow();
+        SagaState state      = ctx.getState();
         Integer   stateRetry = flow.getRetry(state);
         //状态不可执行
         if (flow.isEnd(state)) {
@@ -58,8 +61,8 @@ public class SagaProcessor extends ProcesorService<SagaContext> {
             ctx.setWorker(worker);
             worker.execute(ctx);
         } catch (Throwable e) {
-            ExceptionUtils.wrap(e,ctx.getProfile());
-         }
+            ExceptionUtils.wrap(e, ctx.getProfile());
+        }
     }
 
 

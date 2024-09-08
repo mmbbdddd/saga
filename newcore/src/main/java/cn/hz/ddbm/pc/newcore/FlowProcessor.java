@@ -1,8 +1,7 @@
 package cn.hz.ddbm.pc.newcore;
 
-import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
-import cn.hz.ddbm.pc.newcore.log.Logs;
+import cn.hz.ddbm.pc.newcore.exception.*;
 
 public interface FlowProcessor<C extends FlowContext> {
 
@@ -26,7 +25,7 @@ public interface FlowProcessor<C extends FlowContext> {
      * @throws InterruptedException
      * @throws PauseException
      */
-    default void flowProcess(C ctx) throws  InterruptedException, PauseException {
+    default void flowProcess(C ctx) throws InterruptedException, PauseException {
         //判断流程是否结束
 
         while (true) {

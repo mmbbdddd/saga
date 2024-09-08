@@ -30,7 +30,7 @@
             <artifactId>framework</artifactId>
             <version>${pc.version}</version>
         </dependency>
-          <dependency>
+        <dependency>
             <groupId>cn.hz.ddbm.pc</groupId>
             <artifactId>factory-dsl</artifactId>
             <version>${pc.version}</version>

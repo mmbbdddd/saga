@@ -14,9 +14,9 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
         Assert.notNull(chains, "chains is null");
         Assert.notNull(name, "name is null");
         this.name      = name;
-        this.init      = buildInit(chains,this);
-        this.ends      = buildEnds(chains,this);
-        this.tasks     = buildTasks(chains,this);
+        this.init      = buildInit(chains, this);
+        this.ends      = buildEnds(chains, this);
+        this.tasks     = buildTasks(chains, this);
         this.allStates = new HashSet<>();
         this.allStates.add(init);
         this.allStates.addAll(ends);
@@ -24,31 +24,31 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
         pipeline = new Pipeline<>(chains, this);
     }
 
-    private static <S extends Enum<S>> SagaState<S> buildInit(List<Pair<S, Class<? extends SagaAction>>> lines,SagaFlow<S> flow) {
+    private static <S extends Enum<S>> SagaState<S> buildInit(List<Pair<S, Class<? extends SagaAction>>> lines, SagaFlow<S> flow) {
         Assert.notNull(lines, "lines is null");
-        return new SagaState<>(0, SagaState.Offset.task,flow);
+        return new SagaState<>(0, SagaState.Offset.task, flow);
     }
 
-    private static <S extends Enum<S>> Set<SagaState<S>> buildEnds(List<Pair<S, Class<? extends SagaAction>>> lines,SagaFlow<S> flow) {
+    private static <S extends Enum<S>> Set<SagaState<S>> buildEnds(List<Pair<S, Class<? extends SagaAction>>> lines, SagaFlow<S> flow) {
         Assert.notNull(lines, "tasks is null");
         Set<SagaState<S>> ends = new HashSet<>();
         //最后一个节点，状态为成功，为结束节点
-        ends.add(new SagaState<>(null, null,flow));
+        ends.add(new SagaState<>(null, null, flow));
         //初始化，并且状态是fail。为结束节点
-        ends.add(new SagaState<>(null, null,flow));
+        ends.add(new SagaState<>(null, null, flow));
         return ends;
     }
 
-    private static <S extends Enum<S>> Set<SagaState<S>> buildTasks(List<Pair<S, Class<? extends SagaAction>>> lines,SagaFlow<S> flow) {
+    private static <S extends Enum<S>> Set<SagaState<S>> buildTasks(List<Pair<S, Class<? extends SagaAction>>> lines, SagaFlow<S> flow) {
         List<SagaState<S>> all = new ArrayList<>();
         for (int index = 0; index < lines.size(); index++) {
             int finalIndex = index;
             EnumSet.allOf(SagaState.Offset.class).forEach(offset -> {
-                all.add(new SagaState<>(finalIndex, offset,flow));
+                all.add(new SagaState<>(finalIndex, offset, flow));
             });
         }
-        all.remove(buildInit(lines,flow));
-        all.removeAll(buildEnds(lines,flow));
+        all.remove(buildInit(lines, flow));
+        all.removeAll(buildEnds(lines, flow));
         return new HashSet<>(all);
     }
 

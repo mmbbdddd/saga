@@ -14,5 +14,4 @@ public interface Payload<S extends State> {
     void setStatus(FlowStatus state);
 
 
-
 }

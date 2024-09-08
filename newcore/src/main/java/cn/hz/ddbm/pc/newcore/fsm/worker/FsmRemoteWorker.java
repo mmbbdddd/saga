@@ -1,9 +1,10 @@
 package cn.hz.ddbm.pc.newcore.fsm.worker;
 
 import cn.hutool.core.lang.Assert;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
 import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
@@ -21,7 +22,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         this.router = router;
     }
 
-    public void execute(FsmContext<S> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException {
+    public void execute(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException {
         ctx.setAction(action);
         //如果任务可执行
         FsmState<S>     lastSate = ctx.getState();
@@ -37,10 +38,10 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         }
     }
 
-    private void doFsmActionFailover(FsmState<S> lastSate, FsmContext<S> ctx) throws InterruptedException, ActionException {
+    private void doFsmActionFailover(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws InterruptedException, ActionException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
         try {
-            Object actionResult = action.executeQuery(ctx);
+            Object actionResult = action.remoteFsmQuery(ctx);
             Assert.notNull(actionResult, "queryResult is null");
             S nextState = router.router(ctx, actionResult);
             ctx.setState(new FsmState<>(nextState, FsmState.Offset.task));
@@ -61,7 +62,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
 
     }
 
-    private void doFsmAction(FsmState<S> lastSate, FsmContext<S> ctx) throws ActionException, IdempotentException {
+    private void doFsmAction(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException, IdempotentException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
         //设置容错
         ctx.getState().setOffset(FsmState.Offset.failover);
@@ -70,7 +71,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         processor.idempotent(ctx);
         //执行业务
         try {
-            action.execute(ctx);
+            action.remoteFsm(ctx);
         } finally {
             processor.metricsNode(ctx);
         }

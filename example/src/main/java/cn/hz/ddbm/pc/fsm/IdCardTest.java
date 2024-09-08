@@ -27,7 +27,7 @@ public class IdCardTest {
 
     @Autowired
     ChaosService chaosService;
-    List<ChaosRule> rules = new ArrayList<ChaosRule>(){{
+    List<ChaosRule> rules = new ArrayList<ChaosRule>() {{
 //       this.add(new ChaosRule(ChaosRuleType.EXCEPTION,RuntimeException.class,0.2));
 //       this.add(new ChaosRule(ChaosRuleType.EXCEPTION,"true",0.8));
     }};
@@ -41,7 +41,7 @@ public class IdCardTest {
 
         try {
             //执行100此，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init,  1,100, 20, rules);
+            chaosService.fsm("test", IdCardState.init, 1, 100, 20, rules);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,7 +62,7 @@ public class IdCardTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.fsm("test", IdCardState.init,  1, 100, 1000, null);
+            chaosService.fsm("test", IdCardState.init, 1, 100, 1000, null);
         } catch (Exception e) {
             e.printStackTrace();
         }

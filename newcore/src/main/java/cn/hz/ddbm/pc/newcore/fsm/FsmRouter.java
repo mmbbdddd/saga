@@ -5,6 +5,7 @@ import cn.hutool.core.lang.Pair;
 import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
 import cn.hutool.json.JSONUtil;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.NoSuchRecordException;
 import cn.hz.ddbm.pc.newcore.exception.ProcessingException;
@@ -32,7 +33,7 @@ public class FsmRouter<S extends Enum<S>> {
         this.stateExpressions    = stateExpressions;
     }
 
-    public S router(FsmContext<S> ctx, Object actionResult) throws NoSuchRecordException, ProcessingException {
+    public S router(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx, Object actionResult) throws NoSuchRecordException, ProcessingException {
         String runMode = System.getProperty(Coast.RUN_MODE);
         if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
             return routerByWeight();

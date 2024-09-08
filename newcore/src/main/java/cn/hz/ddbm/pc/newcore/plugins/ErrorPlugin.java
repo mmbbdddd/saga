@@ -23,7 +23,7 @@ public class ErrorPlugin extends Plugin {
 
     @Override
     public void errorAction(State preNode, Exception e, FlowContext ctx) {
-        Logs.error.error("",e);
+        Logs.error.error("", e);
 
     }
 

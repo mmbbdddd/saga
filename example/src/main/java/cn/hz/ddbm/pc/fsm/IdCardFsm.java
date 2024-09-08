@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc.fsm;
 
 import cn.hutool.core.map.multi.RowKeyTable;
-import cn.hutool.db.meta.Table;
 import cn.hz.ddbm.pc.factory.fsm.FSM;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
@@ -13,7 +12,6 @@ import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
 import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +40,7 @@ public class IdCardFsm implements FSM<IdCardState> {
 
     @Override
     public List<Plugin> plugins() {
-        return new ArrayList<Plugin>(){{
+        return new ArrayList<Plugin>() {{
             add(new FsmDigestPlugin());
         }};
     }

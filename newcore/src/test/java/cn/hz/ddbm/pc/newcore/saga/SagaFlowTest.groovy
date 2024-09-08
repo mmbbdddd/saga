@@ -57,7 +57,6 @@ class SagaFlowTest<TestEnum> extends Specification {
     }
 
 
-
     enum S {
         a, b, c
     }

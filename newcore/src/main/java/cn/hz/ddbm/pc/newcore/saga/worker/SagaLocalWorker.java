@@ -2,24 +2,24 @@ package cn.hz.ddbm.pc.newcore.saga.worker;
 
 import cn.hutool.core.lang.Pair;
 import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
 import cn.hz.ddbm.pc.newcore.exception.LockException;
-import cn.hz.ddbm.pc.newcore.log.Logs;
-import cn.hz.ddbm.pc.newcore.saga.*;
-import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
+import cn.hz.ddbm.pc.newcore.saga.SagaState;
+import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaActionProxy;
 
-import java.util.Objects;
-
 public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
-    SagaState<S>         pre;
-    SagaState<S>         next;
-    SagaState<S>         rollback;
-    FlowStatus           manual;
-    LocalSagaActionProxy action;
+    SagaState<S>            pre;
+    SagaState<S>            next;
+    SagaState<S>            rollback;
+    FlowStatus              manual;
+    LocalSagaActionProxy<S> action;
 
 
     public SagaLocalWorker(Integer index, Pair<S, Class<? extends SagaAction>> node, SagaFlow<S> flow) {
@@ -28,12 +28,12 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
         this.rollback = new SagaState<>(index, SagaState.Offset.rollback, flow);
         this.pre      = new SagaState<>(index - 1, SagaState.Offset.task, flow);
         this.manual   = FlowStatus.MANUAL;
-        this.action   = new LocalSagaActionProxy((Class<? extends LocalSagaAction>) node.getValue());
+        this.action   = new LocalSagaActionProxy<>(node.getValue());
     }
 
-    public void execute(SagaContext<S> ctx) throws IdempotentException, ActionException, LockException, FlowEndException {
+    public void execute(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException, ActionException, LockException, FlowEndException {
         ctx.setAction(action);
-        SagaState        lastState = ctx.getState();
+        SagaState<S>     lastState = ctx.getState();
         SagaState.Offset offset    = lastState.getOffset();
         switch (offset) {
             case task:
@@ -50,7 +50,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
     }
 
 
-    private void doActionWithTranscational(SagaState lastState, SagaContext<S> ctx) throws IdempotentException {
+    private void doActionWithTranscational(SagaState<S> lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException {
         ProcesorService processor        = ctx.getProcessor();
         Integer         retryTimes       = ctx.getFlow().getRetry(ctx.getState());
         Long            executeTimeState = processor.getExecuteTimes(ctx, ctx.getState());
@@ -60,7 +60,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
         try {
             processor.plugin().pre(ctx);
             processor.idempotent(ctx);
-            action.execute(ctx);
+            action.localSaga(ctx);
             if (null == next) {
                 ctx.getState().setStatus(FlowStatus.SU);
             } else {
@@ -74,7 +74,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     }
 
-    private void rollbackActionWithTranscational(SagaState lastState, SagaContext<S> ctx) throws IdempotentException {
+    private void rollbackActionWithTranscational(SagaState<S> lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException {
         ProcesorService processor        = ctx.getProcessor();
         Integer         retryTimes       = ctx.getFlow().getRetry(ctx.getState());
         Long            executeTimeState = processor.getExecuteTimes(ctx, ctx.getState());
@@ -84,7 +84,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
         try {
             processor.plugin().pre(ctx);
             processor.idempotent(ctx);
-            action.execute(ctx);
+            action.localSagaRollback(ctx);
             if (null == pre) {
                 ctx.getState().setStatus(FlowStatus.FAIL);
             } else {
