@@ -33,9 +33,5 @@ public class SagaState<S extends Enum<S>> extends State<S> {
 
     public enum Offset {
         task, taskRetry, failover, rollback, rollbackRetry, rollbackFailover;
-
-        public Boolean isForward() {
-            return Objects.equals(task, this) || Objects.equals(taskRetry, this) || Objects.equals(failover, this);
-        }
     }
 }

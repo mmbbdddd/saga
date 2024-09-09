@@ -8,24 +8,14 @@ import java.util.Set;
 
 @Data
 public abstract class FlowModel<S extends State> {
-    protected String name;
-    protected S      init;
-    protected Set<S> ends;
-    protected Set<S> tasks;
-    protected Set<S> allStates;
-
+   protected String  name;
+   protected Profile profile;
 
     public Integer getRetry(S state) {
         return getProfile().getStateAttrs(state).getRetry();
     }
 
     public abstract boolean isEnd(S state);
-
-    public Boolean isState(S stateCode) {
-        return allStates.contains(stateCode);
-    }
-
-    Profile profile;
 
     public void profile(Profile profile) {
         this.profile = profile;

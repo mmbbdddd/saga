@@ -27,11 +27,9 @@ public class PaySaga implements SAGA<PayState> {
     @Override
     public List<Pair<PayState, Class<? extends SagaAction>>> pipeline() {
         return new ArrayList<Pair<PayState, Class<? extends SagaAction>>>() {{
-            add(Pair.of(PayState.fail, SagaEndAction.class));
             add(Pair.of(PayState.freeze, SagaFreezeAction.class));
             add(Pair.of(PayState.send, SagaSendAction.class));
             add(Pair.of(PayState.pay, SagaPayAction.class));
-            add(Pair.of(PayState.su, SagaEndAction.class));
         }};
 
     }

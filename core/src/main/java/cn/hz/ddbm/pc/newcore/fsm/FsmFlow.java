@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     Table<S, String, FsmWorker<S>> transitionTable;
+    Set<S>                         ends;
+
 
     public FsmFlow(String name, S init, Set<S> ends, Set<S> tasks) {
         Assert.notNull(name, "name is null");
@@ -21,13 +23,7 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
         Assert.notNull(ends, "ends null");
         Assert.notNull(tasks, "tasks is null");
         this.name      = name;
-        this.init      = new FsmState<>(init, FsmState.Offset.task);
-        this.ends      = ends.stream().map(e -> new FsmState<>(e, FsmState.Offset.task)).collect(Collectors.toSet());
-        this.tasks     = tasks.stream().map(e -> new FsmState<>(e, FsmState.Offset.task)).collect(Collectors.toSet());
-        this.allStates = new HashSet<>();
-        this.allStates.add(this.init);
-        this.allStates.addAll(this.ends);
-        this.allStates.addAll(this.tasks);
+        this.ends      = ends;
         this.transitionTable = new RowKeyTable<>();
     }
 
@@ -55,7 +51,7 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
 
     @Override
     public boolean isEnd(FsmState<S> state) {
-        return getEnds().stream().map(e->e.getState()).collect(Collectors.toSet()).contains(state.getState());
+        return ends.contains(state.getState());
     }
 
 }

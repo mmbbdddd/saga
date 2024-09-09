@@ -36,6 +36,14 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaAction,
         return new SagaRemoteWorker<>(index, node,total);
     }
 
+    public static <S extends Enum<S>> Pair<S, SagaWorker<S>> failWorker() {
+        return null;
+    }
+
+    public static <S extends Enum<S>> Pair<S, SagaWorker<S>> successWorker() {
+        return null;
+    }
+
 
     @Override
     public abstract void execute(FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException, ActionException, LockException, FlowEndException, NoSuchRecordException;
