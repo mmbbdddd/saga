@@ -7,6 +7,7 @@ public class ActionException extends Exception {
     Exception raw;
 
     public ActionException(Exception e) {
+        super(e.getMessage(),e);
         this.raw = e;
     }
 

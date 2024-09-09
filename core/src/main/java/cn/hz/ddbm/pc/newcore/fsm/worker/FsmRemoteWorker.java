@@ -30,15 +30,15 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         switch (offset) {
             case task:
             case taskRetry:
-                doFsmAction(lastSate, ctx);
+                remoteFsm(lastSate, ctx);
                 break;
             case failover:
-                doFsmActionFailover(lastSate, ctx);
+                remoteFsmFailover(lastSate, ctx);
                 break;
         }
     }
 
-    private void doFsmActionFailover(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws InterruptedException, ActionException {
+    private void remoteFsmFailover(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws InterruptedException, ActionException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
         try {
             processor.plugin().pre(ctx);
@@ -70,7 +70,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
 
     }
 
-    private void doFsmAction(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException, IdempotentException {
+    private void remoteFsm(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException, IdempotentException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
         processor.plugin().pre(ctx);
         //设置容错

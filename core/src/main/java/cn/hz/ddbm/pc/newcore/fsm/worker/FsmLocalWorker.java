@@ -29,27 +29,30 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
         switch (offset) {
             case task:
             case taskRetry:
-                doFsmActionWithTranscational(lastSate, ctx);
+                localFsm(lastSate, ctx);
                 break;
             case failover:
                 break;
         }
     }
 
-    private void doFsmActionWithTranscational(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException, IdempotentException {
+    private void localFsm(FsmState<S> lastSate, FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx) throws ActionException, IdempotentException {
         FsmProcessor<S> processor = (FsmProcessor<S>) ctx.getProcessor();
-        processor.updateStatus(ctx);
-        //冥等
-        processor.idempotent(ctx);
         //执行业务
         try {
+            processor.plugin().pre(ctx);
             Object result = action.localFsm(ctx);
             S      state  = router.router(ctx, result);
             ctx.setState(new FsmState<>(state, FsmState.Offset.task));
+            processor.updateStatus(ctx);
+            processor.plugin().post(lastSate,ctx);
         } catch (NoSuchRecordException e) {
-            ctx.getState().setOffset(FsmState.Offset.taskRetry);
+            processor.plugin().error(lastSate,e,ctx);
+        }catch (ActionException e) {
+            processor.plugin().error(lastSate,e,ctx);
+            throw e;
         } catch (ProcessingException e) {
-            ctx.getState().setOffset(FsmState.Offset.failover);
+            processor.plugin().error(lastSate,e,ctx);
         } finally {
             processor.metricsNode(ctx);
         }

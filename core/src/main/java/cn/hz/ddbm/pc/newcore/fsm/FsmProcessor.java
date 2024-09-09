@@ -10,6 +10,7 @@ import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
+import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import javax.annotation.PostConstruct;
@@ -69,6 +70,7 @@ public class FsmProcessor<E extends Enum<E>> extends ProcesorService<FsmState<E>
         }
         FsmWorker<E> worker = flow.getWorker(ctx.getState(), event);
         try {
+            Logs.flow.debug("{}",worker.getClass().getSimpleName());
             ctx.setWorker(worker);
             worker.execute(ctx);
         } catch (Throwable e) {

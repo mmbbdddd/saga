@@ -4,6 +4,7 @@ public class IdempotentException extends Exception {
     private Exception raw;
 
     public IdempotentException(Exception e) {
+        super(e.getMessage(),e);
         this.raw = e;
     }
 

@@ -48,6 +48,8 @@ public class IdCardTest {
         }
     }
 
+
+
     //模拟支付账号
     public static AtomicInteger account;
     //    模拟冻结字段
@@ -63,7 +65,7 @@ public class IdCardTest {
 
         try {
             //执行10000次，查看流程中断概率
-            chaosService.fsm("test",true, IdCardState.init, 1, 100, 1000, ChaosConfig.goodOf());
+            chaosService.fsm("test",true, IdCardState.init, 2, 1, 1000, ChaosConfig.goodOf());
         } catch (Exception e) {
             e.printStackTrace();
         }
