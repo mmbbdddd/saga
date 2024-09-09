@@ -16,7 +16,7 @@ class FsmWorkerTest extends Specification {
 
         where:
         router                                                                                      | action                     | from || expectedResult
-        new RemoteRouter<S>("noRecordExpression", "prcessingExpression", ["stateExpressions": S.a]) | RemoteFsmActionProxy.class | S.a  || S.a
+        new Router<>()(  ["stateExpressions": S.a]) | RemoteFsmActionProxy.class | S.a  || S.a
     }
 
     enum S {
