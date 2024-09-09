@@ -1,5 +1,7 @@
 package cn.hz.ddbm.pc.newcore.fsm.router;
 
+import cn.hz.ddbm.pc.newcore.fsm.Router;
+
 import java.util.HashMap;
 
 /**
@@ -7,8 +9,8 @@ import java.util.HashMap;
  *
  * @param <S>
  */
-public class LocalToRouter<S extends Enum<S>> extends LocalRouter<S> {
-    public LocalToRouter(S to) {
+public class ToRouter<S extends Enum<S>> extends Router<S> {
+    public ToRouter(S to) {
         super(new HashMap<String, S>() {{
             this.put("true", to);
         }});

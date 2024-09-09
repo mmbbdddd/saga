@@ -4,20 +4,16 @@ import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
-import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
-import cn.hz.ddbm.pc.newcore.fsm.FsmState;
-import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
+import cn.hz.ddbm.pc.newcore.fsm.*;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmActionProxy;
-import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 import cn.hz.ddbm.pc.newcore.log.Logs;
 
 public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
     RemoteFsmActionProxy<S> action;
-    RemoteRouter<S>         router;
+    Router<S>         router;
 
-    public FsmRemoteWorker(Class<? extends RemoteFsmAction> action, RemoteRouter<S> router) {
+    public FsmRemoteWorker(Class<? extends RemoteFsmAction> action, Router<S> router) {
         this.action = new RemoteFsmActionProxy<>(action);
         this.router = router;
     }

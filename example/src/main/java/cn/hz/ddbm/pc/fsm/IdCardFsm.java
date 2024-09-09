@@ -5,9 +5,9 @@ import cn.hz.ddbm.pc.factory.fsm.FSM;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.fsm.Router;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
+import cn.hz.ddbm.pc.newcore.fsm.router.ToRouter;
 import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
 import com.google.common.collect.Sets;
 
@@ -59,13 +59,13 @@ public class IdCardFsm implements FSM<IdCardState> {
     @Override
     public void transitions(Transitions<IdCardState> transitions) {
         transitions.state(IdCardState.init)
-                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.presend))
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new ToRouter<>(IdCardState.presend))
                 .endState()
                 .state(IdCardState.presend)
-                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.auditing))
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new ToRouter<>(IdCardState.auditing))
                 .endState()
                 .state(IdCardState.auditing)
-                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalRouter<>(new RowKeyTable<String, IdCardState, Double>() {{
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new Router<>(new RowKeyTable<String, IdCardState, Double>() {{
                     put("result.code == '0000'", IdCardState.su, 1.0);
                     put("result.code == '0001'", IdCardState.fail, 0.1);
                     put("result.code == '0002'", IdCardState.no_such_order, 0.1);
@@ -73,10 +73,10 @@ public class IdCardFsm implements FSM<IdCardState> {
                 }}))
                 .endState()
                 .state(IdCardState.no_such_order)
-                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.presend))
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new ToRouter<>(IdCardState.presend))
                 .endState()
                 .state(IdCardState.lost_date)
-                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new LocalToRouter<>(IdCardState.init))
+                .local(Coast.EVENT_DEFAULT, LocalFsmAction.class, new ToRouter<>(IdCardState.init))
                 .endState()
         ;
     }

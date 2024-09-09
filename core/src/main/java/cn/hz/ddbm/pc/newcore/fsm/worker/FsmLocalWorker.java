@@ -3,19 +3,15 @@ package cn.hz.ddbm.pc.newcore.fsm.worker;
 import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
-import cn.hz.ddbm.pc.newcore.fsm.FsmProcessor;
-import cn.hz.ddbm.pc.newcore.fsm.FsmState;
-import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
+import cn.hz.ddbm.pc.newcore.fsm.*;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmActionProxy;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
 
 public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
     LocalFsmActionProxy<S> action;
-    LocalRouter<S>         router;
+    Router<S>         router;
 
-    public FsmLocalWorker(Class<? extends LocalFsmAction> action, LocalRouter<S> router) {
+    public FsmLocalWorker(Class<? extends LocalFsmAction> action, Router<S> router) {
         this.action = new LocalFsmActionProxy<>(action);
         this.router = router;
     }

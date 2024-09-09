@@ -6,20 +6,18 @@ import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
-import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 import cn.hz.ddbm.pc.newcore.fsm.worker.FsmLocalWorker;
 import cn.hz.ddbm.pc.newcore.fsm.worker.FsmRemoteWorker;
 import lombok.Data;
 
 @Data
 public abstract class FsmWorker<E extends Enum<E>> extends Worker<FsmAction, FlowContext<FsmFlow<E>, FsmState<E>, FsmWorker<E>>> {
-    public static <S extends Enum<S>> FsmWorker<S> local(S from, Class<? extends LocalFsmAction> action, LocalRouter<S> router) {
+    public static <S extends Enum<S>> FsmWorker<S> local(S from, Class<? extends LocalFsmAction> action, Router<S> router) {
         return new FsmLocalWorker<>(action, router);
 
     }
 
-    public static <S extends Enum<S>> FsmWorker<S> remote(S from, Class<? extends RemoteFsmAction> action, RemoteRouter<S> router) {
+    public static <S extends Enum<S>> FsmWorker<S> remote(S from, Class<? extends RemoteFsmAction> action, Router<S> router) {
         return new FsmRemoteWorker<>(action, router);
     }
 

@@ -1,7 +1,7 @@
 package cn.hz.ddbm.pc.newcore.fsm
 
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmActionProxy
-import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter
+
 import cn.hz.ddbm.pc.newcore.fsm.worker.FsmRemoteWorker
 import spock.lang.Specification
 import spock.lang.Unroll

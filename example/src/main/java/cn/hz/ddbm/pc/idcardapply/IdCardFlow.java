@@ -7,9 +7,8 @@ import cn.hz.ddbm.pc.idcardapply.actions.SendBizAction;
 import cn.hz.ddbm.pc.newcore.Plugin;
 import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalToRouter;
-import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
+import cn.hz.ddbm.pc.newcore.fsm.Router;
+import cn.hz.ddbm.pc.newcore.fsm.router.ToRouter;
 import com.google.common.collect.Sets;
 
 import java.util.*;
@@ -55,27 +54,23 @@ public class IdCardFlow implements FSM<IdCardFSM> {
     public void transitions(Transitions<IdCardFSM> transitions) {
         transitions
                 .state(IdCardFSM.MaterialCollection)
-                .local(Coast.EVENT_DEFAULT, MaterialCollectionAction.class, new LocalToRouter<>(IdCardFSM.RuleChecked))
+                .local(Coast.EVENT_DEFAULT, MaterialCollectionAction.class, new ToRouter<>(IdCardFSM.RuleChecked))
                 .endState()
                 .state(IdCardFSM.RuleChecked)
-                .local(Coast.EVENT_DEFAULT, RuleCheckedAction.class, new LocalRouter<>(new HashMap<String, IdCardFSM>() {{
+                .local(Coast.EVENT_DEFAULT, RuleCheckedAction.class, new Router<>(new HashMap<String, IdCardFSM>() {{
                     put("true", IdCardFSM.Accepted);
                     put("false", IdCardFSM.MaterialCollection);
                 }}))
                 .endState()
                 .state(IdCardFSM.Accepted)
-                .remote(Coast.EVENT_DEFAULT, SendBizAction.class, new RemoteRouter<>(
-                        "",
-                        "",
+                .remote(Coast.EVENT_DEFAULT, SendBizAction.class, new Router<>(
                         new HashMap<String, IdCardFSM>() {{
                             put("true", IdCardFSM.Accepted);
                             put("false", IdCardFSM.MaterialCollection);
                         }}))
                 .endState()
                 .state(IdCardFSM.RuleSyncing)
-                .remote(Coast.EVENT_DEFAULT, SendBizAction.class, new RemoteRouter<>(
-                        "false",
-                        "false",
+                .remote(Coast.EVENT_DEFAULT, SendBizAction.class, new Router<>(
                         new HashMap<String, IdCardFSM>() {{
                             put("true", IdCardFSM.RuleChecked);
                             put("false", IdCardFSM.RuleSyncing);

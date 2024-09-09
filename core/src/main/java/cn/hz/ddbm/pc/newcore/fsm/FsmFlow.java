@@ -7,8 +7,6 @@ import cn.hz.ddbm.pc.newcore.FlowModel;
 import cn.hz.ddbm.pc.newcore.exception.TransitionNotFoundException;
 import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
-import cn.hz.ddbm.pc.newcore.fsm.router.LocalRouter;
-import cn.hz.ddbm.pc.newcore.fsm.router.RemoteRouter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,13 +40,13 @@ public class FsmFlow<S extends Enum<S>> extends FlowModel<FsmState<S>> {
     }
 
 
-    public FsmFlow<S> local(S from, String event, Class<? extends LocalFsmAction> action, LocalRouter<S> router) {
+    public FsmFlow<S> local(S from, String event, Class<? extends LocalFsmAction> action, Router<S> router) {
         FsmWorker<S> sagaFsmWorker = FsmWorker.local(from, action, router);
         this.transitionTable.put(from, event, sagaFsmWorker);
         return this;
     }
 
-    public FsmFlow<S> remote(S from, String event, Class<? extends RemoteFsmAction> action, RemoteRouter<S> router) {
+    public FsmFlow<S> remote(S from, String event, Class<? extends RemoteFsmAction> action, Router<S> router) {
         FsmWorker<S> sagaFsmWorker = FsmWorker.remote(from, action, router);
         this.transitionTable.put(from, event, sagaFsmWorker);
         return this;

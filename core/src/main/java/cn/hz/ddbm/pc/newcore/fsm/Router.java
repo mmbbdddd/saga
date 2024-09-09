@@ -17,20 +17,17 @@ import lombok.Getter;
 
 import java.util.*;
 
-public class FsmRouter<S extends Enum<S>> {
-    private   String                   noRecordExpression;
-    private   String                   prcessingExpression;
+public class Router<S extends Enum<S>> {
     @Getter
     protected Table<String, S, Double> stateExpressions;
 
-    public FsmRouter(String noRecordExpression, String prcessingExpression, Map<String, S> stateExpressions) {
-        this(noRecordExpression, prcessingExpression, parseToTable(stateExpressions));
+
+    public Router(Map<String, S> stateExpressions) {
+        this(parseToTable(stateExpressions));
     }
 
-    public FsmRouter(String noRecordExpression, String prcessingExpression, Table<String, S, Double> stateExpressions) {
-        this.noRecordExpression  = noRecordExpression;
-        this.prcessingExpression = prcessingExpression;
-        this.stateExpressions    = stateExpressions;
+    public Router(Table<String, S, Double> stateExpressions) {
+        this.stateExpressions = stateExpressions;
     }
 
     public S router(FlowContext<FsmFlow<S>, FsmState<S>, FsmWorker<S>> ctx, Object actionResult) throws NoSuchRecordException, ProcessingException {
@@ -40,20 +37,6 @@ public class FsmRouter<S extends Enum<S>> {
         } else {
             Map<String, Object> routerContext = new HashMap<>();
             routerContext.put("result", actionResult);
-            try {
-                if (ExpressionEngineUtils.eval(noRecordExpression, routerContext, Boolean.class)) {
-                    throw new NoSuchRecordException();
-                }
-            } catch (Exception e) {
-                Logs.error.error("", e);
-            }
-            try {
-                if (ExpressionEngineUtils.eval(prcessingExpression, routerContext, Boolean.class)) {
-                    throw new NoSuchRecordException();
-                }
-            } catch (Exception e) {
-                Logs.error.error("", e);
-            }
             for (Table.Cell<String, S, Double> entry : stateExpressions) {
                 String expression = entry.getRowKey();
                 S      state      = entry.getColumnKey();
@@ -71,24 +54,11 @@ public class FsmRouter<S extends Enum<S>> {
 
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        FsmRouter<?> fsmRouter = (FsmRouter<?>) object;
-        return Objects.equals(noRecordExpression, fsmRouter.noRecordExpression) && Objects.equals(prcessingExpression, fsmRouter.prcessingExpression) && Objects.equals(stateExpressions, fsmRouter.stateExpressions);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(noRecordExpression, prcessingExpression, stateExpressions);
-    }
-
-    @Override
     public String toString() {
         return JSONUtil.toJsonStr(stateExpressions.values());
     }
 
-    private static <S extends Enum<S>> Table<String, S, Double> parseToTable(Map<String, S> stateExpressions) {
+    protected static <S extends Enum<S>> Table<String, S, Double> parseToTable(Map<String, S> stateExpressions) {
         Table<String, S, Double> table = new RowKeyTable<>();
         stateExpressions.forEach((expr, state) -> {
             table.put(expr, state, 1.0);
