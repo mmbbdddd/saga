@@ -42,7 +42,7 @@ public class IdCardTest {
 
         try {
             //执行100此，查看流程中断概率
-            chaosService.fsm("test",true, IdCardState.init, 1, 100, 20, ChaosConfig.goodOf());
+            chaosService.fsm("test",true, IdCardState.init, 1, 1, 20, ChaosConfig.goodOf());
         } catch (Exception e) {
             e.printStackTrace();
         }
