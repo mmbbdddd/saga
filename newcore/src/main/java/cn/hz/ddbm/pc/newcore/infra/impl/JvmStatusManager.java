@@ -49,14 +49,14 @@ public class JvmStatusManager implements StatusManager {
     @Override
     public void idempotent(String key) throws IdempotentException {
         if (idempotentRecords.containsKey(key)) {
-            throw new IdempotentException(String.format("交易已发生:" + key));
+            throw new IdempotentException(String.format("交易幂等:" + key));
         } else {
             idempotentRecords.put(key, true);
         }
     }
 
     @Override
-    public void unidempotent(String key) throws IdempotentException {
+    public void unidempotent(String key)   {
         idempotentRecords.remove(key);
     }
 }

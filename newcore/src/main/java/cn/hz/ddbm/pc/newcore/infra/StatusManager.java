@@ -26,7 +26,7 @@ public interface StatusManager {
 
     void idempotent(String key) throws IdempotentException;
 
-    void unidempotent(String key) throws IdempotentException;
+    void unidempotent(String key)  ;
 
 
     default void flush(FlowContext ctx) throws StatusException {

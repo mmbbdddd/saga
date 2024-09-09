@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 public class RedisStatusManager implements StatusManager {
     @Autowired
-    RedisTemplate<String, Pair<FlowStatus, ?>> redisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
     String keyTemplate = "%s:%s";
 
     @Override
@@ -23,39 +23,28 @@ public class RedisStatusManager implements StatusManager {
     }
 
     @Override
-    public void setStatus(String s, Serializable serializable, State pair, Integer integer) throws StatusException {
-
+    public void setStatus(String flow, Serializable flowId, State pair, Integer timeout) throws StatusException {
+        redisTemplate.opsForValue().set(String.format(keyTemplate, flow, flowId), pair, timeout);
     }
 
     @Override
-    public State getStatus(String s, Serializable serializable) throws StatusException {
-        return null;
+    public State getStatus(String flow, Serializable flowId) throws StatusException {
+        return   (State) redisTemplate.opsForValue().get(String.format(keyTemplate, flow, flowId));
     }
 
     @Override
-    public void idempotent(String s) throws IdempotentException {
-
+    public void idempotent(String key) throws IdempotentException {
+        if(redisTemplate.hasKey(key)){
+            throw new IdempotentException(key);
+        }else{
+            redisTemplate.opsForValue().set(key,Boolean.TRUE);
+        }
     }
 
     @Override
-    public void unidempotent(String s) throws IdempotentException {
-
+    public void unidempotent(String key)   {
+        redisTemplate.delete(key);
     }
-
-//    @Override
-//    public Type code() {
-//        return Type.redis;
-//    }
-//
-//    @Override
-//    public void setStatus(String flow, Serializable flowId, Triple<FlowStatus, ?, String> triple, Integer timeout, FsmContext  ctx) throws IOException {
-//        redisTemplate.opsForValue().set(String.format(keyTemplate, flow, flowId), triple, timeout);
-//    }
-//
-//    @Override
-//    public Triple<FlowStatus, ?, String>   getStatus(String flow, Serializable flowId) throws IOException {
-//        return redisTemplate.opsForValue().get(String.format(keyTemplate, flow, flowId));
-//    }
 
 
 }

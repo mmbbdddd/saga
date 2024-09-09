@@ -89,7 +89,6 @@ public abstract class ProcesorService<S extends State, C extends FlowContext<?, 
     }
 
 
-
     public void updateStatus(C ctx) throws StatusException {
         ctx.syncpayload();
         statusManagerMap.get(ctx.getProfile().getStatus()).flush(ctx);
@@ -105,15 +104,22 @@ public abstract class ProcesorService<S extends State, C extends FlowContext<?, 
     }
 
     public void idempotent(C ctx) throws IdempotentException {
-        String namespace = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        String key       = String.format("%s:%s", namespace, ctx.getAction().code());
+        String app       = ctx.getProfile().getNamespace();
+        String flow      = ctx.getFlow().getName();
+        String action    = ctx.getAction().code();
+        Serializable requestId = ctx.getId();
+        String key       = String.format("idempotent:%s:%s:%s:%s", app, flow, action, requestId);
+
         statusManagerMap.get(ctx.getProfile().getStatus()).idempotent(key);
     }
 
 
     public void unidempotent(C ctx) throws IdempotentException {
-        String namespace = String.format("idempotent:%s:%s:%s", ctx.getProfile().getNamespace(), ctx.getFlow().getName(), ctx.getId());
-        String key       = String.format("%s:%s", namespace, ctx.getAction().code());
+        String       app       = ctx.getProfile().getNamespace();
+        String       flow      = ctx.getFlow().getName();
+        String       action    = ctx.getAction().code();
+        Serializable requestId = ctx.getId();
+        String       key       = String.format("idempotent:%s:%s:%s:%s", app, flow, action, requestId);
         statusManagerMap.get(ctx.getProfile().getStatus()).unidempotent(key);
     }
 

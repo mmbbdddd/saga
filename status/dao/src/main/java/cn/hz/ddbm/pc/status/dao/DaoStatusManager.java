@@ -69,7 +69,7 @@ public class DaoStatusManager implements StatusManager, InitializingBean, Applic
     }
 
     @Override
-    public void unidempotent(String key) throws IdempotentException {
+    public void unidempotent(String key)   {
 
     }
 }

@@ -51,14 +51,12 @@ public class StatusManagerProxy implements StatusManager {
     }
 
     @Override
-    public void unidempotent(String key) throws IdempotentException {
+    public void unidempotent(String key) {
         try {
 //            SpringUtil.getBean(ChaosHandler.class).status();
             statusManager.unidempotent(key);
-        } catch (IdempotentException e) {
-            throw e;
         } catch (Exception e) {
-            throw new IdempotentException(e);
+            throw new RuntimeException(e);
         }
     }
 }

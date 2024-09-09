@@ -27,7 +27,7 @@ public class Profile {
 
 
     public static Profile of() {
-        return new ProfileBuilder().namespace("default")
+        return new ProfileBuilder().namespace("default_app")
                 .maxLoopErrorTimes(2)
                 .statusTimeoutMicros(3000)
                 .lockTimeoutMicros(3000)
@@ -45,7 +45,7 @@ public class Profile {
     }
 
     public static Profile chaosOf() {
-        return new ProfileBuilder().namespace("default")
+        return new ProfileBuilder().namespace("default_app")
                 .maxLoopErrorTimes(10)
                 .statusTimeoutMicros(3000)
                 .lockTimeoutMicros(3000)
