@@ -7,6 +7,7 @@ import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.worker.SagaLocalWorker;
 import cn.hz.ddbm.pc.newcore.saga.worker.SagaRemoteWorker;
+import cn.hz.ddbm.pc.newcore.saga.worker.SuOrFailWorker;
 import lombok.Getter;
 
 @Getter
@@ -36,12 +37,12 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaAction,
         return new SagaRemoteWorker<>(index, node,total);
     }
 
-    public static <S extends Enum<S>> Pair<S, SagaWorker<S>> failWorker() {
-        return null;
+    public static <S extends Enum<S>>  SagaWorker<S> failWorker() {
+        return new SuOrFailWorker(Integer.MAX_VALUE);
     }
 
-    public static <S extends Enum<S>> Pair<S, SagaWorker<S>> successWorker() {
-        return null;
+    public static  <S extends Enum<S>> SagaWorker<S> successWorker() {
+        return new SuOrFailWorker(0);
     }
 
 
