@@ -30,11 +30,11 @@ public abstract class SagaWorker<S extends Enum<S>> extends Worker<SagaAction,
     }
 
     public static <S extends Enum<S>> SagaLocalWorker<S> local(Integer index, Pair<S, Class<? extends SagaAction>> node, Integer total) {
-        return new SagaLocalWorker<>(index, node, total);
+        return new SagaLocalWorker<>(index, node);
     }
 
     public static <S extends Enum<S>> SagaRemoteWorker<S> remote(Integer index, Pair<S, Class<? extends SagaAction>> node,Integer total) {
-        return new SagaRemoteWorker<>(index, node,total);
+        return new SagaRemoteWorker<>(index, node);
     }
 
     public static <S extends Enum<S>>  SagaWorker<S> failWorker() {

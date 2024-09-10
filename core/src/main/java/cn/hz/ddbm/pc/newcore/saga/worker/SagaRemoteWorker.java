@@ -27,15 +27,16 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
     FlowStatus               fail;
     FlowStatus               manual;
 
-    public SagaRemoteWorker(Integer index, Pair<S, Class<? extends SagaAction>> node, Integer total) {
+    public SagaRemoteWorker(Integer index, Pair<S, Class<? extends SagaAction>> node ) {
         super(index, node.getKey());
         action                = new RemoteSagaActionProxy<>(node.getValue());
         this.failover         = new SagaState<>(index, SagaState.Offset.failover, FlowStatus.RUNNABLE);
-        this.next             = Objects.equals(total, index + 1) ? null : new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
+        this.next             = new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
         this.su               = FlowStatus.SU;
+        this.next             = new SagaState<>(index - 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
         this.rollback         = new SagaState<>(index, SagaState.Offset.rollback, FlowStatus.RUNNABLE);
         this.rollbackFailover = new SagaState<>(index, SagaState.Offset.rollbackFailover, FlowStatus.RUNNABLE);
-        this.pre              = 0 == index ? null : new SagaState<>(index - 1, SagaState.Offset.rollback, FlowStatus.RUNNABLE);
+        this.pre              = new SagaState<>(index - 1, SagaState.Offset.rollback, FlowStatus.RUNNABLE);
         this.fail             = FlowStatus.FAIL;
         this.manual           = FlowStatus.MANUAL;
     }

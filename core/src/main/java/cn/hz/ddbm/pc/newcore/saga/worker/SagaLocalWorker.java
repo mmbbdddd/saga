@@ -14,8 +14,6 @@ import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 import cn.hz.ddbm.pc.newcore.saga.action.LocalSagaActionProxy;
 
-import java.util.Objects;
-
 public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
     SagaState<S>            pre;
     SagaState<S>            next;
@@ -24,11 +22,11 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
     LocalSagaActionProxy<S> action;
 
 
-    public SagaLocalWorker(Integer index, Pair<S, Class<? extends SagaAction>> node, Integer total) {
+    public SagaLocalWorker(Integer index, Pair<S, Class<? extends SagaAction>> node) {
         super(index, node.getKey());
-        this.next     = Objects.equals(total, index+1) ? null : new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
+        this.next     = new SagaState<>(index + 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
         this.rollback = new SagaState<>(index, SagaState.Offset.rollback, FlowStatus.RUNNABLE);
-        this.pre      = index == 0 ? null : new SagaState<>(index - 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
+        this.pre      = new SagaState<>(index - 1, SagaState.Offset.task, FlowStatus.RUNNABLE);
         this.manual   = FlowStatus.MANUAL;
         this.action   = new LocalSagaActionProxy<>(node.getValue());
     }
@@ -43,19 +41,19 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
         switch (offset) {
             case task:
             case taskRetry:
-                doActionWithTranscational(lastState, ctx);
+                localSaga(lastState, ctx);
                 break;
             case failover:
             case rollback:
             case rollbackRetry:
-                rollbackActionWithTranscational(lastState, ctx);
+                localSagaRollback(lastState, ctx);
                 break;
             case rollbackFailover:
         }
     }
 
 
-    private void doActionWithTranscational(SagaState<S> lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException {
+    private void localSaga(SagaState<S> lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException {
         ProcesorService processor        = ctx.getProcessor();
         Integer         retryTimes       = ctx.getFlow().getRetry(ctx.getState());
         Long            executeTimeState = processor.getExecuteTimes(ctx, ctx.getState());
@@ -66,11 +64,11 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
             processor.plugin().pre(ctx);
             processor.idempotent(ctx);
             action.localSaga(ctx);
-            if (null == next) {
-                ctx.getState().setStatus(FlowStatus.SU);
-            } else {
+//            if (null == next) {
+//                ctx.getState().setStatus(FlowStatus.SU);
+//            } else {
                 ctx.setState(next);
-            }
+//            }
             processor.plugin().post(lastState, ctx);
         } catch (Exception e) {
             processor.unidempotent(ctx);
@@ -79,7 +77,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
 
     }
 
-    private void rollbackActionWithTranscational(SagaState<S> lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException {
+    private void localSagaRollback(SagaState<S> lastState, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws IdempotentException {
         ProcesorService processor        = ctx.getProcessor();
         Integer         retryTimes       = ctx.getFlow().getRetry(ctx.getState());
         Long            executeTimeState = processor.getExecuteTimes(ctx, ctx.getState());
@@ -90,11 +88,11 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
             processor.plugin().pre(ctx);
             processor.idempotent(ctx);
             action.localSagaRollback(ctx);
-            if (null == pre) {
-                ctx.getState().setStatus(FlowStatus.FAIL);
-            } else {
+//            if (pre.isEnd()) {
+//                ctx.getState().setStatus(FlowStatus.FAIL);
+//            } else {
                 ctx.setState(pre);
-            }
+//            }
             processor.plugin().post(lastState, ctx);
         } catch (Exception e) {
             processor.unidempotent(ctx);

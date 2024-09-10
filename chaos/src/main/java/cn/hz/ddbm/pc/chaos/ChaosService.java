@@ -200,7 +200,7 @@ class MockSagaPayload<S extends Enum<S>> implements SagaPayload<S> {
 
     public MockSagaPayload(Integer id, SagaFlow<S> flow) {
         this.id     = id;
-        this.step   = 0;
+        this.step   = 1;
         this.offset = SagaState.Offset.task;
         this.flow   = flow;
     }

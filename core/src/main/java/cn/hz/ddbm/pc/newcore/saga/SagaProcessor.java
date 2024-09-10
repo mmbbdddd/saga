@@ -57,7 +57,7 @@ public class SagaProcessor<E extends Enum<E>> extends ProcesorService<SagaState<
             throw new InterruptedException(String.format("%s:%s>%s",state.code(), stateExecuteTimes, stateRetry));
         }
 
-        SagaWorker worker = flow.getWorker(state.getIndex(),ctx);
+        SagaWorker worker = flow.getWorker(state.getIndex());
         try {
             ctx.setWorker(worker);
             worker.execute(ctx);

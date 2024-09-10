@@ -31,10 +31,7 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
 
     }
 
-    public SagaWorker<S> getWorker(Integer index, FlowContext<SagaFlow<S>, SagaState<S>, SagaWorker<S>> ctx) throws FlowEndException {
-        if (isSuccessOrFail(index)) {
-            throw new FlowEndException();
-        }
+    public SagaWorker<S> getWorker(Integer index)   {
         return list.stream().filter(f -> f.getValue().index.equals(index)).findFirst().get().getValue();
     }
 
