@@ -37,7 +37,7 @@ public class PaySaga implements SAGA<PayState> {
     @Override
     public List<Plugin> plugins() {
         return new ArrayList<Plugin>() {{
-            add(new SagaDigestPlugin());
+//            add(new SagaDigestPlugin());
         }};
     }
 

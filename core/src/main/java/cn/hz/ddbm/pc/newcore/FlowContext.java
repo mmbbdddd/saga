@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.lang.UUID;
 import cn.hz.ddbm.pc.ProcesorService;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
     transient ProcesorService     processor;
     transient Action              action;
     transient Boolean             actionResult;
+    transient String              uuid;
 
     public FlowContext(F flow, Payload<S> payload, Map<String, Object> session) {
         Assert.notNull(flow, "flow is null");
@@ -32,6 +34,7 @@ public class FlowContext<F extends FlowModel<S>, S extends State, W extends Work
         this.session        = session == null ? new HashMap<>() : session;
         this.state          = payload.getState();
         this.loopErrorTimes = new AtomicInteger(0);
+        this.uuid           = UUID.fastUUID().toString(true);
     }
 
 

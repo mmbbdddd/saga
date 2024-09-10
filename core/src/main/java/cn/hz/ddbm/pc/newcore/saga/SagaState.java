@@ -17,7 +17,7 @@ public class SagaState<S extends Enum<S>> extends State<S> {
     @Setter
     Offset offset;
 
-//    public SagaState(Integer index, Offset offset, SagaFlow<S> flow) {
+    //    public SagaState(Integer index, Offset offset, SagaFlow<S> flow) {
 //        this(index,offset,FlowStatus.RUNNABLE,flow);
 //    }
     public SagaState(Integer index, Offset offset, FlowStatus status) {
@@ -31,7 +31,23 @@ public class SagaState<S extends Enum<S>> extends State<S> {
         return Triple.of(status, index, offset);
     }
 
+    public boolean isForward() {
+        return Objects.equals(offset, Offset.task) || Objects.equals(offset, Offset.taskRetry) || Objects.equals(offset, Offset.failover);
+    }
+
     public enum Offset {
         task, taskRetry, failover, rollback, rollbackRetry, rollbackFailover;
+    }
+
+    @Override
+    public FlowStatus getStatus() {
+        if (index == Integer.MAX_VALUE) return FlowStatus.SU;
+        if (index == 0) return FlowStatus.FAIL;
+        return FlowStatus.RUNNABLE;
+    }
+
+    @Override
+    public String toString() {
+        return "index:" + index + ", offset:" + offset;
     }
 }

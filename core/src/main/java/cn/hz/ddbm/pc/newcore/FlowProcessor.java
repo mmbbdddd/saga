@@ -28,7 +28,6 @@ public interface FlowProcessor<C extends FlowContext> {
      */
     default void flowProcess(C ctx) throws InterruptedException, PauseException {
         //判断流程是否结束
-
         while (true) {
             try {
                 workerProcess(ctx);

@@ -44,7 +44,7 @@ public class PayTest {
 
         try {
             //执行100此，查看流程中断概率
-            chaosService.saga("test",  true,1, 1, 4, chaosConfig );
+            chaosService.saga("test",  true,3, 1, 4, chaosConfig );
         } catch (Exception e) {
             e.printStackTrace();
         }

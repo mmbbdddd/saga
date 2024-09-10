@@ -49,6 +49,7 @@ public class ChaosService {
     public void saga(String flowName, Boolean mock, Integer retry, Integer times, Integer timeout, ChaosConfig chaosConfig) throws PauseException, SessionException, FlowEndException, InterruptedException {
         if (mock) {
             System.setProperty(Coast.RUN_MODE, Coast.RUN_MODE_CHAOS);
+            Logs.debug.info("启用混沌模式");
         }
         chaosHandler.setChaosConfig(chaosConfig);
         Coast.DEFAULT_RETRYTIME = retry;
@@ -63,11 +64,12 @@ public class ChaosService {
                 try {
                     FlowContext ctx = sagaProcessor.getContext(flowName, mockPayLoad);
                     while (isContinue(ctx)) {
+                        Logs.debug.info("uuid：{}",ctx.getUuid());
                         sagaProcessor.flowProcess(ctx);
                     }
                     result = ctx;
                 } catch (Throwable t) {
-                    Logs.error.error("{}", ExceptionUtils.unwrap(t));
+                    Logs.error.error("", ExceptionUtils.unwrap(t));
                     result = t;
                 } finally {
                     cdl.countDown();
