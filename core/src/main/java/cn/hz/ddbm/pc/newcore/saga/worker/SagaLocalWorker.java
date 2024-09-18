@@ -62,7 +62,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
         }
         try {
             processor.plugin().pre(ctx);
-            processor.idempotent(ctx);
+//            processor.idempotent(ctx);
             action.localSaga(ctx);
 //            if (null == next) {
 //                ctx.getState().setStatus(FlowStatus.SU);
@@ -86,7 +86,7 @@ public class SagaLocalWorker<S extends Enum<S>> extends SagaWorker<S> {
         }
         try {
             processor.plugin().pre(ctx);
-            processor.idempotent(ctx);
+//            processor.idempotent(ctx);
             action.localSagaRollback(ctx);
 //            if (pre.isEnd()) {
 //                ctx.getState().setStatus(FlowStatus.FAIL);

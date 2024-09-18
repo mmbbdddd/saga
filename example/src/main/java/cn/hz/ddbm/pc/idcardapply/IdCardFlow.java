@@ -13,6 +13,7 @@ import com.google.common.collect.Sets;
 
 import java.util.*;
 
+
 public class IdCardFlow implements FSM<IdCardFSM> {
 
     @Override
@@ -65,7 +66,8 @@ public class IdCardFlow implements FSM<IdCardFSM> {
                 .state(IdCardFSM.Accepted)
                 .remote(Coast.EVENT_DEFAULT, SendBizAction.class, new Router<>(
                         new HashMap<String, IdCardFSM>() {{
-                            put("true", IdCardFSM.Accepted);
+                            put("true", IdCardFSM.RuleSyncing);
+                            put("false", IdCardFSM.Accepted);
                             put("false", IdCardFSM.MaterialCollection);
                         }}))
                 .endState()

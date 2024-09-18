@@ -2,10 +2,7 @@ package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
-import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowModel;
-import cn.hz.ddbm.pc.newcore.FlowStatus;
-import cn.hz.ddbm.pc.newcore.exception.FlowEndException;
 
 import java.util.*;
 
@@ -17,12 +14,12 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
         Assert.notNull(name, "name is null");
         this.name = name;
         this.list = new ArrayList<>();
-        this.list.add(failSagaWorkerPair());
+        this.list.add(failWorker());
         for (int i = 0; i < chains.size(); i++) {
             Pair<S, Class<? extends SagaAction>> node = chains.get(i);
             this.list.add(Pair.of(node.getKey(), SagaWorker.of(i, node, chains.size())));
         }
-        this.list.add(successSagaWorkerPair());
+        this.list.add(successWorker());
     }
 
     @Override
@@ -40,11 +37,11 @@ public class SagaFlow<S extends Enum<S>> extends FlowModel<SagaState<S>> {
         return Objects.equals(index, 0) || Objects.equals(list.size() - 1, index);
     }
 
-    private Pair<S, SagaWorker<S>> failSagaWorkerPair() {
+    private Pair<S, SagaWorker<S>> failWorker() {
         return Pair.of(null,SagaWorker.failWorker());
     }
 
-    private Pair<S, SagaWorker<S>> successSagaWorkerPair() {
+    private Pair<S, SagaWorker<S>> successWorker() {
         return Pair.of(null,SagaWorker.successWorker());
     }
 

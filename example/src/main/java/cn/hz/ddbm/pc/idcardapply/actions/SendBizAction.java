@@ -16,6 +16,6 @@ public class SendBizAction implements RemoteFsmAction {
 
     @Override
     public String code() {
-        return "";
+        return "sendBizAction";
     }
 }

@@ -39,7 +39,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         try {
             processor.plugin().pre(ctx);
             Object actionResult = action.remoteFsmQuery(ctx);
-            Assert.notNull(actionResult, "queryResult is null");
+//            Assert.notNull(actionResult, "queryResult is null");
             S nextState = router.router(ctx, actionResult);
             ctx.setState(new FsmState<>(nextState, FsmState.Offset.task));
             processor.plugin().post(lastSate,   ctx);
@@ -73,7 +73,7 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         ctx.getState().setOffset(FsmState.Offset.failover);
         processor.updateStatus(ctx);
         //冥等
-        processor.idempotent(ctx);
+//        processor.idempotent(ctx);
         //执行业务
         try {
             action.remoteFsm(ctx);

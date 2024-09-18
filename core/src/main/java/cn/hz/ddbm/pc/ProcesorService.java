@@ -103,15 +103,15 @@ public abstract class ProcesorService<S extends State, C extends FlowContext<?, 
         statusManagerMap.get(ctx.getProfile().getStatus()).flush(ctx);
     }
 
-    public void idempotent(C ctx) throws IdempotentException {
-        String app       = ctx.getProfile().getNamespace();
-        String flow      = ctx.getFlow().getName();
-        String action    = ctx.getAction().code();
-        Serializable requestId = ctx.getId();
-        String key       = String.format("idempotent:%s:%s:%s:%s", app, flow, action, requestId);
-
-        statusManagerMap.get(ctx.getProfile().getStatus()).idempotent(key);
-    }
+//    public void idempotent(C ctx) throws IdempotentException {
+//        String app       = ctx.getProfile().getNamespace();
+//        String flow      = ctx.getFlow().getName();
+//        String action    = ctx.getAction().code();
+//        Serializable requestId = ctx.getId();
+//        String key       = String.format("idempotent:%s:%s:%s:%s", app, flow, action, requestId);
+//
+//        statusManagerMap.get(ctx.getProfile().getStatus()).idempotent(key);
+//    }
 
 
     public void unidempotent(C ctx) throws IdempotentException {

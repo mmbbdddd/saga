@@ -18,7 +18,6 @@ public class FsmDigestPlugin<S extends Enum<S>> extends Plugin<FsmState<S>> {
 
     @Override
     public void preAction(FlowContext<?, FsmState<S>, ?> ctx) {
-        Logs.digest.info("{}", ctx.getAction());
     }
 
     @Override
@@ -34,7 +33,7 @@ public class FsmDigestPlugin<S extends Enum<S>> extends Plugin<FsmState<S>> {
 
     @Override
     public void errorAction(FsmState<S> preState, Exception e, FlowContext<?, FsmState<S>, ?> ctx) {
-
+        Logs.error.warn("",e);
     }
 
     @Override

@@ -11,6 +11,6 @@ public class RuleCheckedAction implements LocalFsmAction {
 
     @Override
     public String code() {
-        return "";
+        return "ruleCheckedAction";
     }
 }

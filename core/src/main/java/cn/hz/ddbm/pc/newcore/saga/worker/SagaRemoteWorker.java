@@ -112,7 +112,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
         ProcesorService processor = ctx.getProcessor();
         processor.plugin().pre(ctx);
         //冥等
-        processor.idempotent(ctx);
+//        processor.idempotent(ctx);
         //设置容错
         ctx.setState(rollbackFailover);
         processor.updateStatus(ctx);
@@ -177,7 +177,7 @@ public class SagaRemoteWorker<S extends Enum<S>> extends SagaWorker<S> {
         ProcesorService processor = ctx.getProcessor();
         processor.plugin().pre(ctx);
         //冥等
-        processor.idempotent(ctx);
+//        processor.idempotent(ctx);
         //设置容错
         ctx.setState(failover);
         processor.updateStatus(ctx);

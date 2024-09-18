@@ -11,6 +11,7 @@ import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
 import cn.hz.ddbm.pc.newcore.exception.*;
 import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
 import cn.hz.ddbm.pc.newcore.log.Logs;
+import cn.hz.ddbm.pc.newcore.plugins.FsmDigestPlugin;
 import cn.hz.ddbm.pc.newcore.utils.ExceptionUtils;
 
 import javax.annotation.PostConstruct;
@@ -82,7 +83,7 @@ public class FsmProcessor<E extends Enum<E>> extends ProcesorService<FsmState<E>
     @Override
     protected List<Plugin> getDefaultPlugins() {
         return new ArrayList<Plugin>() {{
-//            add(new FsmDigestPlugin());
+            add(new FsmDigestPlugin());
         }};
     }
 

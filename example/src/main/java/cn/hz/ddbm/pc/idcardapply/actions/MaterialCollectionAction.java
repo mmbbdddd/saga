@@ -11,6 +11,6 @@ public class MaterialCollectionAction implements LocalFsmAction {
 
     @Override
     public String code() {
-        return "";
+        return "materialCollectionAction";
     }
 }
