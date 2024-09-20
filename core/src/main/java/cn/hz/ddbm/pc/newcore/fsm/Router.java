@@ -5,6 +5,7 @@ import cn.hutool.core.lang.Pair;
 import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
 import cn.hutool.json.JSONUtil;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.utils.EnvUtils;
 import cn.hz.ddbm.pc.newcore.utils.ExpressionEngineUtils;
@@ -13,7 +14,7 @@ import lombok.Getter;
 
 import java.util.*;
 
-public class Router<S> {
+public class Router<S extends Enum<S>> {
     @Getter
     protected Table<String, S, Double> stateExpressions;
 
@@ -26,7 +27,7 @@ public class Router<S> {
         this.stateExpressions = stateExpressions;
     }
 
-    public S router(FsmContext ctx, Object actionResult) {
+    public Enum router(FlowContext<FsmState> ctx, Object actionResult) {
         if (EnvUtils.isChaos()) {
             return routerByWeight();
         } else {
@@ -34,7 +35,7 @@ public class Router<S> {
             routerContext.put("result", actionResult);
             for (Table.Cell<String, S, Double> entry : stateExpressions) {
                 String expression = entry.getRowKey();
-                S      state      = entry.getColumnKey();
+                Enum   state      = entry.getColumnKey();
                 if (ExpressionEngineUtils.eval(expression, routerContext, Boolean.class)) {
                     return state;
                 }

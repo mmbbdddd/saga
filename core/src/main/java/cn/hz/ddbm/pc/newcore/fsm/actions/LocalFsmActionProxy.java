@@ -2,33 +2,37 @@ package cn.hz.ddbm.pc.newcore.fsm.actions;
 
 
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.ProcessorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 
 /**
- * @param <S>
  */
-public class LocalFsmActionProxy<S extends Enum<S>> {
+public class LocalFsmActionProxy {
     Class<? extends LocalFsmAction> actionClass;
-    LocalFsmAction<S>               action;
+    LocalFsmAction                  action;
 
     public LocalFsmActionProxy(Class<? extends LocalFsmAction> actionClass) {
         this.actionClass = actionClass;
-        this.action = ProcesorService.getAction(actionClass);
+        this.action      = ProcessorService.getAction(actionClass);
     }
 
 
-    public Object doLocalFsm(FsmContext<S> ctx) throws ActionException {
+    public <S extends Enum<S>> Object doLocalFsm(FlowContext<FsmState > ctx) throws ActionException {
         try {
             //开始事务
             Object result = action.doLocalFsm(ctx);
-            SpringUtil.getBean(ProcesorService.class).metricsNode(ctx);
             //提交事务
             return result;
+        } catch (RuntimeException e) {
+            //回滚事务。
+            throw e;
         } catch (Exception e) {
             //回滚事务。
             throw new ActionException(e);
+        } finally {
+            SpringUtil.getBean(ProcessorService.class).metricsNode(ctx);
         }
     }
 }

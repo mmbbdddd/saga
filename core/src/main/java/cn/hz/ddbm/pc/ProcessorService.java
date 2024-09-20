@@ -5,10 +5,9 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hz.ddbm.pc.newcore.*;
 import cn.hz.ddbm.pc.newcore.chaos.LocalChaosAction;
 import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
-import cn.hz.ddbm.pc.newcore.exception.LockException;
+import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.exception.SessionException;
-import cn.hz.ddbm.pc.newcore.exception.StatusException;
+import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.actions.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.infra.*;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmLocker;
@@ -16,28 +15,24 @@ import cn.hz.ddbm.pc.newcore.infra.impl.JvmSessionManager;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatisticsSupport;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
-import cn.hz.ddbm.pc.newcore.log.Logs;
 import cn.hz.ddbm.pc.newcore.saga.actions.LocalSagaAction;
 import cn.hz.ddbm.pc.newcore.utils.EnvUtils;
-import com.oracle.webservices.internal.api.EnvelopeStyle;
 
+import javax.swing.text.LayoutQueue;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-public class ProcesorService<S extends State> {
-    protected Map<String, BaseFlow> flows;
+public class ProcessorService {
+    Map<String, BaseFlow>                        flows;
     Map<Coast.SessionType, SessionManager>       sessionManagerMap;
     Map<Coast.StatusType, StatusManager>         statusManagerMap;
     Map<Coast.LockType, Locker>                  lockerMap;
     Map<Coast.ScheduleType, ScheduleManger>      scheduleMangerMap;
     Map<Coast.StatisticsType, StatisticsSupport> statisticsSupportMap;
+    PluginService                                pluginService;
 
-    PluginService pluginService;
-
-    public ProcesorService() {
+    public ProcessorService() {
         this.flows                = new HashMap<>();
         this.sessionManagerMap    = new HashMap<>();
         this.statusManagerMap     = new HashMap<>();
@@ -52,6 +47,44 @@ public class ProcesorService<S extends State> {
         this.statusManagerMap.put(Coast.StatusType.jvm, new JvmStatusManager());
 //        this.scheduleMangerMap.put(Coast.ScheduleType.timer, new TimerScheduleManager());
         this.lockerMap.put(Coast.LockType.jvm, new JvmLocker());
+    }
+
+    /**
+     * 连续执行
+     *
+     * @param ctx
+     * @throws ActionException
+     */
+    public void execute(FlowContext ctx) throws ActionException {
+        BaseFlow flow = ctx.getFlow();
+        while (flow.keepRun(ctx)) {
+            try {
+                flow.execute(ctx);
+            } catch (RuntimeException e) {
+                //运行时异常中断
+                flushState(ctx);
+                flushSession(ctx);
+                throw e;
+            } catch (Exception e) {
+                flushState(ctx);
+                flushSession(ctx);
+//                其他尝试重试
+                addRetryTask(ctx);
+            }
+        }
+    }
+
+    private void flushState(FlowContext ctx) {
+        //todo
+
+    }
+
+    private void flushSession(FlowContext ctx) {
+        //todo
+    }
+
+    private void addRetryTask(FlowContext ctx) {
+        //todo
     }
 
 
@@ -78,9 +111,6 @@ public class ProcesorService<S extends State> {
         return (F) flows.get(flowName);
     }
 
-    public PluginService plugin() {
-        return pluginService;
-    }
 
     public Map<String, Object> getSession(String flowName, Serializable id) throws SessionException {
         BaseFlow flow    = getFlow(flowName);
@@ -89,14 +119,15 @@ public class ProcesorService<S extends State> {
     }
 
 
-    public void metricsNode(FlowContext<S> ctx) {
+    public void metricsNode(FlowContext ctx) {
         String            flowName = ctx.getFlow().getName();
         Serializable      id       = ctx.getId();
         State             state    = ctx.getState();
         StatisticsSupport ss       = statisticsSupportMap.get(ctx.getProfile().getStatistics());
+        ss.increment(flowName, id, state, Coast.STATISTICS.EXECUTE_TIMES);
     }
 
-    public Long getExecuteTimes(FlowContext<S> ctx) {
+    public Long getExecuteTimes(FlowContext ctx) {
         String            flowName = ctx.getFlow().getName();
         Serializable      id       = ctx.getId();
         State             state    = ctx.getState();
@@ -108,7 +139,7 @@ public class ProcesorService<S extends State> {
         Assert.notNull(action, "action is null");
         if (EnvUtils.isChaos()) {
             if (LocalFsmAction.class.isAssignableFrom(action) || LocalSagaAction.class.isAssignableFrom(action)) {
-                return (T)SpringUtil.getBean(LocalChaosAction.class);
+                return (T) SpringUtil.getBean(LocalChaosAction.class);
             } else {
                 return SpringUtil.getBean(Coast.REMOTE_CHAOS_ACTION);
             }

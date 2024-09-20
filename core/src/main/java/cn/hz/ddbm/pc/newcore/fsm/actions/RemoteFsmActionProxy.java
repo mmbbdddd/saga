@@ -1,27 +1,28 @@
 package cn.hz.ddbm.pc.newcore.fsm.actions;
 
 
-import cn.hz.ddbm.pc.ProcesorService;
-import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
+import cn.hz.ddbm.pc.ProcessorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 
 /**
  * @param <S>
  */
-public class RemoteFsmActionProxy<S extends Enum<S>> {
+public class RemoteFsmActionProxy  {
     Class<? extends RemoteFsmAction> actionClass;
-    RemoteFsmAction<S>               action;
+    RemoteFsmAction               action;
 
     public RemoteFsmActionProxy(Class<? extends RemoteFsmAction> actionClass) {
         this.actionClass = actionClass;
-        this.action = ProcesorService.getAction(actionClass);
+        this.action = ProcessorService.getAction(actionClass);
     }
 
 
-    public void doRemoteFsm(FsmContext<S> ctx) {
+    public void doRemoteFsm(FlowContext<FsmState > ctx) {
 
     }
 
-    public Object remoteFsmQuery(FsmContext<S> ctx) {
+    public Object remoteFsmQuery(FlowContext<FsmState > ctx) {
 
         return null;
     }

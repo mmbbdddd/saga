@@ -1,7 +1,8 @@
 package cn.hz.ddbm.pc.newcore.saga.workers;
 
 
-import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.FlowContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 
 public class SuWorker extends SagaWorker {
@@ -12,7 +13,7 @@ public class SuWorker extends SagaWorker {
     }
 
     @Override
-    public void execute(SagaContext ctx)   {
+    public void execute(FlowContext<SagaState> ctx)   {
      }
 
     @Override

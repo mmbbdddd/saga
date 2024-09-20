@@ -7,16 +7,15 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class FsmState<S extends Enum<S>> implements State {
+public class FsmState implements State {
     public FlowStatus       flowStatus;
-    public S                state;
+    public Enum             state;
     public FsmWorker.Offset offset;
 
     @Override
     public Serializable code() {
         return null;
     }
-
 
 
 }

@@ -1,8 +1,5 @@
 package cn.hz.ddbm.pc.newcore;
 
-import cn.hz.ddbm.pc.ProcesorService;
-import cn.hz.ddbm.pc.newcore.config.Coast;
-import cn.hz.ddbm.pc.newcore.fsm.FsmState;
 import lombok.Data;
 
 import java.util.HashMap;

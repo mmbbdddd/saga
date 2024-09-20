@@ -2,13 +2,14 @@ package cn.hz.ddbm.pc.newcore.fsm;
 
 import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.ProcessorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.Profile;
 import cn.hz.ddbm.pc.newcore.chaos.LocalChaosAction;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.fsm.actions.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.routers.ToRouter;
-import cn.hz.ddbm.pc.newcore.utils.EnvUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -23,13 +24,14 @@ public class FsmFlowTest {
         ctx.refresh();
     }
 
+
     @Test
-    public void runFsm() {
-        EnvUtils.setRunModeChaos();
-        FsmFlow<IdCard> p = new FsmFlow<>(IdCard.init, IdCard.su, IdCard.fail);
+    public void runFsm() throws ActionException {
+//        EnvUtils.setRunModeChaos();
+        FsmFlow  p = new FsmFlow(IdCard.init, IdCard.su, IdCard.fail);
         p.local(IdCard.init, "push", PrepareAction.class, new ToRouter<>(IdCard.presend));
         p.local(IdCard.presend, "push", PrepareAction.class, new ToRouter<>(IdCard.auditing));
-        p.local(IdCard.auditing, "push", PrepareAction.class, new Router<>(new RowKeyTable<String, IdCard, Double>() {{
+        p.local(IdCard.auditing, "push", PrepareAction.class, new Router(new RowKeyTable<String, IdCard, Double>() {{
             put("result.code == '0000'", IdCard.su, 1.0);
             put("result.code == '0001'", IdCard.fail, 0.1);
             put("result.code == '0002'", IdCard.no_such_order, 0.1);
@@ -38,19 +40,17 @@ public class FsmFlowTest {
         p.local(IdCard.no_such_order, "push", PrepareAction.class, new ToRouter<>(IdCard.presend));
         p.local(IdCard.lost_date, "push", PrepareAction.class, new ToRouter<>(IdCard.init));
 
-        FsmContext<IdCard> ctx = new FsmContext<>();
-        ctx.flow  = p;
-        ctx.state = new FsmState<>();
+        p.profile(Profile.chaosOf());
+
+        FlowContext<FsmState> ctx = new FlowContext<FsmState>();
+        ctx.flow = p;
+
+        ctx.state = new FsmState();
         ctx.state.setFlowStatus(FlowStatus.RUNNABLE);
         ctx.state.setState(IdCard.init);
         ctx.state.setOffset(FsmWorker.Offset.task);
         ctx.setEvent("push");
-        try {
-            p.execute(ctx);
-        } catch (ActionException e) {
-            throw new RuntimeException(e);
-        }
-
+        p.execute(ctx);
     }
 
     enum IdCard {
@@ -81,15 +81,20 @@ public class FsmFlowTest {
         }
 
         @Bean
-        ProcesorService procesorService() {
-            return new ProcesorService();
+        ProcessorService procesorService() {
+            return new ProcessorService();
         }
     }
 
     static class PrepareAction implements LocalFsmAction {
         @Override
-        public Object doLocalFsm(FsmContext ctx) throws Exception {
-            throw new RuntimeException("1");
+        public Object doLocalFsm(FlowContext<FsmState > ctx) throws Exception {
+            Long    executeTimes = SpringUtil.getBean(ProcessorService.class).getExecuteTimes(ctx);
+            Integer retryTimes   = ctx.getFlow().getRetry(ctx.state);
+            if (executeTimes > retryTimes) {
+                throw new RuntimeException("2");
+            }
+            throw new Exception("1");
         }
     }
 }

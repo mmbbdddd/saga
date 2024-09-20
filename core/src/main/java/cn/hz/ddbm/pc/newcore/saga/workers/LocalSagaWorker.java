@@ -1,11 +1,10 @@
 package cn.hz.ddbm.pc.newcore.saga.workers;
 
 
-import cn.hutool.extra.spring.SpringUtil;
-import cn.hz.ddbm.pc.ProcesorService;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
-import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 import cn.hz.ddbm.pc.newcore.saga.actions.LocalSagaActionProxy;
 
@@ -21,9 +20,7 @@ public class LocalSagaWorker extends SagaWorker {
     }
 
     @Override
-    public void execute(SagaContext ctx) {
-        Long executeTimes = SpringUtil.getBean(ProcesorService.class).getExecuteTimes(ctx);
-        Integer retryTime = ctx.getFlow().getRetry(ctx.getState());
+    public void execute(FlowContext<SagaState> ctx) {
         switch (ctx.state.offset) {
             case task:
                     action.doLocalSaga(ctx);

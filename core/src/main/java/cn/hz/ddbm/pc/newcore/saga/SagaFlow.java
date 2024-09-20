@@ -3,7 +3,9 @@ package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.core.lang.Assert;
 import cn.hz.ddbm.pc.newcore.BaseFlow;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -26,8 +28,11 @@ public class SagaFlow extends BaseFlow<SagaState> {
     private SagaFlow(List<SagaWorker> workers) {
         this.pipelines = workers;
     }
-
-    public void execute(SagaContext ctx) {
+    @Override
+    public boolean keepRun(FlowContext<SagaState> ctx) {
+        return false;
+    }
+    public void execute(FlowContext<SagaState> ctx) {
         Assert.notNull(ctx, "ctx is null");
         Assert.notNull(ctx.state.index, "ctx.index is null");
         Assert.notNull(ctx.state.offset, "ctx.offset is null");
@@ -51,9 +56,10 @@ public class SagaFlow extends BaseFlow<SagaState> {
         }
     }
 
-    private SagaWorker getWorker(SagaContext ctx) {
+    private SagaWorker getWorker(FlowContext<SagaState> ctx) {
         return pipelines.stream().filter(w -> w.index.equals(ctx.state.getIndex())).findFirst().get();
     }
+
 
 
 }

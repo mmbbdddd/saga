@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.utils.EnvUtils;
 import lombok.Data;
 
@@ -27,4 +28,8 @@ public abstract class BaseFlow<S extends State> {
             return profile == null ? Profile.of() : profile;
         }
     }
+
+    public abstract boolean keepRun(FlowContext<S> ctx);
+
+    public abstract void execute(FlowContext<S> ctx) throws ActionException;
 }

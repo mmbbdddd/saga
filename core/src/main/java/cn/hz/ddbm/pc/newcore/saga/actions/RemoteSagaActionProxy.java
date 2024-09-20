@@ -2,8 +2,9 @@ package cn.hz.ddbm.pc.newcore.saga.actions;
 
 
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
-import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 
 public class RemoteSagaActionProxy {
@@ -13,19 +14,19 @@ public class RemoteSagaActionProxy {
         this.action = (RemoteSagaAction) SpringUtil.getBean(actionType);
     }
 
-    public void doRemoteSaga(SagaContext ctx) {
+    public void doRemoteSaga(FlowContext<SagaState> ctx) {
         action.doRemoteSaga(ctx);
     }
 
-    public SagaWorker.Offset remoteSagaQuery(SagaContext ctx) {
+    public SagaWorker.Offset remoteSagaQuery(FlowContext<SagaState> ctx) {
         return action.remoteSagaQuery(ctx);
     }
 
-    public void doRemoteSagaRollback(SagaContext ctx) {
+    public void doRemoteSagaRollback(FlowContext<SagaState> ctx) {
         action.doRemoteSagaRollback(ctx);
     }
 
-    public SagaWorker.Offset remoteSagaRollbackQuery(SagaContext ctx) {
+    public SagaWorker.Offset remoteSagaRollbackQuery(FlowContext<SagaState> ctx) {
         return action.remoteSagaRollbackQuery(ctx);
     }
 }

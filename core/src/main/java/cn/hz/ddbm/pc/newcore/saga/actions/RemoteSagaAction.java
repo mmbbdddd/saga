@@ -1,16 +1,17 @@
 package cn.hz.ddbm.pc.newcore.saga.actions;
 
 
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
-import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 
 public interface RemoteSagaAction extends SagaAction {
-    void doRemoteSaga(SagaContext ctx);
+    void doRemoteSaga(FlowContext<SagaState> ctx);
 
-    SagaWorker.Offset remoteSagaQuery(SagaContext ctx);
+    SagaWorker.Offset remoteSagaQuery(FlowContext<SagaState> ctx);
 
-    void doRemoteSagaRollback(SagaContext ctx);
+    void doRemoteSagaRollback(FlowContext<SagaState> ctx);
 
-    SagaWorker.Offset remoteSagaRollbackQuery(SagaContext ctx);
+    SagaWorker.Offset remoteSagaRollbackQuery(FlowContext<SagaState> ctx);
 }

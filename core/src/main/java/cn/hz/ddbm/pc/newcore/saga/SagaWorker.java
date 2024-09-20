@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
 
+import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.saga.actions.LocalSagaAction;
 import cn.hz.ddbm.pc.newcore.saga.workers.FailWorker;
 import cn.hz.ddbm.pc.newcore.saga.workers.LocalSagaWorker;
@@ -32,7 +33,7 @@ public abstract class SagaWorker {
         return new FailWorker();
     }
 
-    public abstract void execute(SagaContext ctx)  ;
+    public abstract void execute(FlowContext<SagaState> ctx)  ;
 
     public abstract boolean isFail();
 
