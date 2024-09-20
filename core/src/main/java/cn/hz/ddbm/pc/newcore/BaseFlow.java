@@ -29,6 +29,11 @@ public abstract class BaseFlow<S extends State> {
         }
     }
 
+    /**
+     * 未结束，可运行
+     * @param ctx
+     * @return
+     */
     public abstract boolean keepRun(FlowContext<S> ctx);
 
     public abstract void execute(FlowContext<S> ctx) throws Exception;

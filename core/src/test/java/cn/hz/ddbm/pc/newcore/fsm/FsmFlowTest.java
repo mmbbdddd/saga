@@ -10,6 +10,7 @@ import cn.hz.ddbm.pc.newcore.chaos.LocalChaosAction;
 import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.fsm.actions.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.routers.ToRouter;
+import org.codehaus.groovy.transform.sc.transformers.RangeExpressionTransformer;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -94,7 +95,14 @@ public class FsmFlowTest {
             if (executeTimes > retryTimes) {
                 throw new RuntimeException("2");
             }
-            throw new Exception("1");
+            Double r = Math.random();
+            if(r<0.1){
+                throw new Exception("1");
+            }
+            if(r<0.3){
+                throw new RuntimeException("1");
+            }
+            return null;
         }
     }
 }

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 @Data
 public class FlowContext<S extends State> {
+    public String              uuid;
     public String              id;
     public BaseFlow<S>         flow;
     public S                   state;

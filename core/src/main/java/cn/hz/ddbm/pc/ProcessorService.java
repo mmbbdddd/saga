@@ -15,6 +15,7 @@ import cn.hz.ddbm.pc.newcore.infra.impl.JvmSessionManager;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatisticsSupport;
 import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatusManager;
 import cn.hz.ddbm.pc.newcore.infra.proxy.*;
+import cn.hz.ddbm.pc.newcore.saga.SagaState;
 import cn.hz.ddbm.pc.newcore.saga.actions.LocalSagaAction;
 import cn.hz.ddbm.pc.newcore.utils.EnvUtils;
 
@@ -148,6 +149,12 @@ public class ProcessorService {
         }
     }
 
+    public FlowContext<SagaState> getSagaContext(String flowName, Object o) {
+        return null;
+    }
+    public FlowContext<SagaState> getFsmContext(String flowName, Object o) {
+        return null;
+    }
 }
 
 
