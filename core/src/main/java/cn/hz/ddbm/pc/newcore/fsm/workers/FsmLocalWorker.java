@@ -3,6 +3,7 @@ package cn.hz.ddbm.pc.newcore.fsm.workers;
 
 import cn.hz.ddbm.pc.newcore.FlowStatus;
 import cn.hz.ddbm.pc.newcore.config.ErrorCode;
+import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.fsm.FsmContext;
 import cn.hz.ddbm.pc.newcore.fsm.FsmWorker;
@@ -21,18 +22,17 @@ public class FsmLocalWorker<S extends Enum<S>> extends FsmWorker<S> {
     }
 
     @Override
-    public void execute(FsmContext<S> ctx) {
+    public void execute(FsmContext<S> ctx) throws ActionException {
         ctx.setAction(action);
         //如果任务可执行
         Offset offset = ctx.state.offset;
         switch (offset) {
             case task:
-                ctx.state.offset = failover;
-                Object result = action.doLocal(ctx);
+                Object result = action.doLocalFsm(ctx);
                 S state = router.router(ctx, result);
                 if (null == state) {
-                    ctx.state.flowStatus   = FlowStatus.MANUAL;
-                    ctx.errorMessage = ErrorCode.ROUTER_RESULT_EMPTY;
+                    ctx.state.flowStatus = FlowStatus.MANUAL;
+                    ctx.errorMessage     = ErrorCode.ROUTER_RESULT_EMPTY;
                 } else if (state.equals(ctx.getState())) {
                     ctx.state.offset = failover;
                 } else {

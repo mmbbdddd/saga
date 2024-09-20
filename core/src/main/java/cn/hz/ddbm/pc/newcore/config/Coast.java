@@ -7,11 +7,8 @@ public class Coast {
     public static final String  REMOTE_CHAOS_ACTION     = "remoteChaosAction";
     public static final String  PLUGIN_EXECUTOR_SERVICE = "pluginExecutorService";
     public static final String  ACTION_EXECUTOR_SERVICE = "actionExecutorService";
-    public static final String  RUN_MODE                = "run_mode";
-    public static final String  RUN_MODE_CHAOS          = "chaos";
-    public static final String  RUN_MODE_STABLE         = "stable";
-    public static final String  CHAOS_WEIGHTS     = "chaos_weight";
-    public static       Integer DEFAULT_RETRYTIME = 1;
+    public static final String  CHAOS_WEIGHTS           = "chaos_weight";
+    public static       Integer DEFAULT_RETRYTIME       = 1;
 
     public final static String EVENT_DEFAULT = "push";
 

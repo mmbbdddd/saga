@@ -28,10 +28,10 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
         switch (offset) {
             case task:
                 ctx.state.offset = failover;
-                action.doRemote(ctx);
+                action.doRemoteFsm(ctx);
                 break;
             case failover:
-                Object result = action.remoteQuery(ctx);
+                Object result = action.remoteFsmQuery(ctx);
                 S state = router.router(ctx, result);
                 if (null == state) {
                     ctx.state.flowStatus   = FlowStatus.MANUAL;

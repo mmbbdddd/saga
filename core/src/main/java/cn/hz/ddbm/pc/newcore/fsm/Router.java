@@ -6,6 +6,7 @@ import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
 import cn.hutool.json.JSONUtil;
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.utils.EnvUtils;
 import cn.hz.ddbm.pc.newcore.utils.ExpressionEngineUtils;
 import cn.hz.ddbm.pc.newcore.utils.RandomUitl;
 import lombok.Getter;
@@ -26,8 +27,7 @@ public class Router<S> {
     }
 
     public S router(FsmContext ctx, Object actionResult) {
-        String runMode = System.getProperty(Coast.RUN_MODE);
-        if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
+        if (EnvUtils.isChaos()) {
             return routerByWeight();
         } else {
             Map<String, Object> routerContext = new HashMap<>();

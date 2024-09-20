@@ -6,11 +6,11 @@ import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 
 public interface RemoteSagaAction extends SagaAction {
-    void doSaga(SagaContext ctx);
+    void doRemoteSaga(SagaContext ctx);
 
-    SagaWorker.Offset querySaga(SagaContext ctx);
+    SagaWorker.Offset remoteSagaQuery(SagaContext ctx);
 
-    void doSagaRollback(SagaContext ctx);
+    void doRemoteSagaRollback(SagaContext ctx);
 
-    SagaWorker.Offset querySagaRollback(SagaContext ctx);
+    SagaWorker.Offset remoteSagaRollbackQuery(SagaContext ctx);
 }

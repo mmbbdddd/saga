@@ -1,27 +1,31 @@
 package cn.hz.ddbm.pc.newcore.saga;
 
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.infra.impl.JvmStatisticsSupport;
 import cn.hz.ddbm.pc.newcore.saga.actions.LocalSagaAction;
+import cn.hz.ddbm.pc.newcore.utils.EnvUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-import static org.junit.Assert.*;
-
 public class SagaFlowTest {
 
     AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+    ProcesorService procesor;
 
     @Before
     public void setup() {
         ctx.register(SagaFlowTest.CC.class);
         ctx.refresh();
+        procesor = ctx.getBean(ProcesorService.class);
     }
 
     @Test
     public void runSaga() {
+        EnvUtils.setRunModeChaos();
         SagaFlow p = SagaFlow.of(SagaFlowTest.FreezedAction.class, SagaFlowTest.PayAction.class, SagaFlowTest.CommitAction.class);
 
         SagaContext ctx = new SagaContext();
@@ -35,6 +39,14 @@ public class SagaFlowTest {
     }
 
     static class CC {
+        @Bean
+        JvmStatisticsSupport jvmStatisticsSupport() {
+            return new JvmStatisticsSupport();
+        }
+        @Bean
+        ProcesorService procesorService() {
+            return new ProcesorService();
+        }
         @Bean
         SpringUtil springUtil() {
             return new SpringUtil();
@@ -60,12 +72,12 @@ public class SagaFlowTest {
     public static class FreezedAction implements LocalSagaAction {
 
         @Override
-        public void doSagaRollback(SagaContext ctx) {
+        public void doLocalSagaRollback(SagaContext ctx) {
 
         }
 
         @Override
-        public void doSaga(SagaContext ctx) {
+        public void doLocalSaga(SagaContext ctx) {
 
         }
     }
@@ -74,12 +86,12 @@ public class SagaFlowTest {
 
 
         @Override
-        public void doSagaRollback(SagaContext ctx) {
+        public void doLocalSagaRollback(SagaContext ctx) {
 
         }
 
         @Override
-        public void doSaga(SagaContext ctx) {
+        public void doLocalSaga(SagaContext ctx) {
 
         }
     }
@@ -88,12 +100,12 @@ public class SagaFlowTest {
 
 
         @Override
-        public void doSagaRollback(SagaContext ctx) {
+        public void doLocalSagaRollback(SagaContext ctx) {
 
         }
 
         @Override
-        public void doSaga(SagaContext ctx) {
+        public void doLocalSaga(SagaContext ctx) {
 
         }
     }

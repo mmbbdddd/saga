@@ -13,19 +13,19 @@ public class RemoteSagaActionProxy {
         this.action = (RemoteSagaAction) SpringUtil.getBean(actionType);
     }
 
-    public void doSaga(SagaContext ctx) {
-        action.doSaga(ctx);
+    public void doRemoteSaga(SagaContext ctx) {
+        action.doRemoteSaga(ctx);
     }
 
-    public SagaWorker.Offset querySaga(SagaContext ctx) {
-        return action.querySaga(ctx);
+    public SagaWorker.Offset remoteSagaQuery(SagaContext ctx) {
+        return action.remoteSagaQuery(ctx);
     }
 
-    public void doSagaRollback(SagaContext ctx) {
-        action.doSagaRollback(ctx);
+    public void doRemoteSagaRollback(SagaContext ctx) {
+        action.doRemoteSagaRollback(ctx);
     }
 
-    public SagaWorker.Offset querySagaRollback(SagaContext ctx) {
-        return action.querySagaRollback(ctx);
+    public SagaWorker.Offset remoteSagaRollbackQuery(SagaContext ctx) {
+        return action.remoteSagaRollbackQuery(ctx);
     }
 }

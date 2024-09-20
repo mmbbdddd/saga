@@ -1,14 +1,15 @@
 package cn.hz.ddbm.pc.newcore;
 
 import cn.hz.ddbm.pc.newcore.config.Coast;
+import cn.hz.ddbm.pc.newcore.utils.EnvUtils;
 import lombok.Data;
 
 import java.util.Objects;
 
 @Data
 public abstract class BaseFlow<S extends State> {
-   protected String  name;
-   protected Profile profile;
+    protected String  name;
+    protected Profile profile;
 
     public Integer getRetry(S state) {
         return getProfile().getStateAttrs(state).getRetry();
@@ -19,8 +20,8 @@ public abstract class BaseFlow<S extends State> {
     }
 
     public Profile getProfile() {
-        String runMode = System.getProperty(Coast.RUN_MODE);
-        if (Objects.equals(runMode, Coast.RUN_MODE_CHAOS)) {
+
+        if (EnvUtils.isChaos()) {
             return profile == null ? Profile.chaosOf() : profile;
         } else {
             return profile == null ? Profile.of() : profile;

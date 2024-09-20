@@ -17,6 +17,6 @@ public interface LocalFsmAction<S extends Enum<S>> extends FsmAction {
      * @param ctx
      * @throws Exception
      */
-    Object localFsm(FsmContext<S> ctx) throws Exception;
+    Object doLocalFsm(FsmContext<S> ctx) throws Exception;
 
 }

@@ -1,11 +1,11 @@
 package cn.hz.ddbm.pc.newcore.saga.workers;
 
 
+import cn.hutool.extra.spring.SpringUtil;
+import cn.hz.ddbm.pc.ProcesorService;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
-import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
-import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
 import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
 import cn.hz.ddbm.pc.newcore.saga.actions.RemoteSagaActionProxy;
 
@@ -21,19 +21,21 @@ public class RemoteSagaWorker extends SagaWorker {
 
     @Override
     public void execute(SagaContext ctx) {
+        Long executeTimes = SpringUtil.getBean(ProcesorService.class).getExecuteTimes(ctx);
+        Integer retryTime = ctx.getFlow().getRetry(ctx.getState());
         switch (ctx.state.offset) {
             case task:
 //                任务执行之前状态先设置为task_failover
-                if (ctx.executeTimes() > ctx.flow.getRetry(ctx.getState())) {
+                if (executeTimes > retryTime) {
                     ctx.state.setOffset(rollback);
                 } else {
                     ctx.state.offset = task_failover;
-                    action.doSaga(ctx);
+                    action.doRemoteSaga(ctx);
                 }
                 break;
             case task_failover:
 //                查询任务后递归执行状态机
-                ctx.state.offset = (action.querySaga(ctx));
+                ctx.state.offset = (action.remoteSagaQuery(ctx));
                 execute(ctx);
                 break;
             case task_su:
@@ -47,15 +49,15 @@ public class RemoteSagaWorker extends SagaWorker {
                 break;
             case rollback:
 //                任务执行之前状态先设置为rollback_failover
-                if (ctx.executeTimes() > ctx.flow.getRetry(ctx.getState())) {
+                if (executeTimes > retryTime) {
                     ctx.state.setOffset(rollback);
                 } else {
                     ctx.state.offset = rollback_failover;
-                    action.doSagaRollback(ctx);
+                    action.doRemoteSagaRollback(ctx);
                 }
                 break;
             case rollback_failover:
-                ctx.state.offset = (action.querySagaRollback(ctx));
+                ctx.state.offset = (action.remoteSagaRollbackQuery(ctx));
                 execute(ctx);
                 break;
             case rollback_su:

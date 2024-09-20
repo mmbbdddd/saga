@@ -5,7 +5,7 @@ import cn.hz.ddbm.pc.newcore.saga.SagaAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 
 public interface LocalSagaAction extends SagaAction {
-    void doSagaRollback(SagaContext ctx);
+    void doLocalSagaRollback(SagaContext ctx);
 
-    void doSaga(SagaContext ctx);
+    void doLocalSaga(SagaContext ctx);
 }

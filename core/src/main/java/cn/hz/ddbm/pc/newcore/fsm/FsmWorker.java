@@ -1,6 +1,7 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
 
+import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.fsm.actions.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.actions.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.workers.FsmLocalWorker;
@@ -28,7 +29,7 @@ public abstract class FsmWorker<S extends Enum<S>> {
         return new FsmRemoteWorker<>(fsm,from, action, router);
     }
 
-    public abstract void execute(FsmContext<S> ctx);
+    public abstract void execute(FsmContext<S> ctx) throws ActionException;
 
     public enum Offset {
         task, failover

@@ -6,6 +6,7 @@ import cn.hutool.core.map.multi.RowKeyTable;
 import cn.hutool.core.map.multi.Table;
 import cn.hz.ddbm.pc.newcore.BaseFlow;
 import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.exception.ActionException;
 import cn.hz.ddbm.pc.newcore.fsm.actions.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.fsm.actions.RemoteFsmAction;
 import cn.hz.ddbm.pc.newcore.log.Logs;
@@ -26,7 +27,7 @@ public class FsmFlow<S extends Enum<S>> extends BaseFlow<FsmState<S>> {
     }
 
 
-    public void execute(FsmContext<S> ctx) {
+    public void execute(FsmContext<S> ctx) throws ActionException {
         Assert.notNull(ctx, "ctx is null");
         Assert.notNull(ctx.state, "ctx.state is null");
         Assert.notNull(ctx.state.flowStatus, "ctx.flowstatus is null");
