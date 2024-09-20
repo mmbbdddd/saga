@@ -11,13 +11,13 @@ import java.util.Objects;
 public abstract class Plugin<S extends State> {
     public abstract String code();
 
-    public abstract void preAction(FlowContext<?, S, ?> ctx);
+    public abstract void preAction(FlowContext<S> ctx);
 
-    public abstract void postAction(S preState, FlowContext<?, S, ?> ctx);
+    public abstract void postAction(S preState, FlowContext<S> ctx);
 
-    public abstract void errorAction(S preState, Exception e, FlowContext<?, S, ?> ctx);
+    public abstract void errorAction(S preState, Exception e, FlowContext<S> ctx);
 
-    public abstract void finallyAction(State preNode,FlowContext<?, S, ?> ctx);
+    public abstract void finallyAction(S preNode, FlowContext<S> ctx);
 
     @Override
     public boolean equals(Object object) {

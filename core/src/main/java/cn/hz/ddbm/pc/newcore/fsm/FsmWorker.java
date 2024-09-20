@@ -1,29 +1,36 @@
 package cn.hz.ddbm.pc.newcore.fsm;
 
-import cn.hz.ddbm.pc.newcore.FlowContext;
-import cn.hz.ddbm.pc.newcore.Worker;
-import cn.hz.ddbm.pc.newcore.exception.InterruptedException;
-import cn.hz.ddbm.pc.newcore.exception.*;
-import cn.hz.ddbm.pc.newcore.fsm.action.LocalFsmAction;
-import cn.hz.ddbm.pc.newcore.fsm.action.RemoteFsmAction;
-import cn.hz.ddbm.pc.newcore.fsm.worker.FsmLocalWorker;
-import cn.hz.ddbm.pc.newcore.fsm.worker.FsmRemoteWorker;
+
+import cn.hz.ddbm.pc.newcore.fsm.actions.LocalFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.actions.RemoteFsmAction;
+import cn.hz.ddbm.pc.newcore.fsm.workers.FsmLocalWorker;
+import cn.hz.ddbm.pc.newcore.fsm.workers.FsmRemoteWorker;
 import lombok.Data;
 
 @Data
-public abstract class FsmWorker<E extends Enum<E>> extends Worker<FsmAction, FlowContext<FsmFlow<E>, FsmState<E>, FsmWorker<E>>> {
-    public static <S extends Enum<S>> FsmWorker<S> local(S from, Class<? extends LocalFsmAction> action, Router<S> router) {
-        return new FsmLocalWorker<>(action, router);
+public abstract class FsmWorker<S extends Enum<S>> {
+    protected FsmFlow<S> fsm;
+    protected S          state;
+    protected Router<S> router;
+
+    public FsmWorker(FsmFlow<S> fsm, S state, Router<S> router) {
+        this.fsm    = fsm;
+        this.state  = state;
+        this.router = router;
+    }
+
+    public static <S extends Enum<S>> FsmWorker<S> local(FsmFlow<S> fsm, S from, Class<? extends LocalFsmAction> action, Router<S> router) {
+        return new FsmLocalWorker<>(fsm,from, action, router);
 
     }
 
-    public static <S extends Enum<S>> FsmWorker<S> remote(S from, Class<? extends RemoteFsmAction> action, Router<S> router) {
-        return new FsmRemoteWorker<>(action, router);
+    public static <S extends Enum<S>> FsmWorker<S> remote(FsmFlow<S> fsm, S from, Class<? extends RemoteFsmAction> action, Router<S> router) {
+        return new FsmRemoteWorker<>(fsm,from, action, router);
     }
 
-    public abstract void execute(FlowContext<FsmFlow<E>, FsmState<E>, FsmWorker<E>> ctx) throws StatusException, IdempotentException, ActionException, LockException, PauseException, FlowEndException, InterruptedException, ProcessingException, NoSuchRecordException;
+    public abstract void execute(FsmContext<S> ctx);
+
+    public enum Offset {
+        task, failover
+    }
 }
-
-
-
-

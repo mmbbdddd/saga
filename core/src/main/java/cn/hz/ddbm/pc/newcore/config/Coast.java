@@ -10,8 +10,8 @@ public class Coast {
     public static final String  RUN_MODE                = "run_mode";
     public static final String  RUN_MODE_CHAOS          = "chaos";
     public static final String  RUN_MODE_STABLE         = "stable";
-    public static final String  CHAOS_WEIGHTS           = "chaos_weight";
-    public static       Integer DEFAULT_RETRYTIME       = 1;
+    public static final String  CHAOS_WEIGHTS     = "chaos_weight";
+    public static       Integer DEFAULT_RETRYTIME = 1;
 
     public final static String EVENT_DEFAULT = "push";
 

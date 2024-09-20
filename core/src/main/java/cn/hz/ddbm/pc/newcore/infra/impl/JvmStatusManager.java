@@ -1,5 +1,7 @@
 package cn.hz.ddbm.pc.newcore.infra.impl;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hz.ddbm.pc.newcore.State;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.IdempotentException;
@@ -12,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class JvmStatusManager implements StatusManager {
-    ConcurrentMap<String, State>   statusMap;
+    ConcurrentMap<String, String>  statusMap;
     ConcurrentMap<String, Boolean> idempotentRecords;
     String                         keyTemplate = "%s:%s";
 
@@ -27,24 +29,23 @@ public class JvmStatusManager implements StatusManager {
     }
 
     @Override
-    public void setStatus(String flow, Serializable flowId, State status, Integer timeout) throws StatusException {
-        try {
-            Logs.status.debug("状态变迁到{}", status);
-            statusMap.put(String.format(keyTemplate, flow, flowId), status);
-        } catch (Exception e) {
-            throw new StatusException(e);
-        }
-    }
+    public <T> void setStatus(String flow, Serializable flowId, T status, Integer timeout) throws StatusException {
 
+    }
 
     @Override
-    public State getStatus(String flow, Serializable flowId) throws StatusException {
+    public <T> T getStatus(String flow, Serializable flowId, Class<T> type) throws StatusException {
         try {
-            return statusMap.get(String.format(keyTemplate, flow, flowId));
+            String status =  statusMap.get(String.format(keyTemplate, flow, flowId));
+            if(StrUtil.isEmpty(status)){
+                return null;
+            }
+            return JSONUtil.toBean(status,type);
         } catch (Exception e) {
             throw new StatusException(e);
         }
     }
+
 
     @Override
     public void idempotent(String key) throws IdempotentException {
@@ -56,7 +57,7 @@ public class JvmStatusManager implements StatusManager {
     }
 
     @Override
-    public void unidempotent(String key)   {
+    public void unidempotent(String key) {
         idempotentRecords.remove(key);
     }
 }

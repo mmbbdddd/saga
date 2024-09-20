@@ -1,7 +1,6 @@
 package cn.hz.ddbm.pc.newcore.infra;
 
 
-import cn.hz.ddbm.pc.newcore.FlowContext;
 import cn.hz.ddbm.pc.newcore.config.Coast;
 import cn.hz.ddbm.pc.newcore.exception.SessionException;
 
@@ -21,10 +20,6 @@ public interface SessionManager {
 
     Map<String, Object> get(String flowName, Serializable flowId) throws SessionException;
 
-    default void flush(FlowContext ctx) throws SessionException {
-        set(ctx.getFlow().getName(), ctx.getId(), ctx.getSession());
-
-    }
 
 
 }

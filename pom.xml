@@ -11,18 +11,18 @@
         <module>parent</module>
         <module>core</module>
         <!--        <module>core</module>-->
-        <module>framework</module>
-        <module>factory</module>
-        <module>plugin</module>
-        <module>session</module>
-        <module>chaos</module>
-        <module>status</module>
-        <module>configuration</module>
-        <module>locker</module>
-        <module>statistics</module>
-        <module>example</module>
-        <module>scheudule</module>
-        <module>build-all</module>
+<!--        <module>framework</module>-->
+<!--        <module>factory</module>-->
+<!--        <module>plugin</module>-->
+<!--        <module>session</module>-->
+<!--        <module>chaos</module>-->
+<!--        <module>status</module>-->
+<!--        <module>configuration</module>-->
+<!--        <module>locker</module>-->
+<!--        <module>statistics</module>-->
+<!--        <module>example</module>-->
+<!--        <module>scheudule</module>-->
+<!--        <module>build-all</module>-->
     </modules>
 
 

@@ -1,0 +1,79 @@
+package cn.hz.ddbm.pc.newcore.saga.workers;
+
+
+import cn.hz.ddbm.pc.newcore.FlowStatus;
+import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
+import cn.hz.ddbm.pc.newcore.saga.SagaAction;
+import cn.hz.ddbm.pc.newcore.saga.SagaContext;
+import cn.hz.ddbm.pc.newcore.saga.SagaFlow;
+import cn.hz.ddbm.pc.newcore.saga.SagaWorker;
+import cn.hz.ddbm.pc.newcore.saga.actions.RemoteSagaActionProxy;
+
+import static cn.hz.ddbm.pc.newcore.saga.SagaWorker.Offset.*;
+
+public class RemoteSagaWorker extends SagaWorker {
+    RemoteSagaActionProxy action;
+
+    public RemoteSagaWorker(Integer index, Class<? extends SagaAction> actionType) {
+        super(index);
+        this.action = new RemoteSagaActionProxy(actionType);
+    }
+
+    @Override
+    public void execute(SagaContext ctx) {
+        switch (ctx.state.offset) {
+            case task:
+//                任务执行之前状态先设置为task_failover
+                if (ctx.executeTimes() > ctx.flow.getRetry(ctx.getState())) {
+                    ctx.state.setOffset(rollback);
+                } else {
+                    ctx.state.offset = task_failover;
+                    action.doSaga(ctx);
+                }
+                break;
+            case task_failover:
+//                查询任务后递归执行状态机
+                ctx.state.offset = (action.querySaga(ctx));
+                execute(ctx);
+                break;
+            case task_su:
+//                成功则状态设置为下一个
+                ctx.state.index++;
+                ctx.state.offset = task;
+                break;
+            case task_fail:
+//                失败择装填设置为就地回滚
+                ctx.state.offset = rollback;
+                break;
+            case rollback:
+//                任务执行之前状态先设置为rollback_failover
+                if (ctx.executeTimes() > ctx.flow.getRetry(ctx.getState())) {
+                    ctx.state.setOffset(rollback);
+                } else {
+                    ctx.state.offset = rollback_failover;
+                    action.doSagaRollback(ctx);
+                }
+                break;
+            case rollback_failover:
+                ctx.state.offset = (action.querySagaRollback(ctx));
+                execute(ctx);
+                break;
+            case rollback_su:
+                ctx.state.index--;
+                break;
+            case rollback_fail:
+                ctx.state.setFlowStatus(FlowStatus.MANUAL);
+                break;
+        }
+    }
+
+    @Override
+    public boolean isFail() {
+        return false;
+    }
+
+    @Override
+    public boolean isSu() {
+        return false;
+    }
+}

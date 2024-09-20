@@ -1,6 +1,6 @@
 package cn.hz.ddbm.pc.factory.fsm;
 
-import cn.hz.ddbm.pc.newcore.FlowModel;
+import cn.hz.ddbm.pc.newcore.BaseFlow;
 import cn.hz.ddbm.pc.newcore.factory.FsmFlowFactory;
 import cn.hz.ddbm.pc.newcore.fsm.FsmFlow;
 import cn.hz.ddbm.pc.newcore.log.Logs;
@@ -30,7 +30,7 @@ public class BeanFsmFlowFactory implements FsmFlowFactory, ApplicationContextAwa
             }
         }).collect(Collectors.toList());
         return flows.stream().collect(Collectors.toMap(
-                FlowModel::getName,
+                BaseFlow::getName,
                 t -> t
         ));
     }
