@@ -31,5 +31,5 @@ public abstract class BaseFlow<S extends State> {
 
     public abstract boolean keepRun(FlowContext<S> ctx);
 
-    public abstract void execute(FlowContext<S> ctx) throws ActionException;
+    public abstract void execute(FlowContext<S> ctx) throws Exception;
 }

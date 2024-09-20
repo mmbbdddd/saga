@@ -26,7 +26,7 @@ public class FsmFlowTest {
 
 
     @Test
-    public void runFsm() throws ActionException {
+    public void runFsm() throws Exception {
 //        EnvUtils.setRunModeChaos();
         FsmFlow  p = new FsmFlow(IdCard.init, IdCard.su, IdCard.fail);
         p.local(IdCard.init, "push", PrepareAction.class, new ToRouter<>(IdCard.presend));

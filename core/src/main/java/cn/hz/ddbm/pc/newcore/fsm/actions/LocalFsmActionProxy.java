@@ -19,7 +19,7 @@ public class LocalFsmActionProxy {
     }
 
 
-    public <S extends Enum<S>> Object doLocalFsm(FlowContext<FsmState > ctx) throws ActionException {
+    public <S extends Enum<S>> Object doLocalFsm(FlowContext<FsmState > ctx) throws Exception {
         try {
             //开始事务
             Object result = action.doLocalFsm(ctx);
@@ -30,7 +30,7 @@ public class LocalFsmActionProxy {
             throw e;
         } catch (Exception e) {
             //回滚事务。
-            throw new ActionException(e);
+            throw e;
         } finally {
             SpringUtil.getBean(ProcessorService.class).metricsNode(ctx);
         }

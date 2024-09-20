@@ -15,13 +15,4 @@ public class FailWorker extends SagaWorker {
     public void execute(FlowContext<SagaState> ctx)   {
      }
 
-    @Override
-    public boolean isFail() {
-        return true;
-    }
-
-    @Override
-    public boolean isSu() {
-        return false;
-    }
 }

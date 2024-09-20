@@ -21,7 +21,7 @@ public class FsmLocalWorker  extends FsmWorker  {
     }
 
     @Override
-    public void execute(FlowContext<FsmState > ctx) throws ActionException {
+    public void execute(FlowContext<FsmState > ctx) throws Exception {
         ctx.setAction(action);
         //如果任务可执行
         Offset  offset       = ctx.state.offset;

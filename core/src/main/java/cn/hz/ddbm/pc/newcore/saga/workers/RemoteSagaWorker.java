@@ -58,13 +58,4 @@ public class RemoteSagaWorker extends SagaWorker {
         }
     }
 
-    @Override
-    public boolean isFail() {
-        return false;
-    }
-
-    @Override
-    public boolean isSu() {
-        return false;
-    }
 }

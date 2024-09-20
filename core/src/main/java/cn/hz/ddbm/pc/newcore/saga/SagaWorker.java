@@ -11,7 +11,7 @@ import cn.hz.ddbm.pc.newcore.saga.workers.SuWorker;
 import static cn.hz.ddbm.pc.newcore.log.Logs.flow;
 
 public abstract class SagaWorker {
-    Integer index;
+    public Integer index;
 
     public SagaWorker(Integer index) {
         this.index = index;
@@ -34,10 +34,6 @@ public abstract class SagaWorker {
     }
 
     public abstract void execute(FlowContext<SagaState> ctx)  ;
-
-    public abstract boolean isFail();
-
-    public abstract boolean isSu();
 
 
     public enum Offset {

@@ -28,7 +28,7 @@ public class FsmFlow extends BaseFlow<FsmState> {
     }
 
 
-    public void execute(FlowContext<FsmState> ctx) throws ActionException {
+    public void execute(FlowContext<FsmState> ctx) throws Exception {
         Assert.notNull(ctx, "ctx is null");
         Assert.notNull(ctx.state, "ctx.state is null");
         Assert.notNull(ctx.state.flowStatus, "ctx.flowstatus is null");
