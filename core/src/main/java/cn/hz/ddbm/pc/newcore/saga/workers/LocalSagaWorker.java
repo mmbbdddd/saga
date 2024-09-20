@@ -26,13 +26,9 @@ public class LocalSagaWorker extends SagaWorker {
         Integer retryTime = ctx.getFlow().getRetry(ctx.getState());
         switch (ctx.state.offset) {
             case task:
-                if (executeTimes > retryTime) {
-                    ctx.state.setOffset(rollback);
-                } else {
                     action.doLocalSaga(ctx);
                     ctx.state.index++;
                     ctx.state.offset = task;
-                }
                 break;
             case rollback:
                 try {

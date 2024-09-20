@@ -13,11 +13,11 @@ import cn.hz.ddbm.pc.newcore.fsm.actions.RemoteFsmActionProxy;
 import static cn.hz.ddbm.pc.newcore.fsm.FsmWorker.Offset.failover;
 
 public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
-    RemoteFsmActionProxy action;
+    RemoteFsmActionProxy<S> action;
 
     public FsmRemoteWorker(FsmFlow<S> fsm, S from, Class<? extends RemoteFsmAction> action, Router<S> router) {
         super(fsm, from, router);
-        this.action = new RemoteFsmActionProxy(action);
+        this.action = new RemoteFsmActionProxy<>(action);
     }
 
     @Override
@@ -34,10 +34,8 @@ public class FsmRemoteWorker<S extends Enum<S>> extends FsmWorker<S> {
                 Object result = action.remoteFsmQuery(ctx);
                 S state = router.router(ctx, result);
                 if (null == state) {
-                    ctx.state.flowStatus   = FlowStatus.MANUAL;
-                    ctx.errorMessage = ErrorCode.ROUTER_RESULT_EMPTY;
-                } else if (state.equals(ctx.getState())) {
-                    ctx.state.offset = failover;
+                    ctx.state.flowStatus = FlowStatus.MANUAL;
+                    ctx.errorMessage     = ErrorCode.ROUTER_RESULT_EMPTY;
                 } else {
                     ctx.state.state  = state;
                     ctx.state.offset = Offset.task;

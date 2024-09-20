@@ -21,17 +21,11 @@ public class RemoteSagaWorker extends SagaWorker {
 
     @Override
     public void execute(SagaContext ctx) {
-        Long executeTimes = SpringUtil.getBean(ProcesorService.class).getExecuteTimes(ctx);
-        Integer retryTime = ctx.getFlow().getRetry(ctx.getState());
         switch (ctx.state.offset) {
             case task:
 //                任务执行之前状态先设置为task_failover
-                if (executeTimes > retryTime) {
-                    ctx.state.setOffset(rollback);
-                } else {
-                    ctx.state.offset = task_failover;
-                    action.doRemoteSaga(ctx);
-                }
+                ctx.state.offset = task_failover;
+                action.doRemoteSaga(ctx);
                 break;
             case task_failover:
 //                查询任务后递归执行状态机
@@ -49,12 +43,8 @@ public class RemoteSagaWorker extends SagaWorker {
                 break;
             case rollback:
 //                任务执行之前状态先设置为rollback_failover
-                if (executeTimes > retryTime) {
-                    ctx.state.setOffset(rollback);
-                } else {
-                    ctx.state.offset = rollback_failover;
-                    action.doRemoteSagaRollback(ctx);
-                }
+                ctx.state.offset = rollback_failover;
+                action.doRemoteSagaRollback(ctx);
                 break;
             case rollback_failover:
                 ctx.state.offset = (action.remoteSagaRollbackQuery(ctx));

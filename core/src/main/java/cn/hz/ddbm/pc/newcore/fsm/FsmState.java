@@ -16,4 +16,7 @@ public class FsmState<S extends Enum<S>> implements State {
     public Serializable code() {
         return null;
     }
+
+
+
 }

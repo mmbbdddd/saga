@@ -5,9 +5,10 @@ import cn.hz.ddbm.pc.newcore.fsm.actions.LocalFsmAction;
 import cn.hz.ddbm.pc.newcore.saga.SagaContext;
 import cn.hz.ddbm.pc.newcore.saga.actions.LocalSagaAction;
 
-public class LocalChaosAction implements LocalFsmAction, LocalSagaAction {
+public class LocalChaosAction<S extends Enum<S>> implements LocalFsmAction<S>, LocalSagaAction {
+
     @Override
-    public Object doLocalFsm(FsmContext ctx) throws Exception {
+    public Object doLocalFsm(FsmContext<S> ctx) throws Exception {
         return null;
     }
 
